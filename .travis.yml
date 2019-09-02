@@ -1,0 +1,19 @@
+language: node_js
+node_js: "stable"
+branches:
+  only:
+    - develop
+install: npm install
+cache:
+  directories:
+    - "node_modules"
+ 
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'CREATE DATABASE test;' -U postgres
+  - npm i 
+
+scripts: npm test
+after_success: npm run coverage
