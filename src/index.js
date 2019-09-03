@@ -12,12 +12,13 @@ import session from 'express-session';
 import cors from 'cors';
 import passport from 'passport';
 import errorhandler from 'errorhandler';
-import mongoose from 'mongoose';
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+dotenv.config();
+
 // Create global app object
 const app = express();
-dotenv.config();
 app.use(cors());
 
 // Normal express config defaults
@@ -27,8 +28,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(require('method-override')());
-
-app.use(express.static(`${__dirname}/public`));
 
 app.use(
   session({
@@ -43,14 +42,6 @@ if (!isProduction) {
   app.use(errorhandler());
 }
 
-if (isProduction) {
-  mongoose.connect(process.env.MONGODB_URI);
-} else {
-  mongoose.connect('mongodb://localhost/conduit');
-  mongoose.set('debug', true);
-}
-
-require('./models/User');
 
 app.use(require('./routes'));
 
