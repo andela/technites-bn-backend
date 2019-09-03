@@ -1,0 +1,7 @@
+{
+    "openapi" : "3.0.0",
+    "info" : {
+      "title" : "Barefoot Nomad",
+      "description" : "Make company global travel and accommodation easy and convenient for the strong workforce of savvy members of staff, by leveraging the modern web."
+    }
+}
