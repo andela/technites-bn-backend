@@ -11,3 +11,14 @@ Make company global travel and accommodation easy and convenient for the strong 
 
 ---
 
+# Setup  environment
+clone repository then :
+```shell
+$ npm install
+```
+create database locally then remember to make .env file with required environment variables as specified in .env.example  
+
+and run :
+```shell
+$ npm run migrate
+```
