@@ -1,7 +1,7 @@
 {
-  "name": "express-authorshaven",
+  "name": "express-barefoot-nomad",
   "version": "1.0.0",
-  "description": "A Social platform for the creative at heart",
+  "description": "A platform for making company travel and accomodation easy and convinient",
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=development nodemon --exec babel-node src/index.js",
