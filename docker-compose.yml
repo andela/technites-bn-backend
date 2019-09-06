@@ -1,0 +1,29 @@
+
+version: "3.7"
+services:
+ db:
+   image: postgres
+   restart: always
+   volumes:
+     - "pgdata:/var/lib/postgresql/data"
+   ports:
+     - '5432:5432'
+   environment:         
+      - POSTGRES_DB= ${DB_NAME}
+      - POSTGRES_USER= ${DB_USER}
+      - POSTGRES_PASSWORD= ${DB_PASS}
+ web:
+   command: npm run dev
+   build: .
+   depends_on:
+     - db
+   ports:
+     - '5000:3000'
+   environment:
+      - DB_HOST=db
+      - DB_USER= ${DB_USER}
+      - DB_NAME= ${DB_NAME}
+      - DB_PASS= ${DB_PASS}
+      - JWT_SECRET= ${JWT_SECRET}
+volumes:
+  pgdata:
