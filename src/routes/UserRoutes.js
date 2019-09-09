@@ -3,24 +3,31 @@ import UserController from '../controllers/UserController';
 import Validation from '../validation/Validations';
 import UserAuthentication from '../middlewares/UserAuthentication';
 import database from '../database/models';
+import passport from '../config/passport';
+import OAuthController from '../controllers/OAuthController';
+
 
 const router = new Router();
 
+const { reset, updateCredentials, register } = UserController;
 const { resetValidator, credentialsValidator } = Validation;
-const {
-  reset, updateCredentials, register
-} = UserController;
 const { verifyToken } = UserAuthentication;
+const { loginCallback } = OAuthController;
+
 router.post('/reset', resetValidator, reset);
-
 router.put('/reset/:token', credentialsValidator, updateCredentials);
-
-
 router.get('/user');
-
 router.post('/login');
-
 router.post('/register', register);
+router.get('/google', passport.authenticate('google', {
+  scope: [
+    'https://www.googleapis.com/auth/userinfo.profile',
+    'https://www.googleapis.com/auth/userinfo.email'
+  ]
+}));
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), loginCallback);
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+router.get('/fb/callback', passport.authenticate('facebook', { failureRedirect: '/api/v1/auth/facebook' }), loginCallback);
 
 router.get('/login/:token', verifyToken, async (req, res) => {
   await database.User.update({ is_verified: true }, { where: { email: req.user.email } });

@@ -49,7 +49,6 @@
         },
         "security": []
       }
-
     },
     "/reset": {
       "post": {
@@ -133,6 +132,96 @@
         "responses": {
           "200": {
             "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/auth/facebook": {
+      "get": {
+        "description": "redirect user to facebook consent screen",
+        "summary": "/api/v1/auth/facebook",
+        "tags": [
+          "SOCIAL LOGIN"
+        ],
+        "operationId": "FacebookGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "302": {
+            "description": "redirect to facebook",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/auth/fb/callback": {
+      "get": {
+        "description": "get profile data from facebook",
+        "summary": "/api/v1/auth/fb/callback",
+        "tags": [
+          "SOCIAL LOGIN"
+        ],
+        "operationId": "FbCallbackGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            },
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/auth/google": {
+      "get": {
+        "description": "redirect user to google consent screen",
+        "summary": "/api/v1/auth/google",
+        "tags": [
+          "SOCIAL LOGIN"
+        ],
+        "operationId": "GoogleGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "302": {
+            "description": "redirect to google",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/auth/google/callback": {
+      "get": {
+        "description": "get profile data from google",
+        "summary": "/api/v1/auth/google/callback",
+        "tags": [
+          "SOCIAL LOGIN"
+        ],
+        "operationId": "GoogleCallbackGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object"
+            },
             "headers": {}
           }
         }

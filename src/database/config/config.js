@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -9,8 +10,11 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: 'postgres',
-    operatorsAliases: false,
-    logging: true,
+    dialectOption: {
+      ssl: true,
+      native: true,
+    },
+    logging: console.log,
   },
   test: {
     username: process.env.DB_USER,
@@ -18,12 +22,19 @@ module.exports = {
     database: process.env.TEST_DB_NAME,
     host: process.env.DB_HOST,
     dialect: 'postgres',
-    operatorsAliases: false,
-    logging: false,
+    dialectOption: {
+      ssl: true,
+      native: true,
+    },
+    logging: null,
   },
   production: {
     use_env_variable: 'DATABASE_URL',
     dialect: 'postgres',
-    logging: false,
+    dialectOption: {
+      ssl: true,
+      native: true,
+    },
+    logging: null,
   }
 };

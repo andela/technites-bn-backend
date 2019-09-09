@@ -1,0 +1,78 @@
+{
+    "googleProfile": {
+        "id": "111922611047187379856",
+        "displayName": "Mucyo Fred",
+        "name": {
+            "familyName": "Fred",
+            "givenName": "Mucyo"
+        },
+        "emails": [
+            {
+                "value": "mucyomiller@gmail.com",
+                "verified": true
+            }
+        ],
+        "photos": [
+            {
+                "value": "https://lh3.googleusercontent.com/a-/AAuE7mBWG_XWFmf9XyyY-DSVdiph-c9AnvEd8TqJZwTYHA"
+            }
+        ],
+        "provider": "google",
+        "_json": {
+            "sub": "111922611047187379856",
+            "name": "Mucyo Fred",
+            "given_name": "Mucyo",
+            "family_name": "Fred",
+            "picture": "https://lh3.googleusercontent.com/a-/AAuE7mBWG_XWFmf9XyyY-DSVdiph-c9AnvEd8TqJZwTYHA",
+            "email": "mucyomiller@gmail.com",
+            "email_verified": true,
+            "locale": "en-GB"
+        }
+    },
+    "facebookProfile": {
+        "id": "2364889826880055",
+        "username": "undefined",
+        "displayName": "undefined",
+        "name": {
+            "familyName": "Fred",
+            "givenName": "Mucyo",
+            "middleName": "M"
+        },
+        "gender": "undefined",
+        "profileUrl": "undefined",
+        "emails": [
+            {
+                "value": "mucyomiller@gmail.com"
+            }
+        ],
+        "photos": [
+            {
+                "value": "https://platform-lookaside.fbsbx.com/platform/profilepic/?asid=2364889826880055&height=200&width=200&ext=1570755349&hash=AeSuAZ2gAtx5Lmmw"
+            }
+        ],
+        "provider": "facebook",
+        "_json": {
+            "id": "2364889826880055",
+            "email": "mucyomiller@gmail.com",
+            "last_name": "Fred",
+            "first_name": "Mucyo",
+            "middle_name": "M",
+            "picture": {
+                "data": [
+                    "Object"
+                ]
+            }
+        }
+    },
+    "userResponse": {
+        "status": 200,
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZmlyc3RuYW1lIjoiRnJlZCIsImxhc3RuYW1lIjoiTXVjeW8iLCJlbWFpbCI6Im11Y3lvbWlsbGVyQGdtYWlsLmNvbSIsInByb2ZpbGVfdXJsIjpudWxsLCJpYXQiOjE1NjgxNjM1ODksImV4cCI6MTU2ODI0OTk4OX0.uVsENs5ngSJD-ppKI2pIWg9TIyfljRsFVr1qnh41np4",
+        "user": {
+            "id": 1,
+            "firstname": "Fred",
+            "lastname": "Mucyo",
+            "email": "mucyomiller@gmail.com",
+            "profile_url": null
+        }
+    }
+}
