@@ -50,8 +50,8 @@ class AuthHelper {
 
   /**
    *
-   * @param {object} email
-   * @returns {object} token
+   * @param {*} email
+   * @returns {object} - returns a jwt sign token
    */
   static jwtSignReset(email) {
     return jwt.sign({ email }, JWT_SECRET, { expiresIn: '600s' });
