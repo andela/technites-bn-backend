@@ -17,6 +17,9 @@
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
+    "@hapi/joi": "^15.1.1",
+    "@sendgrid/mail": "^6.4.0",
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
@@ -33,8 +36,8 @@
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
     "request": "^2.87.0",
-    "swagger-ui-express": "^4.0.7",
     "sequelize": "^5.18.1",
+    "swagger-ui-express": "^4.0.7",
     "underscore": "^1.9.1"
   },
   "devDependencies": {

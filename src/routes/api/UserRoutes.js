@@ -1,5 +1,21 @@
-const router = require('express').Router();
+/* eslint-disable no-unused-vars */
+import { Router } from 'express';
+import UserController from '../../controllers/userController';
+import Validation from '../../validation/Validations';
+import wrongMethod from '../../middlewares/router/wrongMethod';
+
 const passport = require('passport');
+
+const router = new Router();
+
+const { resetValidator, credentialsValidator } = Validation;
+const {
+  reset, updateCredentials
+} = UserController;
+
+router.route('/auth/reset').post(resetValidator, reset).all(wrongMethod);
+
+router.route('/auth/reset/:token').patch(credentialsValidator, updateCredentials).all(wrongMethod);
 
 router.get('/user', (req, res, next) => {});
 
@@ -32,4 +48,4 @@ router.post('/users/login', (req, res, next) => {
 
 router.post('/users', (req, res, next) => {});
 
-module.exports = router;
+export default router;

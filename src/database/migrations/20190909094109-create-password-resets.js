@@ -1,25 +1,24 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable require-jsdoc */
+
 export function up(queryInterface, Sequelize) {
-  return queryInterface.createTable('Users', {
+  return queryInterface.createTable('Password_resets', {
     id: {
       allowNull: false,
       autoIncrement: true,
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    firstname: {
-      type: Sequelize.STRING
+    user_id: {
+      type: Sequelize.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'Users',
+        key: 'id',
+        as: 'user_id',
+      },
     },
-    lastname: {
-      type: Sequelize.STRING
-    },
-    username: {
-      type: Sequelize.STRING
-    },
-    email: {
-      type: Sequelize.STRING
-    },
-    password: {
+    token: {
       type: Sequelize.STRING
     },
     createdAt: {
@@ -32,5 +31,4 @@ export function up(queryInterface, Sequelize) {
     }
   });
 }
-// eslint-disable-next-line no-unused-vars
-export function down(queryInterface, Sequelize) { return queryInterface.dropTable('Users'); }
+export function down(queryInterface, Sequelize) { return queryInterface.dropTable('Password_resets'); }

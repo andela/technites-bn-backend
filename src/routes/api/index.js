@@ -1,6 +1,5 @@
-const router = require("express").Router();
 
-router.use("/", require("./users"));
+const router = require("express").Router();
 
 router.use(function(err, req, res, next) {
     if (err.name === "ValidationError") {
