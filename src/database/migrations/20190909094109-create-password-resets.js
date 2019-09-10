@@ -2,7 +2,7 @@
 /* eslint-disable require-jsdoc */
 
 export function up(queryInterface, Sequelize) {
-  return queryInterface.createTable('Password_resets', {
+  return queryInterface.createTable('PasswordResets', {
     id: {
       allowNull: false,
       autoIncrement: true,
@@ -31,4 +31,4 @@ export function up(queryInterface, Sequelize) {
     }
   });
 }
-export function down(queryInterface, Sequelize) { return queryInterface.dropTable('Password_resets'); }
+export function down(queryInterface, Sequelize) { return queryInterface.dropTable('PasswordResets'); }

@@ -1,7 +1,115 @@
-{
-    "openapi" : "3.0.0",
-    "info" : {
-      "title" : "Barefoot Nomad",
-      "description" : "Make company global travel and accommodation easy and convenient for the strong workforce of savvy members of staff, by leveraging the modern web."
-    }
-}
+    {
+        "swagger": "2.0",
+        "info": {
+          "version": "1.0",
+          "title": "Barefoot Nomad",
+          "description" : "Make company global travel and accommodation easy and convenient for the strong workforce of savvy members of staff, by leveraging the modern web."
+        },
+        "host": "localhost:3000",
+        "basePath": "/api/v1/auth",
+        "schemes": [
+          "http",
+          "https"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "paths": {
+          "/reset": {
+            "post": {
+              "description": "TODO: Add Description",
+              "summary": "Request Password Reset",
+              "tags": [
+                "Misc"
+              ],
+              "operationId": "ResetPost",
+              "deprecated": false,
+              "produces": [
+                "application/json"
+              ],
+              "consumes": [
+                "application/x-www-form-urlencoded"
+              ],
+              "parameters": [
+                {
+                  "name": "Content-Type",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": ""
+                },
+                {
+                  "name": "email",
+                  "in": "formData",
+                  "required": true,
+                  "type": "string",
+                  "description": ""
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "headers": {}
+                }
+              }
+            }
+          },
+          "/token": {
+            "patch": {
+              "description": "TODO: Add Description",
+              "summary": "Reset Password",
+              "tags": [
+                "Misc"
+              ],
+              "operationId": "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9EyJlbWFpbCI6InJ1Z3VtYmlyYWpvcmR5YmFzdGllbkBnbWFpbC5jb20iLCJpYXQiOjE1NjgxMTE5MzksImV4cCI6MTU2ODExMjUzOX0XG9JideyTTLzSFm8KocZkQYdm09NVemebmPhkPOjcYPatch",
+              "deprecated": false,
+              "produces": [
+                "application/json"
+              ],
+              "consumes": [
+                "application/x-www-form-urlencoded"
+              ],
+              "parameters": [
+                {
+                  "name": "Content-Type",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": ""
+                },
+                {
+                  "name": "password",
+                  "in": "formData",
+                  "required": true,
+                  "type": "integer",
+                  "format": "int32",
+                  "description": ""
+                },
+                {
+                  "name": "confirm_password",
+                  "in": "formData",
+                  "required": true,
+                  "type": "integer",
+                  "format": "int32",
+                  "description": ""
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "headers": {}
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          {
+            "name": "Misc",
+            "description": ""
+          }
+        ]
+      }

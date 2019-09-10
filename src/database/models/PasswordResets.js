@@ -2,16 +2,16 @@
 /* eslint-disable camelcase */
 
 export default (sequelize, DataTypes) => {
-  const Password_resets = sequelize.define('Password_resets', {
+  const PasswordResets = sequelize.define('PasswordResets', {
     user_id: DataTypes.INTEGER,
     token: DataTypes.STRING
   }, {});
-  Password_resets.associate = (models) => {
+  PasswordResets.associate = (models) => {
     // associations can be defined here
-    Password_resets.belongsTo(models.User, {
+    PasswordResets.belongsTo(models.User, {
       onDelete: 'CASCADE',
       foreignKey: 'user_id',
     });
   };
-  return Password_resets;
+  return PasswordResets;
 };

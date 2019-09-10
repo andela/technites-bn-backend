@@ -25,5 +25,6 @@ services:
       - DB_NAME= ${DB_NAME}
       - DB_PASS= ${DB_PASS}
       - JWT_SECRET= ${JWT_SECRET}
+      - SENDGRID_API_KEY= ${SENDGRID_API_KEY}
 volumes:
   pgdata:

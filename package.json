@@ -7,7 +7,7 @@
     "start": "npm run build && NODE_ENV=production node dist/index.js",
     "build": "rm -rf dist && mkdir dist && babel src -s -d dist",
     "dev": "NODE_ENV=development nodemon --exec babel-node src/index.js",
-    "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha src/**/*.js --require @babel/register ./test --exit",
+    "test": "export NODE_ENV=test && sequelize db:migrate:undo:all  && sequelize db:migrate  && sequelize db:seed:all && nyc --reporter=html --reporter=text mocha src/**/*.js --require @babel/register ./test --exit",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov npm run test",
     "migrate": "node_modules/.bin/sequelize db:migrate",
     "seed": "NODE_ENV=test node_modules/.bin/sequelize db:seed:all",
@@ -52,15 +52,17 @@
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "coveralls": "^3.0.6",
     "cross-env": "^5.2.1",
     "eslint": "^6.3.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "nodemon": "^1.19.2",
-    "coveralls": "^3.0.6",
+    "mocha": "^6.2.0",
     "mocha-lcov-reporter": "^1.3.0",
+    "nodemon": "^1.19.2",
     "nyc": "^14.1.1",
     "sequelize-cli": "^5.5.1",
-    "mocha": "^6.2.0"
+    "sinon": "^7.4.2"
   }
 }
+
