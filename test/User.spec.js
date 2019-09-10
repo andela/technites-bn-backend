@@ -1,10 +1,14 @@
-import chai from 'chai';
+import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import jwt from 'jsonwebtoken';
 import app from '../src/index';
 
 chai.use(chaiHttp);
 chai.should();
+
+const loginUrl = '/api/v1/auth/login';
+const signUpUrl = '/api/v1/auth/register';
+
 const dummyUser = {
   firstname: 'firstname',
   lastname: 'secondname',
@@ -22,7 +26,7 @@ describe('users endpoints', () => {
     it('it should create a user', (done) => {
       chai
         .request(app)
-        .post('/api/v1/auth/register')
+        .post(signUpUrl)
         .send(dummyUser)
         .end((err, res) => {
           res.should.have.status(201);
@@ -119,5 +123,81 @@ describe('users endpoints', () => {
           done();
         });
     });
+  });
+});
+
+describe('Test user login with Email and password Endpoint', () => {
+  it('Should not login an unregistered user', () => {
+    const userData = {
+      email: 'new@mail.com',
+      password: 'Anyp4ss'
+    };
+    chai
+      .request(app)
+      .post(loginUrl)
+      .send(userData)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.message).to.equal('registration required');
+      });
+  });
+
+  it('Should not login a user with an invalid password', () => {
+    const userData = {
+      email: 'test@user.com',
+      password: 'wrongPass'
+    };
+    chai
+      .request(app)
+      .post(loginUrl)
+      .send(userData)
+      .end((err, res) => {
+        expect(res.status).to.equal(403);
+        expect(res.body.message).to.equal('invalid password');
+      });
+  });
+
+  it('should not log in a user without a password', (done) => {
+    const userData = {
+      email: 'test@MediaList.com'
+    };
+    chai
+      .request(app)
+      .post(loginUrl)
+      .send(userData)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.password[0]).to.equal('Password is required to login');
+        done();
+      });
+  });
+  it('should not log in a user without email', (done) => {
+    const userData = {
+      password: 'Anyp4ss'
+    };
+    chai
+      .request(app)
+      .post(loginUrl)
+      .send(userData)
+      .end((err, res) => {
+        expect(res.status).to.equal(400);
+        expect(res.body.errors.name[0]).to.equal('Email is required to login');
+        done();
+      });
+  });
+
+  it('Should login a registered user', () => {
+    const userData = {
+      email: 'user@mail.com',
+      password: 'Anyp4ss'
+    };
+    chai
+      .request(app)
+      .post(loginUrl)
+      .send(userData)
+      .end((err, res) => {
+        expect(res.status).to.equal(200);
+        expect(res.body.message).to.equal('you have successfully logged in');
+      });
   });
 });
