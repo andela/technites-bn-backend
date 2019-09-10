@@ -3,6 +3,7 @@ export default (sequelize, DataTypes) => {
     firstname: DataTypes.STRING,
     lastname: DataTypes.STRING,
     username: DataTypes.STRING,
+    email: DataTypes.STRING,
     password: DataTypes.STRING
   }, {});
   // eslint-disable-next-line no-unused-vars
