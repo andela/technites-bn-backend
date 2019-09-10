@@ -49,13 +49,14 @@
         },
         "security": []
       }
+
     },
-    "/reset": {
+    "/auth/reset": {
       "post": {
         "description": "TODO: Add Description",
         "summary": "Request Password Reset",
         "tags": [
-          "Misc"
+          "USER"
         ],
         "operationId": "ResetPost",
         "deprecated": false,
@@ -89,12 +90,12 @@
         }
       }
     },
-    "/token": {
+    "/auth/reset/{token}": {
       "put": {
         "description": "TODO: Add Description",
         "summary": "Reset Password",
         "tags": [
-          "Misc"
+          "USER"
         ],
         "operationId": "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9EyJlbWFpbCI6InJ1Z3VtYmlyYWpvcmR5YmFzdGllbkBnbWFpbC5jb20iLCJpYXQiOjE1NjgxMTE5MzksImV4cCI6MTU2ODExMjUzOX0XG9JideyTTLzSFm8KocZkQYdm09NVemebmPhkPOjcYPatch",
         "deprecated": false,
@@ -106,26 +107,24 @@
         ],
         "parameters": [
           {
-            "name": "Content-Type",
-            "in": "header",
-            "required": true,
-            "type": "string",
-            "description": ""
-          },
-          {
             "name": "password",
             "in": "formData",
             "required": true,
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
             "description": ""
           },
           {
             "name": "confirm_password",
             "in": "formData",
             "required": true,
-            "type": "integer",
-            "format": "int32",
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string",
             "description": ""
           }
         ],

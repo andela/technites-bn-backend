@@ -10,13 +10,17 @@ const SaltRounds = 8;
  */
 class AuthHelper {
   /**
-   * @param {Object} user object
+   * @param {Object} payload object
+   * @param {Object} time object
    * @returns {Object} token
    */
-  static jwtSign(user) {
+  static jwtSign(payload, time = '24h') {
     // remove password from User Model
-    const { password, ...patchedUser } = user;
-    return jwt.sign(patchedUser, JWT_SECRET, { expiresIn: '24h' });
+    if ('password' in payload) {
+      const { password, ...patchedUser } = payload;
+      return jwt.sign(patchedUser, JWT_SECRET, { expiresIn: time });
+    }
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: time });
   }
 
   /**
@@ -46,15 +50,6 @@ class AuthHelper {
    */
   static hashPassword(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(SaltRounds));
-  }
-
-  /**
-   *
-   * @param {*} email
-   * @returns {object} - returns a jwt sign token
-   */
-  static jwtSignReset(email) {
-    return jwt.sign({ email }, JWT_SECRET, { expiresIn: '600s' });
   }
 }
 

@@ -78,14 +78,24 @@ describe('users endpoints', () => {
     });
   });
 
-  describe('POST api/v1/auth/reset/:token', () => {
+  describe('PUT api/v1/auth/reset/:token', () => {
     it('Should not reset password when password missmatch', (done) => {
       chai.request(app)
         .put(`/api/v1/auth/reset/${validtoken}`)
         .set('Accept', 'application/json')
-        .send({ password: '123456', confirm_password: '1234567' })
+        .send({ password: '123456aA@', confirm_password: '123456aB@' })
         .end((err, res) => {
           expect(res.status).to.equal(401);
+          done();
+        });
+    });
+    it('Should not reset password when password doesnt follow regex', (done) => {
+      chai.request(app)
+        .put(`/api/v1/auth/reset/${validtoken}`)
+        .set('Accept', 'application/json')
+        .send({ password: '123456', confirm_password: '123456' })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
           done();
         });
     });
@@ -93,7 +103,7 @@ describe('users endpoints', () => {
       chai.request(app)
         .put(`/api/v1/auth/reset/${validtoken}`)
         .set('Accept', 'application/json')
-        .send({ password: '123456', confirm_password: '123456' })
+        .send({ password: '123456aA@', confirm_password: '123456aA@' })
         .end((err, res) => {
           expect(res.status).to.equal(200);
           done();
@@ -103,31 +113,11 @@ describe('users endpoints', () => {
       chai.request(app)
         .put(`/api/v1/auth/reset/${invalidtoken}`)
         .set('Accept', 'application/json')
-        .send({ password: '123456', confirm_password: '123456' })
+        .send({ password: '123456aA@', confirm_password: '123456aA@' })
         .end((err, res) => {
           expect(res.status).to.equal(401);
           done();
         });
-    });
-  });
-
-  describe('POST api/v1/auth/login/:token', () => {
-    let token = jwt.sign(dummyUser, process.env.JWT_SECRET);
-
-    const exec = () => chai.request(app).get(`/api/v1/auth/login/${token}`);
-
-    it('should return 200 if a user is verified', async () => {
-      const res = await exec();
-
-      res.should.have.status(200);
-      res.body.should.have.property('message');
-    });
-
-    it('should return 400 if token is invalid', async () => {
-      token = 'a';
-      const res = await exec();
-
-      res.should.have.status(400);
     });
   });
 });
