@@ -11,7 +11,7 @@ class UserService {
 
   static async storeToken(userInfo) {
     try {
-      return await database.Password_resets.create(userInfo);
+      return await database.PasswordResets.create(userInfo);
     } catch (error) {
       throw error;
     }

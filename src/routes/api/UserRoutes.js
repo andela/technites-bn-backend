@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { Router } from 'express';
-import UserController from '../../controllers/userController';
+import UserController from '../../controllers/UserController';
 import Validation from '../../validation/Validations';
-import wrongMethod from '../../middlewares/router/wrongMethod';
+import wrongMethod from '../../middlewares/router/WrongMethod';
 
 const passport = require('passport');
 
