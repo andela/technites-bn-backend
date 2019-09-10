@@ -20,7 +20,7 @@ class AuthHelper {
   }
 
   /**
-   * @function jwtVerifiy
+   * @function jwtVerify
    * @param {String} token String
    * @returns {Object} decoded token
    */
@@ -50,8 +50,8 @@ class AuthHelper {
 
   /**
    *
-   * @param {*} email
-   * @returns {object} - returns a jwt sign token
+   * @param {object} email
+   * @returns {object} token
    */
   static jwtSignReset(email) {
     return jwt.sign({ email }, JWT_SECRET, { expiresIn: '600s' });

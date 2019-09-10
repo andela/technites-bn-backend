@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import database from '../database/models';
 
 /**
@@ -26,14 +27,25 @@ class UserService {
     return user.dataValues;
   }
 
+  /**
+   *
+   * @param {object} userInfo
+   * @returns {object} user
+   */
   static async storeToken(userInfo) {
     try {
-      return await database.Password_resets.create(userInfo);
+      return await database.PasswordResets.create(userInfo);
     } catch (error) {
       throw error;
     }
   }
 
+  /**
+ *
+ * @param {object} userEmail
+ * @param {object} password
+ * @returns {object} user
+ */
   static async updateCredentials(userEmail, password) {
     try {
       const userToUpdate = await database.User.findOne({

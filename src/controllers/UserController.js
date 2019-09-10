@@ -53,41 +53,49 @@ class UserController {
     }
   }
 
+  /**
+ *
+ * @param {req} req - Receive Email
+ * @param {res} res for reset
+ * @returns {token} - it returns a token
+ */
   static async reset(req, res) {
-    // check whether email address is correct
-
-    // check whether email address is recorded
-    const searchUser = await userService.findUserByEmail(req.body.email);
-    if (!searchUser) {
-      util.setError(409, 'Email not found');
+    try{
+      // check whether email address is recorded
+      const searchUser = await userService.findUserByEmail(req.body.email);
+      if (!searchUser) {
+        util.setError(404, 'Email not found');
+        return util.send(res);
+      }
+      // sign token
+      const token = jwtSignReset(req.body.email);
+      // store password reset
+      const userinfo = {
+        user_id: searchUser.id,
+        token
+      };
+      userService.storeToken(userinfo).then(() => {
+      // send email
+        mail.setMessage(req.body.email, token, searchUser.firstname, req.body.email);
+        return mail.send(res);
+      });
+    }catch (error) {
+      util.setError(409, 'Failed to send email request');
       return util.send(res);
     }
-    // sign token
-    const token = jwtSignReset(req.body.email);
-    // store password reset
-    const userinfo = {
-      user_id: searchUser.id,
-      token
-    };
-    const savetoken = await userService.storeToken(userinfo).then(() => {
-    // creating mail message
-      const msg = {
-        to: req.body.email,
-        subject: 'Password Reset',
-        text: 'Password Reset',
-        html: `<strong><h1>Barefoot Nomad</h1><h3>Dear ${searchUser.firstname} You have requested to reset your password,<br><br> click on this link to reset your password</h3></strong><br><br> <a href="localhost:3000/api/v1/auth/reset/${token}">localhost:3000/api/v1/auth/reset/${token}</a>`
-      };
-      // send email
-      mail.setMessage(msg.to, msg.subject, msg.text, msg.html);
-      return mail.send(res);
-    });
   }
 
+  /**
+ *
+ * @param {req} req - Receive Email
+ * @param {res} res for reset
+ * @returns {message} - it returns a successful message
+ */
   static async updateCredentials(req, res) {
     // check if password looks alike
     if (req.body.password === req.body.confirm_password) {
-    // Decode token
       try {
+        // Decode token
         const user = jwtVerify(req.params.token);
         // encrypt password
         const newpassword = bcrypt.hashSync(req.body.password, 8);
@@ -97,11 +105,11 @@ class UserController {
           return util.send(res);
         });
       } catch (error) {
-        util.setError(409, 'Token has expired, please try again');
+        util.setError(401, 'Token has expired, please try again');
         return util.send(res);
       }
     } else{
-      util.setError(409, 'Password mismatch');
+      util.setError(401, 'Passwords do not match');
       return util.send(res);
     }
   }
