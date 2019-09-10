@@ -9,7 +9,7 @@ export default (sequelize, DataTypes) => {
   // eslint-disable-next-line no-unused-vars
   User.associate = (models) => {
     // associations can be defined here
-    User.hasMany(models.Password_resets, {
+    User.hasMany(models.PasswordResets, {
       foreignKey: 'user_id',
     });
   };

@@ -8,15 +8,13 @@ import bcrypt from 'bcrypt';
 import Util from '../utils/Utils';
 import Mail from '../utils/Mail';
 import userService from '../services/UserServices';
-import AuthenticationHelper from '../utils/AuthenticationHelper';
+import AuthenticationHelper from '../utils/AuthHelper';
 
 const util = new Util();
 const mail = new Mail();
 const { jwtSignReset, jwtVerify } = AuthenticationHelper;
 class UserController {
   static async reset(req, res) {
-    // check whether email address is correct
-
     // check whether email address is recorded
     const searchUser = await userService.findUserByEmail(req.body.email);
     if (!searchUser) {
@@ -31,15 +29,8 @@ class UserController {
       token
     };
     const savetoken = await userService.storeToken(userinfo).then(() => {
-    // creating mail message
-      const msg = {
-        to: req.body.email,
-        subject: 'Password Reset',
-        text: 'Password Reset',
-        html: `<strong><h1>Barefoot Nomad</h1><h3>Dear ${searchUser.firstname} You have requested to reset your password,<br><br> click on this link to reset your password</h3></strong><br><br> <a href="localhost:3000/api/v1/auth/reset/${token}">localhost:3000/api/v1/auth/reset/${token}</a>`
-      };
       // send email
-      mail.setMessage(msg.to, msg.subject, msg.text, msg.html);
+      mail.setMessage(req.body.email, token, searchUser.firstname, req.body.email);
       return mail.send(res);
     });
   }
