@@ -9,7 +9,6 @@ export function up(queryInterface, Sequelize) {
     },
     firstname: {
       type: Sequelize.STRING,
-<<<<<<< HEAD
       allowNull: false
     },
     lastname: {
@@ -22,22 +21,7 @@ export function up(queryInterface, Sequelize) {
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false
-=======
       allowNull: false,
-    },
-    lastname: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    username: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: Sequelize.STRING,
-      allowNull: false,
->>>>>>> feature(register-new-user): set up register user api
     },
     email: {
       type: Sequelize.STRING
