@@ -1,7 +1,90 @@
 {
-    "openapi" : "3.0.0",
-    "info" : {
-      "title" : "Barefoot Nomad",
-      "description" : "Make company global travel and accommodation easy and convenient for the strong workforce of savvy members of staff, by leveraging the modern web."
+  "swagger" : "2.0",
+  "info" : {
+    "title" : "Barefoot Nomad",
+    "description" : "Make company global travel and accommodation easy and convenient for the strong workforce of savvy members of staff, by leveraging the modern web."
+  },
+  "host": "localhost:3000",
+  "basePath": "/api/v1/",
+  "securityDefinitions": {},
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "description": "register a new user",
+        "summary": "register page",
+        "tags": [
+          "USER"
+        ],
+        "operationId": "AuthSignupPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/signuprequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
     }
+  },
+
+"definitions": {
+  "signuprequest": {
+    "title": "signuprequest",
+    "example": {
+      "firstname": "UserOne",
+      "lastname": "paceBefore  ",
+      "username": "King ",
+      "email": "didasmbalanya@gmail.com",
+      "password": "kenya123"
+    },
+    "type": "object",
+    "properties": {
+      "email": {
+        "type": "string"
+      },
+      "firstname": {
+        "type": "string"
+      },
+      "lastname": {
+        "type": "string"
+      },
+      "password": {
+        "type": "string"
+      },
+      "username": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "email",
+      "password",
+      "username"
+    ]
+  }
+  }
 }

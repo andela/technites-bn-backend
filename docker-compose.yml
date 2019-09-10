@@ -7,18 +7,19 @@ services:
    volumes:
      - "pgdata:/var/lib/postgresql/data"
    ports:
-     - '5432:5432'
+     - '${DB_DOCKER_PORT}:5432'
    environment:         
       - POSTGRES_DB= ${DB_NAME}
       - POSTGRES_USER= ${DB_USER}
       - POSTGRES_PASSWORD= ${DB_PASS}
  web:
+   command: npm run migrate:refresh
    command: npm run dev
    build: .
    depends_on:
      - db
    ports:
-     - '5000:3000'
+     - '${WEB_DOCKER_PORT}:${PORT}'
    environment:
       - DB_HOST=db
       - DB_USER= ${DB_USER}

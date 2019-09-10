@@ -9,19 +9,19 @@ export function up(queryInterface, Sequelize) {
     },
     firstname: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     lastname: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     username: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     password: {
       type: Sequelize.STRING,
