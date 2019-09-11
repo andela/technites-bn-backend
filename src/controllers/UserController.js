@@ -1,42 +1,22 @@
-/* eslint-disable consistent-return */
-/* eslint-disable radix */
-/* eslint-disable max-len */
-/* eslint-disable no-restricted-globals */
-/* eslint-disable import/no-unresolved */
 import bcrypt from 'bcrypt';
 import userService from '../services/UserServices';
 import { getPublicProfile } from '../utils/UserUtils';
 import AuthenticationHelper from '../utils/AuthHelper';
+import Response from '../utils/Response';
 
+const response = new Response();
 const { jwtSign } = AuthenticationHelper;
+
 /**
- * class that contains user controller
+ * @class UserController
  */
 class UserController {
   /**
-   * @api {post} /api/user Create user
-   * @apiName Create new user
-   * @apiPermission user
-   * @apiGroup User
-   *
-   * * @apiParam  {String} [username] username
-   * @apiParam  {String} [email] email
-   * @apiParam  {String} [password] password
-   * @apiParam  {String} [firstname] Status
-   * @apiParam  {String} [lastname] Status
-   *
-   * @apiSuccess (200) {Object} mixed `User` object
-  */
-
-  /**
-   * @param {object} [req] object
-   * @param {object} [res] object
-   * @returns {object} user on succesful sign up\q
-   * */
+   * @param {Object} req object
+   * @param {Object} res object
+   * @returns {Object} res
+   */
   static async register(req, res) {
-    /**
-     * @returns user object on succesful sign up
-    */
     const foundUser = await userService.findUserByEmail(req.body.email);
     if (foundUser) {
       res.status(409).send({ status: 409, error: `User with email ${req.body.email} already exists` });
@@ -48,6 +28,28 @@ class UserController {
       res.status(201).send({
         status: 201, message: 'user successfully registered', data: getPublicProfile(newUser), token
       });
+    }
+  }
+
+  /**
+   * @description contoller function that logs a user in
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @returns {object} user - Logged in user
+   */
+  static async loginUser(req, res) {
+    const { password, ...currentUser } = req.user;
+    try {
+      const userToken = jwtSign(currentUser);
+      const resposeData = {
+        user: currentUser,
+        userToken
+      };
+      response.setSuccess(200, 'you have successfully logged in', resposeData);
+      response.send(res);
+    } catch (error) {
+      response.setError(500, 'ServerError - Could not generate token');
+      return response.send(res);
     }
   }
 }

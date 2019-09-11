@@ -57,7 +57,7 @@ describe('Test user login with Email and password Endpoint', () => {
       .send(userData)
       .end((err, res) => {
         expect(res.status).to.equal(400);
-        expect(res.body.message).to.equal('registration required');
+        expect(res.body.message).to.equal('invalid user credentials');
       });
   });
 
@@ -72,7 +72,7 @@ describe('Test user login with Email and password Endpoint', () => {
       .send(userData)
       .end((err, res) => {
         expect(res.status).to.equal(403);
-        expect(res.body.message).to.equal('invalid password');
+        expect(res.body.message).to.equal('iinvalid user credentials');
       });
   });
 

@@ -15,6 +15,9 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false
     },
+    email: {
+      type: Sequelize.STRING
+    },
     username: {
       type: Sequelize.STRING,
       allowNull: false
