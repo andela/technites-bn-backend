@@ -1,3 +1,4 @@
+import { validationResult } from 'express-validator';
 import bcrypt from 'bcrypt';
 import Response from '../utils/Response';
 import UserServices from '../services/UserServices';
@@ -16,13 +17,11 @@ export default class UserAuthentication {
    * @returns {undefined}
    */
   static async loginCheck(req, res, next) {
-    // const errors = validationResult(req);
-    // console.log(errors);
-
-    // if (!errors.isEmpty()) {
-    //   response.setError(400, UserValidation.formatErrors(errors));
-    //   return response.send(res);
-    // }
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      response.setError(401, errors.array()[0].msg);
+      return response.send(res);
+    }
 
 
     const { email, password } = req.body;

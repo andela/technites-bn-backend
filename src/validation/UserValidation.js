@@ -28,15 +28,4 @@ export default class ValidateUser {
         .withMessage('Password is required to login')
     ];
   }
-
-  /**
-     * @method formatErrors
-     * @description Formats the validation error message
-     * @param {*} errors
-     * @returns {string} - string wiht the appropriate error message
-     */
-  static formatErrors(errors) {
-    errors.formatWith(({ msg }) => (!(msg instanceof Array) ? [msg] : msg));
-    return errors.mapped();
-  }
 }
