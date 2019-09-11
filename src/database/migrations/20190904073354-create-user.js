@@ -15,9 +15,6 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false
     },
-    email: {
-      type: Sequelize.STRING
-    },
     username: {
       type: Sequelize.STRING,
       allowNull: true
@@ -25,9 +22,6 @@ export function up(queryInterface, Sequelize) {
     email: {
       type: Sequelize.STRING,
       allowNull: false,
-    },
-    email: {
-      type: Sequelize.STRING
     },
     password: {
       type: Sequelize.STRING,

@@ -1,5 +1,5 @@
-import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
+import bcrypt from 'bcrypt';
 import Response from '../utils/Response';
 import UserServices from '../services/UserServices';
 import AuthHelper from '../utils/AuthHelper';
@@ -48,10 +48,8 @@ class UserAuthentication {
    */
   static async loginCheck(req, res, next) {
     const errors = validationResult(req);
-    console.log(errors);
-
     if (!errors.isEmpty()) {
-      response.setError(400, UserValidation.formatErrors(errors));
+      response.setError(401, errors.array()[0].msg);
       return response.send(res);
     }
 
