@@ -97,4 +97,24 @@ describe('users endpoints', () => {
         });
     });
   });
+
+  describe('POST api/v1/auth/login/:token', () => {
+    let token = jwt.sign(dummyUser, process.env.JWT_SECRET);
+
+    const exec = () => chai.request(app).get(`/api/v1/auth/login/${token}`);
+
+    it('should return 200 if a user is verified', async () => {
+      const res = await exec();
+
+      res.should.have.status(200);
+      res.body.should.have.property('message');
+    });
+
+    it('should return 400 if token is invalid', async () => {
+      token = 'a';
+      const res = await exec();
+
+      res.should.have.status(400);
+    });
+  });
 });
