@@ -11,7 +11,7 @@ services:
 
 before_script:
   - psql -c 'CREATE DATABASE test;' -U postgres
-  - npm i 
+  - npm run migrate
 
 scripts: npm test
 

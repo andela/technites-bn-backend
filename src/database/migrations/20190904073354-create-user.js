@@ -8,16 +8,24 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.INTEGER
     },
     firstname: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
     lastname: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
     username: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    email: {
+      type: Sequelize.STRING,
+      allowNull: false
     },
     password: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false,
     },
     createdAt: {
       allowNull: false,

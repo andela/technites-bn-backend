@@ -7,7 +7,7 @@
     "start": "npm run build && NODE_ENV=production node dist/index.js",
     "build": "rm -rf dist && mkdir dist && babel src -s -d dist",
     "dev": "NODE_ENV=development nodemon --exec babel-node src/index.js",
-    "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha src/**/*.js --require @babel/register ./test --exit",
+    "test": "export NODE_ENV=test && npm run migrate:refresh && nyc --reporter=html --reporter=text mocha src/**/*.js --require @babel/register ./test --exit",
     "coverage": "nyc --reporter=lcov --reporter=text-lcov npm run test",
     "migrate": "node_modules/.bin/sequelize db:migrate",
     "seed": "NODE_ENV=test node_modules/.bin/sequelize db:seed:all",
@@ -17,6 +17,7 @@
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
     "dotenv": "^6.0.0",
@@ -33,8 +34,8 @@
     "pg": "^7.12.1",
     "pg-hstore": "^2.3.3",
     "request": "^2.87.0",
-    "swagger-ui-express": "^4.0.7",
     "sequelize": "^5.18.1",
+    "swagger-ui-express": "^4.0.7",
     "underscore": "^1.9.1"
   },
   "devDependencies": {

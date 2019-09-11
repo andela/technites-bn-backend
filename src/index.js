@@ -12,6 +12,7 @@ import session from 'express-session';
 import cors from 'cors';
 import passport from 'passport';
 import errorhandler from 'errorhandler';
+import routes from './routes';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -43,7 +44,7 @@ if (!isProduction) {
 }
 
 
-app.use(require('./routes'));
+app.use('/api/v1/', routes);
 
 // / catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -87,3 +88,4 @@ app.use((err, req, res, next) => {
 const server = app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${server.address().port}`);
 });
+module.exports = server;
