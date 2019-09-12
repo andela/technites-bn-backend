@@ -1,5 +1,5 @@
 
-[![Coverage Status](https://coveralls.io/repos/github/andela/technites-bn-backend/badge.svg?branch=bg-fix-coveralls-integration-168311192)](https://coveralls.io/github/andela/technites-bn-backend?branch=bg-fix-coveralls-integration-168311192)
+[![Coverage Status](https://coveralls.io/repos/github/andela/technites-bn-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/technites-bn-backend?branch=develop)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a5fa230c63f46d23a649/maintainability)](https://codeclimate.com/github/andela/technites-bn-backend/maintainability)
 [![Build Status](https://travis-ci.org/andela/technites-bn-backend.svg?branch=develop)](https://travis-ci.org/andela/technites-bn-backend)     [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 

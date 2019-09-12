@@ -1,8 +1,9 @@
 export const getPublicProfile = (userObject) => {
   const publicUser = {
     id: userObject.id,
-    first_name: userObject.first_name,
-    last_name: userObject.last_name,
+    firstname: userObject.firstname,
+    lastname: userObject.lastname,
+    username: userObject.username,
     email: userObject.email,
   };
   return publicUser;
