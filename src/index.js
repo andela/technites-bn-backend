@@ -1,48 +1,47 @@
 /* eslint-disable no-console */
-/* eslint-disable import/no-unresolved */
 /* eslint-disable no-unused-vars */
 import dotenv from 'dotenv';
-import fs from 'fs';
-import http from 'http';
-import path from 'path';
 import methods from 'methods';
 import express from 'express';
+import morgan from 'morgan';
+import methodOverride from 'method-override';
 import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors';
-import passport from 'passport';
 import errorhandler from 'errorhandler';
+import passport from './config/passport';
 import routes from './routes';
-
-const isProduction = process.env.NODE_ENV === 'production';
 
 dotenv.config();
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 // Create global app object
 const app = express();
-app.use(cors());
 
+app.enable('trust proxy');
+
+app.use(cors());
+app.use(passport.initialize());
 // Normal express config defaults
-app.use(require('morgan')('dev'));
+app.use(morgan('dev'));
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(require('method-override')());
-
-app.use(
-  session({
-    secret: 'authorshaven',
-    cookie: { maxAge: 60000 },
-    resave: false,
-    saveUninitialized: false
-  })
-);
+app.use(methodOverride());
 
 if (!isProduction) {
   app.use(errorhandler());
 }
 
+app.use((req, res, next) => {
+  if (req.header('x-forwarded-proto') !== 'https' && isProduction) {
+    res.redirect(`https://${req.header('host')}${req.url}`);
+  } else {
+    next();
+  }
+});
 
 app.use('/api/v1/', routes);
 
@@ -89,4 +88,4 @@ const server = app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${server.address().port}`);
 });
 
-export default app;
+export default server;

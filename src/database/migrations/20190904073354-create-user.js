@@ -17,18 +17,15 @@ export function up(queryInterface, Sequelize) {
     },
     username: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: true
     },
     email: {
       type: Sequelize.STRING,
       allowNull: false
-    },
-    email: {
-      type: Sequelize.STRING
     },
     password: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     is_verified: {
       type: Sequelize.BOOLEAN,
