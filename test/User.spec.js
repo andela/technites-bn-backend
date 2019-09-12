@@ -10,7 +10,7 @@ const dummyUser = {
   lastname: 'secondname',
   username: 'username',
   email: 'dummyuser@gmail.com',
-  password: 'dummydummy',
+  password: 'dummy12@',
 };
 const { expect } = chai;
 const { JWT_SECRET } = process.env;
@@ -40,6 +40,19 @@ describe('users endpoints', () => {
         .end((err, res) => {
           res.should.have.status(409);
           res.body.should.have.property('error').eql(`User with email ${dummyUser.email} already exists`);
+          done();
+        });
+    });
+
+    it('it should return error if invalid data is entered on the request', (done) => {
+      dummyUser.password = 'password';
+      chai
+        .request(app)
+        .post('/api/v1/auth/register')
+        .send(dummyUser)
+        .end((err, res) => {
+          res.should.have.status(422);
+          res.body.should.have.property('error');
           done();
         });
     });

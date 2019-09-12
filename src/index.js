@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors';
 import errorhandler from 'errorhandler';
+import expressValidator from 'express-validator';
 import passport from './config/passport';
 import routes from './routes';
 
