@@ -20,11 +20,11 @@ class AuthHelper {
   }
 
   /**
-   * @function jwtVerifiy
+   * @function jwtVerify
    * @param {String} token String
    * @returns {Object} decoded token
    */
-  static jwtVerifiy(token) {
+  static jwtVerify(token) {
     const decoded = jwt.verify(token, JWT_SECRET);
     return decoded;
   }
@@ -46,6 +46,15 @@ class AuthHelper {
    */
   static hashPassword(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(SaltRounds));
+  }
+
+  /**
+   *
+   * @param {object} email
+   * @returns {object} token
+   */
+  static jwtSignReset(email) {
+    return jwt.sign({ email }, JWT_SECRET, { expiresIn: '600s' });
   }
 }
 
