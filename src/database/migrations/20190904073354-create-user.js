@@ -30,6 +30,11 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    is_verified: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

@@ -1,5 +1,10 @@
 /* eslint-disable no-useless-catch */
+import sgMail from '@sendgrid/mail';
+import dotenv from 'dotenv';
 import database from '../database/models';
+import getConfirmationEmail from '../utils/ConfirmationEmail';
+
+dotenv.config();
 
 /**
  * @class UserService
@@ -62,6 +67,28 @@ class UserService {
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+   * @param  {String} token
+   * @param  {String} email
+   * @returns {Object} result;
+   */
+  static async sendConfirmationEmail(token, email) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+    let message = {
+      to: email,
+      from: process.env.EMAIL_MESSAGE_FROM,
+      subject: 'Confirmation email',
+      html: getConfirmationEmail(token),
+    };
+
+    if (process.env.NODE_ENV === 'test') {
+      message = { ...message, mail_settings: { sandbox_mode: { enable: true } } };
+    }
+
+    return sgMail.send(message);
   }
 }
 

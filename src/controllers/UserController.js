@@ -47,8 +47,15 @@ class UserController {
       req.body.password = bcrypt.hashSync(req.body.password, 8);
       const newUser = await userService.addUser(req.body);
       const token = jwtSign(req.body);
+
+      // check if user is registered before sending user a verification email
+      const searchUser = await userService.findUserByEmail(req.body.email);
+      if (!searchUser) return res.status(404).json({ status: 404, error: 'Email is not registered' });
+
+      userService.sendConfirmationEmail(token, searchUser.email);
+
       res.status(201).send({
-        status: 201, message: 'user successfully registered', data: getPublicProfile(newUser), token
+        status: 201, message: 'Signed up successful, please confirm your account by clicking on the verification link in the email we sent you', data: getPublicProfile(newUser), token
       });
     }
   }
