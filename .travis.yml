@@ -8,6 +8,7 @@ cache:
  
 services:
   - postgresql
+  - redis-server
 
 before_script:
   - psql -c 'CREATE DATABASE test;' -U postgres
