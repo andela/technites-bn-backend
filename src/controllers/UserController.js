@@ -75,7 +75,7 @@ class UserController {
         return util.send(res);
       }
       // sign token
-      const token = jwtSignReset(req.body.email);
+      const token = jwtSign({ email: req.body.email }, '600s');
       // store password reset
       const userinfo = {
         user_id: searchUser.id,

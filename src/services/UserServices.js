@@ -33,10 +33,10 @@ class UserService {
   }
 
   /**
-   *
-   * @param {object} userInfo
-   * @returns {object} user
-   */
+ *
+ * @param {*} userInfo
+ * @returns {*} userInfo
+ */
   static async storeToken(userInfo) {
     try {
       return await database.PasswordResets.create(userInfo);
