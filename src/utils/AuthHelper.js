@@ -51,6 +51,15 @@ class AuthHelper {
   static hashPassword(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(SaltRounds));
   }
+
+  /**
+   *
+   * @param {object} email
+   * @returns {object} token
+   */
+  static jwtSignReset(email) {
+    return jwt.sign({ email }, JWT_SECRET, { expiresIn: '600s' });
+  }
 }
 
 export default AuthHelper;

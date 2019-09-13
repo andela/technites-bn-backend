@@ -6,6 +6,7 @@ import UserRoute from './UserRoutes';
 const router = new Router();
 
 router.use('/auth', UserRoute);
+
 router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 export default router;

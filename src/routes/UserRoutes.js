@@ -6,19 +6,22 @@ import database from '../database/models';
 import passport from '../config/passport';
 import OAuthController from '../controllers/OAuthController';
 
-import { data, validator } from '../validation/index';
+import { data, validator, loginData } from '../validation/UserValidation';
 
 const router = new Router();
 
-const { reset, updateCredentials, register } = UserController;
+const {
+  reset, updateCredentials, register, loginUser, logoutUser
+} = UserController;
 const { resetValidator, credentialsValidator } = Validation;
 const { verifyToken } = UserAuthentication;
 const { loginCallback } = OAuthController;
 
 router.post('/reset', resetValidator, reset);
 router.put('/reset/:token', credentialsValidator, updateCredentials);
+router.post('/login', loginData, validator, loginUser);
+router.post('/logout', verifyToken, logoutUser);
 router.get('/user');
-router.post('/login');
 router.post('/register', data, validator, register);
 router.get('/google', passport.authenticate('google', {
   scope: [
