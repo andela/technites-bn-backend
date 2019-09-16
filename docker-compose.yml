@@ -8,9 +8,8 @@ services:
    ports:
      - '${DB_DOCKER_PORT}:5432'
 
-   redis:
-    image: redis
-
+ redis:
+   image: redis
    environment:         
       - POSTGRES_DB= ${DB_NAME}
       - POSTGRES_USER= ${DB_USER}
@@ -31,6 +30,6 @@ services:
       - DB_PASS= ${DB_PASS}
       - JWT_SECRET= ${JWT_SECRET}
       - SENDGRID_API_KEY= ${SENDGRID_API_KEY}
-      - REDIS_URL = redis://redis:6379
+      - REDIS_URL=redis://redis:6379
 volumes:
   pgdata:

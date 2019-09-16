@@ -67,6 +67,8 @@ class UserController {
     const { email, password } = req.body;
     const searchUser = await findUserByEmail(email);
     if (!searchUser) return res.status(401).json({ status: 401, error: 'Invalid user credentials' });
+    const isVerified = searchUser.is_verified;
+    if (!isVerified) return res.status(401).json({ status: 401, error: 'Email verification required' });
     const comparePass = comparePassword(password, searchUser.password);
     if (!comparePass) return res.status(404).json({ status: 404, error: 'Invalid user credentials' });
     const {
@@ -87,8 +89,7 @@ class UserController {
   static async logoutUser(req, res) {
     const { email } = req.user;
     try {
-      redisClient.set(email, req.token, () => {
-      });
+      redisClient.set(email, req.token);
       response.setSuccess(200, 'You have logged out');
       return response.send(res);
     } catch (error) {
