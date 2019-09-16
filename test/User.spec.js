@@ -154,7 +154,7 @@ describe('users endpoints', () => {
 
   describe('POST: /api/v1/auth/login', () => {
     let userData;
-    it('Should not login an unregistered user', () => {
+    it('Should not login an unregistered user', (done) => {
       userData = {
         email: 'new@mail.com',
         password: 'Anyp4ss'
@@ -166,10 +166,11 @@ describe('users endpoints', () => {
         .end((err, res) => {
           expect(res.status).to.equal(401);
           expect(res.body.error).to.equal('Invalid user credentials');
+          done();
         });
     });
 
-    it('Should not login a user with an invalid password', () => {
+    it('Should not login a user with an invalid password', (done) => {
       userData = {
         email: dummyUser.email,
         password: 'wrongPass'
@@ -181,6 +182,7 @@ describe('users endpoints', () => {
         .end((err, res) => {
           expect(res.status).to.equal(401);
           expect(res.body.error).to.equal('Invalid user credentials');
+          done();
         });
     });
 
