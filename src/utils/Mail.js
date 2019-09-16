@@ -165,7 +165,7 @@ export default class Mail {
     }
     sgMail.send(message).then(() => {
       if (this.msgType === 'ResetRequest') {
-        util.setSuccess(200, 'Email sent successfully', this.token);
+        util.setSuccess(200, 'Email sent successfully');
       } else {
         util.setSuccess(200, 'Password reset succesfully');
       }
