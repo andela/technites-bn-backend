@@ -21,6 +21,10 @@ export function up(queryInterface, Sequelize) {
     token: {
       type: Sequelize.STRING
     },
+    valid: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

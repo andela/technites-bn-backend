@@ -28,6 +28,7 @@ describe('SOCIAL LOGIN', () => {
       firstname: 'Fred',
       lastname: 'Mucyo',
       email: 'mucyomiller@gmail.com',
+      is_verified: true
     }).calledOnce);
     done();
   });

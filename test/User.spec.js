@@ -2,18 +2,20 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import jwt from 'jsonwebtoken';
 import app from '../src/index';
+import UserService from '../src/services/UserServices';
 
 chai.use(chaiHttp);
 chai.should();
 
-
+const { findTokenByUserID } = UserService;
 const signUpUrl = '/api/v1/auth/register';
 const loginUrl = '/api/v1/auth/login';
 const logoutUrl = '/api/v1/auth/logout';
 
 const { JWT_SECRET } = process.env;
 let validtoken = null;
-const invalidtoken = jwt.sign({ email: 'technites@gmail.com' }, JWT_SECRET, { expiresIn: '1ms' });
+const invalidtoken = jwt.sign({ email: 'technites@gmail.com', use: 'Reset' }, JWT_SECRET, { expiresIn: '1ms' });
+const invalidtoken2 = jwt.sign({ email: 'technitesdev@gmail.com' }, JWT_SECRET, { expiresIn: '600s' });
 
 describe('users endpoints', () => {
   let token;
@@ -76,17 +78,28 @@ describe('users endpoints', () => {
           done();
         });
     });
-    it('Should send reset link when informations are correct', async () => {
-      const result = await chai.request(app)
+    it('Should send reset link when informations are correct', (done) => {
+      chai.request(app)
         .post('/api/v1/auth/reset')
         .set('Accept', 'application/json')
-        .send({ email: 'technitesdev@gmail.com' });
-      validtoken = result.body.data;
-      expect(result.body.status).to.equal(200);
+        .send({ email: 'technitesdev@gmail.com' })
+        .end((err, res) => {
+          expect(res.body.status).to.equal(200);
+          done();
+        });
     });
   });
 
   describe('PUT api/v1/auth/reset/:token', () => {
+    it('Should reset password when all informations are correct', async () => {
+      const userInfo = await findTokenByUserID(1);
+      validtoken = userInfo.token;
+      const result2 = await chai.request(app)
+        .put(`/api/v1/auth/reset/${validtoken}`)
+        .set('Accept', 'application/json')
+        .send({ password: '123456aA@', confirm_password: '123456aA@' });
+      expect(result2.status).to.equal(200);
+    });
     it('Should not reset password when password missmatch', (done) => {
       chai.request(app)
         .put(`/api/v1/auth/reset/${validtoken}`)
@@ -107,13 +120,23 @@ describe('users endpoints', () => {
           done();
         });
     });
-    it('Should reset password when all informations are correct', (done) => {
+    it('Should not reset password when token used is not for resetting', (done) => {
+      chai.request(app)
+        .put(`/api/v1/auth/reset/${invalidtoken2}`)
+        .set('Accept', 'application/json')
+        .send({ password: '123456aA@', confirm_password: '123456aA@' })
+        .end((err, res) => {
+          expect(res.status).to.equal(400);
+          done();
+        });
+    });
+    it('Should not reset password when token has been used', (done) => {
       chai.request(app)
         .put(`/api/v1/auth/reset/${validtoken}`)
         .set('Accept', 'application/json')
         .send({ password: '123456aA@', confirm_password: '123456aA@' })
         .end((err, res) => {
-          expect(res.status).to.equal(200);
+          expect(res.status).to.equal(400);
           done();
         });
     });
@@ -123,7 +146,7 @@ describe('users endpoints', () => {
         .set('Accept', 'application/json')
         .send({ password: '123456aA@', confirm_password: '123456aA@' })
         .end((err, res) => {
-          expect(res.status).to.equal(401);
+          expect(res.status).to.equal(400);
           done();
         });
     });

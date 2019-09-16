@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import bcrypt from 'bcrypt';
 import Util from '../utils/Utils';
 import Mail from '../utils/Mail';
@@ -16,7 +17,9 @@ const {
   findUserByEmail,
   storeToken,
   updateCredentials,
-  sendConfirmationEmail
+  sendConfirmationEmail,
+  storedToken,
+  destroyToken
 } = UserService;
 let msgType = null;
 /**
@@ -112,11 +115,12 @@ class UserController {
         return util.send(res);
       }
       // sign token
-      const token = jwtSign({ email: req.body.email }, '600s');
+      const token = jwtSign({ email: req.body.email, use: 'Reset' }, '600s');
       // store password reset
       const userinfo = {
         user_id: searchUser.id,
-        token
+        token,
+        valid: true
       };
       storeToken(userinfo).then(() => {
       // send email
@@ -139,17 +143,31 @@ class UserController {
     // check if password looks alike
     if (req.body.password === req.body.confirm_password) {
       try {
+        // check whether token is valid
+        const verifyToken = await storedToken(req.params.token);
+        if (!verifyToken.valid === true) {
+          util.setError(400, 'You have already reset your password, request another reset if you dont remember your password');
+          return util.send(res);
+        }
         // Decode token
-        const user = jwtVerify(req.params.token);
+        const user = jwtVerify(verifyToken.token);
+        // Check whether token is used for resetting only
+        if (!user.use === 'Reset') {
+          util.setError(400, 'The token used here is not for resetting password, Use the appropriate one');
+          return util.send(res);
+        }
         // encrypt password
         const newpassword = bcrypt.hashSync(req.body.password, 8);
         // Update credentials
+        const newValidity = false;
         updateCredentials(user.email, newpassword).then(() => {
-          mail.setMessage(user.email, req.params.token, 'User', user.email, msgType = 'Reset');
-          return mail.send(res);
+          destroyToken(req.params.token, newValidity).then(() => {
+            mail.setMessage(user.email, req.params.token, 'User', user.email, msgType = 'Reset');
+            return mail.send(res);
+          });
         });
       } catch (error) {
-        util.setError(401, 'Token has expired, please try again');
+        util.setError(400, 'Oops Something went wrong');
         return util.send(res);
       }
     } else {

@@ -9,6 +9,7 @@ export function up(queryInterface, Sequelize) {
     username: 'johndoe',
     email: 'technitesdev@gmail.com',
     password: '123456',
+    is_verified: true,
     createdAt: new Date(),
     updatedAt: new Date()
   }], {});

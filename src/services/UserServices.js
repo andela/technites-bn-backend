@@ -34,12 +34,65 @@ class UserService {
 
   /**
  *
- * @param {*} userInfo
+ * @param {object} userInfo
+ *  * @param {object} tokenOwner
  * @returns {*} userInfo
  */
   static async storeToken(userInfo) {
     try {
-      return await database.PasswordResets.create(userInfo);
+      const searchToken = await database.PasswordResets.findOne({
+        where: { user_id: userInfo.user_id }
+      });
+      if (searchToken) {
+        await database.PasswordResets.update(userInfo, { where: { user_id: userInfo.user_id } });
+        return userInfo;
+      }
+      const newToken = await database.PasswordResets.create(userInfo);
+      return newToken;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   *
+   * @param {Object} token
+   * @returns {Object} response
+   */
+  static async storedToken(token) {
+    const storedToken = await database.PasswordResets.findOne({ where: { token } });
+    if (!storedToken) return null;
+    return storedToken.dataValues;
+  }
+
+  /**
+   * @param {object} id
+ * @returns {object} response
+ */
+  static async findTokenByUserID(id) {
+    const storedToken = await database.PasswordResets.findOne({ where: { id } });
+    if (!storedToken) return null;
+    return storedToken.dataValues;
+  }
+
+  /**
+ *
+ * @param {object} token
+ * @returns {object} destroy token
+ */
+  static async destroyToken(token) {
+    try {
+      const searchToken = await database.PasswordResets.findOne({
+        where: { token }
+      });
+      if (searchToken) {
+        const destroy = {
+          valid: false,
+        };
+        await database.PasswordResets.update(destroy, { where: { token } });
+        return destroy;
+      }
+      return null;
     } catch (error) {
       throw error;
     }
