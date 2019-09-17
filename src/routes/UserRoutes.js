@@ -4,7 +4,6 @@ import UserController from '../controllers/UserController';
 import UserAuthentication from '../middlewares/UserAuthentication';
 import Validation from '../validation/Validations';
 
-
 const router = new Router();
 
 const connection = connect();

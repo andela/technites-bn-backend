@@ -10,7 +10,7 @@
     "test": "export NODE_ENV=test && npm run migrate:refresh && npm run seed && nyc --reporter=html --reporter=text mocha src/**/*.js --timeout 15000 --require @babel/register ./test --exit",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "migrate": "sequelize db:migrate",
-    "seed": "sequelize db:seed:all",
+    "seed": "sequelize db:seed:undo:all && sequelize db:seed:all",
     "migrate:reset": "sequelize db:migrate:undo:all",
     "migrate:refresh": "npm run migrate:reset && npm run migrate"
   },

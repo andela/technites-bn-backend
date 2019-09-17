@@ -1,6 +1,6 @@
 import { sanitizeBody } from 'express-validator';
 
-const { check, validationResult } = require('express-validator/check');
+const { check, validationResult } = require('express-validator');
 
 export const loginData = [
   check('email')
@@ -15,8 +15,23 @@ export const loginData = [
     .withMessage('Invalid user credentials'),
   sanitizeBody('notifyOnReply').toBoolean()
 ];
-
-export const data = [
+export const changeRoleData = [
+  check('email').isLength({ min: 3, max: 256 })
+    .not()
+    .isEmpty()
+    .withMessage('Email field cannot be empty')
+    .isEmail()
+    .withMessage('Email entered is not of type "email"')
+    .normalizeEmail()
+    .trim(),
+  check('new_role').isInt()
+    .withMessage('new_role value can only be an integer')
+    .not()
+    .isEmpty()
+    .isIn([1, 2, 3, 4, 5, 6, 7])
+    .withMessage('new_role value can only take a value between 1 and 7')
+];
+export const registerData = [
   check('firstname').isLength({ min: 2, max: 30 })
     .withMessage('Firstname must have 2 or more characters')
     .not()

@@ -19,6 +19,7 @@ const invalidtoken2 = jwt.sign({ email: 'technitesdev@gmail.com' }, JWT_SECRET, 
 
 describe('users endpoints', () => {
   let token;
+  let testId;
   const dummyUser = {
     firstname: 'firstname',
     lastname: 'secondname',
@@ -35,6 +36,7 @@ describe('users endpoints', () => {
         .send(dummyUser)
         .end((err, res) => {
           token = res.body.token;
+          testId = Number(res.body.data.id);
           res.should.have.status(201);
           res.body.should.have.property('data').be.a('object');
           res.body.should.have.property('token').be.a('string');
@@ -232,7 +234,7 @@ describe('users endpoints', () => {
   });
 
   describe('POST api/v1/auth/login/:token', () => {
-    let confirmationToken = jwt.sign(dummyUser, process.env.JWT_SECRET);
+    let confirmationToken = jwt.sign(dummyUser, process.env.JWT_SECRET, { expiresIn: '24h' });
     const exec = () => chai.request(app).get(`/api/v1/auth/login/${confirmationToken}`);
     it('should return 200 if a user is verified', async () => {
       const res = await exec();
@@ -311,7 +313,7 @@ describe('users endpoints', () => {
     });
     it('Should return user when found', (done) => {
       chai.request(app)
-        .get('/api/v1/users/1')
+        .get(`/api/v1/users/${testId}`)
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -329,19 +331,9 @@ describe('users endpoints', () => {
           done();
         });
     });
-    it('Should return all users of a specific company', (done) => {
-      chai.request(app)
-        .get('/api/v1/users/company/Andela')
-        .set('Accept', 'application/json')
-        .send()
-        .end((err, res) => {
-          expect(res.body.status).to.equal(200);
-          done();
-        });
-    });
     it('Should not return users of a specific company in case they are not found', (done) => {
       chai.request(app)
-        .get('/api/v1/users/company/Andelas')
+        .get('/api/v1/users/company/Andela')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {

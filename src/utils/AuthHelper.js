@@ -15,11 +15,6 @@ class AuthHelper {
    * @returns {Object} token
    */
   static jwtSign(payload, time = '24h') {
-    // remove password from User Model
-    if ('password' in payload) {
-      const { password, ...patchedUser } = payload;
-      return jwt.sign(patchedUser, JWT_SECRET, { expiresIn: time });
-    }
     return jwt.sign(payload, JWT_SECRET, { expiresIn: time });
   }
 
