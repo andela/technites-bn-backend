@@ -14,6 +14,7 @@ export function up(queryInterface, Sequelize) {
     password,
     company: 'Andela',
     is_verified: true,
+    role_value: 7,
     createdAt: new Date(),
     updatedAt: new Date()
   },

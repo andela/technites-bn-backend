@@ -5,6 +5,7 @@ import UserAuthentication from '../middlewares/UserAuthentication';
 import database from '../database/models';
 import passport from '../config/passport';
 import OAuthController from '../controllers/OAuthController';
+import RequestController from '../controllers/RequestController';
 
 import { registerData, validator, loginData } from '../validation/UserValidation';
 
@@ -16,12 +17,20 @@ const {
 const { resetValidator, credentialsValidator } = Validation;
 const { verifyToken } = UserAuthentication;
 const { loginCallback } = OAuthController;
+const { getRequests } = RequestController;
 
 router.post('/reset', resetValidator, reset);
 router.put('/reset/:token', credentialsValidator, updateCredentials);
 router.post('/login', loginData, validator, loginUser);
 router.post('/logout', verifyToken, logoutUser);
 router.post('/register', registerData, validator, register);
+router.post('/reset', resetValidator, reset);
+router.put('/reset/:token', credentialsValidator, updateCredentials);
+router.post('/login', loginData, validator, loginUser);
+router.post('/logout', verifyToken, logoutUser);
+router.get('/user');
+router.get('/user/:id/requests', getRequests);
+
 router.get('/google', passport.authenticate('google', {
   scope: [
     'https://www.googleapis.com/auth/userinfo.profile',
@@ -37,5 +46,6 @@ router.get('/login/:token', verifyToken, async (req, res) => {
 
   res.json({ status: 200, message: 'Your account is now verified' });
 });
+
 
 export default router;
