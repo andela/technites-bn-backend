@@ -1,11 +1,14 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-useless-catch */
 import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
+import Sequelize from 'sequelize';
 import database from '../database/models';
 import getConfirmationEmail from '../utils/ConfirmationEmail';
+import checkService from '../utils/UserServicesResponse';
 
+const { Op } = Sequelize;
 dotenv.config();
-
 /**
  * @class UserService
  * @description user service methods
@@ -142,6 +145,81 @@ class UserService {
     }
 
     return sgMail.send(message);
+  }
+
+
+  /**
+   *
+   * @param {*} id
+   * @param {*} profile
+   * @returns {*} updated profile
+   */
+  static async updateProfile(id, profile) {
+    const checkProfile = await database.User.findOne({
+      where: { id }
+    });
+
+    if (checkProfile) {
+      await database.User.update(profile, { where: { id } });
+      return profile;
+    }
+    return null;
+  }
+
+  /**
+ *
+ * @param {*} id
+ * @returns {*} user
+ */
+  static async findUserById(id) {
+    const searchUser = await database.User.findOne({
+      attributes:
+      ['id', 'firstname',
+        'lastname', 'email',
+        'username', 'is_verified',
+        'role_value', 'phone', 'gender',
+        'dob', 'address', 'country',
+        'language', 'currency', 'image_url',
+        'company', 'department', 'line_manager',
+        'createdAt', 'updatedAt'],
+      where: {
+        id,
+        [Op.not]: [{ role_value: 7 }]
+      }
+    });
+    if (!searchUser) return null;
+    return searchUser.dataValues;
+  }
+
+  /**
+ *
+ * @param {*} company
+ * @returns {*} user
+ */
+  static async findUserByCompany(company) {
+    const searchUser = await database.User.findAll({
+      attributes: {
+        exclude: ['password']
+      },
+      where: {
+        company,
+        [Op.not]: [{ role_value: 7 }]
+      }
+    });
+    return checkService(searchUser);
+  }
+
+  /**
+   * @returns {*} users
+   */
+  static async displayAllUsers() {
+    const users = await database.User.findAll({
+      attributes: {
+        exclude: ['password']
+      },
+      where: { [Op.not]: [{ role_value: 7 }] }
+    });
+    return checkService(users);
   }
 }
 

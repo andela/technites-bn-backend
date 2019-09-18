@@ -67,6 +67,19 @@ describe('users endpoints', () => {
         });
     });
   });
+  // This test needs to run before user verification, token is from dummy user
+  describe('PATCH api/v1/user/editprofile', () => {
+    it('Should not allow user to edit profile when user is not verified', (done) => {
+      chai.request(app)
+        .patch('/api/v1/users/editprofile')
+        .set('Authorization', `${token}`)
+        .send({ gender: 'Male' })
+        .end((err, res) => {
+          expect(res.body.status).to.equal(401);
+          done();
+        });
+    });
+  });
   describe('POST api/v1/auth/reset', () => {
     it('Should not send reset link when email is not registered', (done) => {
       chai.request(app)
@@ -232,6 +245,33 @@ describe('users endpoints', () => {
       res.should.have.status(400);
     });
   });
+  // This test needs to run before logging out user, token is from dummy user
+  describe('PATCH api/v1/user/editprofile', () => {
+    it('Should not allow user to edit profile to email that already exists', (done) => {
+      chai.request(app)
+        .patch('/api/v1/users/editprofile')
+        .set('Authorization', `${token}`)
+        .send({ email: 'technitesdev@gmail.com' })
+        .end((err, res) => {
+          expect(res.body.status).to.equal(409);
+          done();
+        });
+    });
+    it('Should not accept uploads that are not images', async () => {
+      const userUpdate = await chai.request(app)
+        .patch('/api/v1/users/editprofile')
+        .set('Authorization', `${token}`)
+        .attach('image', 'src/utils/assets/Test.rtf', 'Test.rtf');
+      expect(userUpdate.body.status).to.equal(415);
+    });
+    it('Should update profile on demand', async () => {
+      const userUpdate = await chai.request(app)
+        .patch('/api/v1/users/editprofile')
+        .set('Authorization', `${token}`)
+        .attach('image', 'src/utils/assets/Profile.png', 'Profile.png');
+      expect(userUpdate.body.status).to.equal(200);
+    });
+  });
 
   describe('users logout endpoints', () => {
     it('should logout a logged in user', (done) => {
@@ -243,6 +283,69 @@ describe('users endpoints', () => {
         .end((err, res) => {
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('message');
+          done();
+        });
+    });
+  });
+
+  describe('GET api/v1/user/1', () => {
+    it('Should not return specific profile if parameter is not an integer', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/a')
+        .set('Accept', 'application/json')
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(400);
+          done();
+        });
+    });
+    it('Should return an appropriate message when user is not found', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/100')
+        .set('Accept', 'application/json')
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(404);
+          done();
+        });
+    });
+    it('Should return user when found', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/1')
+        .set('Accept', 'application/json')
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(200);
+          done();
+        });
+    });
+    it('Should return all users', (done) => {
+      chai.request(app)
+        .get('/api/v1/users')
+        .set('Accept', 'application/json')
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(200);
+          done();
+        });
+    });
+    it('Should return all users of a specific company', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/company/Andela')
+        .set('Accept', 'application/json')
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(200);
+          done();
+        });
+    });
+    it('Should not return users of a specific company in case they are not found', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/company/Andelas')
+        .set('Accept', 'application/json')
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(404);
           done();
         });
     });

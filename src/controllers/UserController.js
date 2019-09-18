@@ -1,5 +1,7 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable no-unused-vars */
 import bcrypt from 'bcrypt';
+import cloudinary from 'cloudinary';
 import Util from '../utils/Utils';
 import Mail from '../utils/Mail';
 import redisClient from '../utils/RedisConnection';
@@ -19,9 +21,19 @@ const {
   updateCredentials,
   sendConfirmationEmail,
   storedToken,
-  destroyToken
+  destroyToken,
+  updateProfile,
+  findUserById,
+  displayAllUsers,
+  findUserByCompany
 } = UserService;
 let msgType = null;
+const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
+cloudinary.config({
+  cloud_name: CLOUDINARY_NAME,
+  api_key: CLOUDINARY_API_KEY,
+  api_secret: CLOUDINARY_API_SECRET,
+});
 /**
  * @class UserController
  */
@@ -175,6 +187,103 @@ class UserController {
       util.setError(401, 'Passwords do not match');
       return util.send(res);
     }
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*}  edited profile
+ */
+  static async editProfile(req, res) {
+    // Check if user is verified
+    if (!req.user.is_verified === true) {
+      util.setError(401, 'Please Verify your account first');
+      return util.send(res);
+    }
+    // can not update to an existing email
+    // check if user provided email
+    if (req.body.email) {
+      // check if email provided by user is the same as the one signed
+      if (req.user.email !== req.body.email) {
+        // Search if email already exists
+        const searchUser = await findUserByEmail(req.body.email);
+        if (searchUser) {
+          util.setError(409, 'The email you are trying to use is already registered');
+          return util.send(res);
+        }
+      }
+    }
+    const profile = req.body;
+    // Add picture if user added it
+    if (req.files && req.files.image) {
+      const image = req.files.image.path;
+      // checking if user uploaded valid picture
+      const imgExt = image.split('.').pop();
+      if (imgExt !== 'jpg' && imgExt !== 'jpeg' && imgExt !== 'png' && imgExt !== 'bmp' && imgExt !== 'gif') {
+        util.setError(415, 'Please Upload a valid image');
+        return util.send(res);
+      }
+      // uploading to cloudinary
+      const uploadPicture = await cloudinary.uploader.upload(image);
+      profile.image_url = uploadPicture.url;
+    }
+    // update profile
+    updateProfile(req.user.id, profile).then(() => {
+      util.setSuccess(200, 'Profile Updated!', profile);
+      return util.send(res);
+    });
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} user
+ */
+  static async viewSingleProfile(req, res) {
+    // Ensure passed value from the params is an integer value
+    if (isNaN(req.params.id)) {
+      util.setError(400, 'Petition id must be an Integer');
+      return util.send(res);
+    }
+    const searchUser = await findUserById(req.params.id);
+    if (!searchUser) {
+      util.setError(404, 'User not found');
+      return util.send(res);
+    }
+    const { password, ...foundUser } = searchUser;
+    util.setSuccess(200, 'User found!', foundUser);
+    return util.send(res);
+  }
+
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} all users
+ */
+  static async viewAllProfiles(req, res) {
+    const allUsers = await displayAllUsers();
+    util.setSuccess(200, 'All users!', allUsers);
+    return util.send(res);
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} all users
+ */
+  static async viewProfilesByCompany(req, res) {
+    const allUsers = await findUserByCompany(req.params.company);
+    if (allUsers.length === 0) {
+      util.setError(404, `No users found working for ${req.params.company}`);
+      return util.send(res);
+    }
+    util.setSuccess(200, 'All users!', allUsers);
+    return util.send(res);
   }
 }
 

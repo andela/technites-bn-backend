@@ -1,42 +1,27 @@
 import { Router } from 'express';
+import connect from 'connect-multiparty';
 import UserController from '../controllers/UserController';
-import Validation from '../validation/Validations';
 import UserAuthentication from '../middlewares/UserAuthentication';
-import database from '../database/models';
-import passport from '../config/passport';
-import OAuthController from '../controllers/OAuthController';
+import Validation from '../validation/Validations';
 
-import { data, validator, loginData } from '../validation/UserValidation';
 
 const router = new Router();
 
-const {
-  reset, updateCredentials, register, loginUser, logoutUser
-} = UserController;
-const { resetValidator, credentialsValidator } = Validation;
+const connection = connect();
+
 const { verifyToken } = UserAuthentication;
-const { loginCallback } = OAuthController;
+const {
+  editProfile, viewSingleProfile, viewAllProfiles, viewProfilesByCompany
+} = UserController;
 
-router.post('/reset', resetValidator, reset);
-router.put('/reset/:token', credentialsValidator, updateCredentials);
-router.post('/login', loginData, validator, loginUser);
-router.post('/logout', verifyToken, logoutUser);
-router.get('/user');
-router.post('/register', data, validator, register);
-router.get('/google', passport.authenticate('google', {
-  scope: [
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/userinfo.email'
-  ]
-}));
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), loginCallback);
-router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
-router.get('/fb/callback', passport.authenticate('facebook', { failureRedirect: '/api/v1/auth/facebook' }), loginCallback);
+const { updateProfileValidator } = Validation;
 
-router.get('/login/:token', verifyToken, async (req, res) => {
-  await database.User.update({ is_verified: true }, { where: { email: req.user.email } });
+router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);
 
-  res.json({ status: 200, message: 'Your account is now verified' });
-});
+router.get('/:id', viewSingleProfile);
+
+router.get('/', viewAllProfiles);
+
+router.get('/company/:company', viewProfilesByCompany);
 
 export default router;

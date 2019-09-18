@@ -225,6 +225,143 @@
           }
         }
       }
+    },
+    "/user/editprofile": {
+      "patch": {
+        "description": "TODO: Add Description",
+        "summary": "Edit Profile",
+        "tags": [
+          "User can Edit Profile"
+        ],
+        "operationId": "UserEditprofilePatch",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "firstname",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "phone",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "gender",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "dob",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "required": false,
+            "type": "file",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/user/2": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Get Single Profile",
+        "tags": [
+          "User can view various profiles"
+        ],
+        "operationId": "User2Get",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Get All Users",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "UserGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/user/company/Andela": {
+      "get": {
+        "description": "TODO: Add Description",
+        "summary": "Get by company",
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "UserCompanyAndelaGet",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
     }
   }
 }
