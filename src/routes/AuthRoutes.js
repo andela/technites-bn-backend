@@ -21,7 +21,6 @@ router.post('/reset', resetValidator, reset);
 router.put('/reset/:token', credentialsValidator, updateCredentials);
 router.post('/login', loginData, validator, loginUser);
 router.post('/logout', verifyToken, logoutUser);
-router.get('/user');
 router.post('/register', registerData, validator, register);
 router.get('/google', passport.authenticate('google', {
   scope: [
