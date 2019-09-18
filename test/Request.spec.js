@@ -60,9 +60,25 @@ describe('REQUESTS ENDPOINTS', () => {
           done();
         });
     });
-    
     it('it should create a one way trip request', (done) => {
       dummyRequest.request_type = 'OneWay';
+      chai
+        .request(app)
+        .post('/api/v1/users/1/requests')
+        .set('Authorization', `Bearer ${token}`)
+        .send(dummyRequest)
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.body.should.have.property('message');
+          res.body.should.have.property('data').be.a('object');
+          done();
+        });
+    });
+
+    it('it should create a return trip request', (done) => {
+      dummyRequest.request_type = 'ReturnTrip';
+      dummyRequest.return_date = '2029-02-10';
+
       chai
         .request(app)
         .post('/api/v1/users/1/requests')
