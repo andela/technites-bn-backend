@@ -6,7 +6,14 @@
   },
   "host": "localhost:3000",
   "basePath": "/api/v1/",
-  "securityDefinitions": {},
+  "securityDefinitions": {
+    "Bearer": { "type": "apiKey", "name": "Authorization", "in": "header" }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
   "schemes": [
     "http",
     "https"
@@ -399,6 +406,43 @@
         "security": []
       }
     
+    },
+    "/users/{id}/requests": {
+      "get": {
+        "tags": [
+            "REQUESTS"
+        ],
+        "summary": "User's requests",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+        } ],
+        "description": "User can view all the requests made overtime",
+        "produces": [
+            "application/json"
+        ],
+        "responses": {
+          "200": {
+            "status": 200,
+            "message": "requests retrieved successfully",
+            "data": []
+          },
+          "401": {
+            "status": 401,
+            "message": "Authentication error"
+          },
+          "403": {
+            "status": 401,
+            "message": "Authorization error"
+          }
+        }
+      }
     }
   }
 }

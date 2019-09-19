@@ -7,7 +7,8 @@ chai.use(chaiHttp);
 chai.should();
 
 const { jwtSign } = AuthHelper;
-const token = jwtSign({ email: 'technitesdev@gmail.com' }, '4m');
+const token = jwtSign({ email: 'technitesdev1@gmail.com' }, '4m');
+const adminToken = jwtSign({ email: 'technitesdev@gmail.com' }, '4m');
 
 describe('REQUESTS ENDPOINTS', () => {
   describe('GET api/v1/users/:id/requests', () => {
@@ -16,6 +17,18 @@ describe('REQUESTS ENDPOINTS', () => {
         .request(app)
         .get('/api/v1/users/1/requests')
         .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have.property('data').be.a('array');
+          res.body.should.have.property('message').be.a('string');
+          done();
+        });
+    });
+    it('it should return other users requests if is An Admin', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users/1/requests')
+        .set('Authorization', `Bearer ${adminToken}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.have.property('data').be.a('array');

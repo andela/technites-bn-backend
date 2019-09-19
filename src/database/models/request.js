@@ -1,7 +1,17 @@
 export default (sequelize, DataTypes) => {
   const Request = sequelize.define('Request', {
     user_id: DataTypes.INTEGER,
-    departure: DataTypes.INTEGER,
+    request_type: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isIn: {
+          args: [['OneWay', 'ReturnTrip']],
+          msg: 'Invalid Request Type use OneWay or ReturnTrip only'
+        }
+      }
+    },
+    location_id: DataTypes.INTEGER,
     departure_date: {
       type: DataTypes.DATEONLY,
       allowNull: false,
@@ -12,6 +22,10 @@ export default (sequelize, DataTypes) => {
     return_date: DataTypes.STRING,
     destinations: {
       type: DataTypes.JSONB,
+      allowNull: false
+    },
+    reason: {
+      type: DataTypes.STRING,
       allowNull: false
     },
     status: {

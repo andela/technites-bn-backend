@@ -11,7 +11,11 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.INTEGER,
       allowNull: false
     },
-    departure: {
+    request_type: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
+    location_id: {
       type: Sequelize.INTEGER,
       allowNull: false
     },
@@ -22,7 +26,12 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.STRING
     },
     destinations: {
-      type: Sequelize.JSONB
+      type: Sequelize.JSONB,
+      allowNull: false
+    },
+    reason: {
+      type: Sequelize.STRING,
+      allowNull: false
     },
     status: {
       type: Sequelize.STRING
