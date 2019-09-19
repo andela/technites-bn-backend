@@ -55,10 +55,11 @@ class UserController {
     if (foundUser) {
       res.status(409).send({ status: 409, error: `User with email ${req.body.email} already exists` });
     } else {
-      req.body.is_admin = false;
+      req.body.is_verified = false;
+      req.body.role_value = 1;
       req.body.password = bcrypt.hashSync(req.body.password, 8);
       const newUser = await addUser(req.body);
-      const token = jwtSign(req.body);
+      const token = jwtSign({ email: req.body.email });
 
       // check if user is registered before sending user a verification email
       const searchUser = await findUserByEmail(req.body.email);
@@ -89,7 +90,7 @@ class UserController {
     const {
       password: xx, createdAt, updatedAt, ...user
     } = searchUser;
-    const token = jwtSign(user);
+    const token = jwtSign({ email: searchUser.email });
 
     response.setSuccess(200, 'You have successfully logged in', { token, user });
     response.send(res);

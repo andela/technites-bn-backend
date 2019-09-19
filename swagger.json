@@ -362,6 +362,43 @@
           }
         }
       }
+    },
+    "/admin/users": {
+      "put": {
+        "description": "rchange a new role",
+        "summary": "change role",
+        "tags": [
+          "Super Admin"
+        ],
+        "operationId": "ChangeRole",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    
     }
   }
 }
