@@ -1,18 +1,15 @@
 import { Router } from 'express';
-import fileUpload from 'express-fileupload';
+import multiparty from 'connect-multiparty';
 import AccomodationController from '../controllers/AccomodationController';
 import UserAuthentication from '../middlewares/UserAuthentication';
 import { validator, accommodationData } from '../validation/UserValidation';
 
+const multipartyMiddle = multiparty();
 const router = new Router();
-router.use(fileUpload({ useTempFiles: true }));
 
 const { verifyToken } = UserAuthentication;
 const { createAccomodation } = AccomodationController;
 
-router.post('/create', accommodationData, validator, verifyToken, createAccomodation);
-// router.get('/all', getAvailableAccomodations);
-// router.get('/available', getAvailableAccomodations);
-// router.get('/:id', getSpecificAccomodation);
+router.post('/', verifyToken, multipartyMiddle, accommodationData, validator, createAccomodation);
 
 export default router;
