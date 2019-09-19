@@ -38,7 +38,7 @@ class UserService {
   /**
  *
  * @param {object} userInfo
- *  * @param {object} tokenOwner
+ * @param {object} tokenOwner
  * @returns {*} userInfo
  */
   static async storeToken(userInfo) {

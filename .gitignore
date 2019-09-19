@@ -99,3 +99,4 @@ dist/
 
 .DS_Store
 .vscode/
+dump.rdb

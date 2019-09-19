@@ -6,7 +6,7 @@ import database from '../database/models';
 import passport from '../config/passport';
 import OAuthController from '../controllers/OAuthController';
 
-import { data, validator, loginData } from '../validation/UserValidation';
+import { registerData, validator, loginData } from '../validation/UserValidation';
 
 const router = new Router();
 
@@ -22,7 +22,7 @@ router.put('/reset/:token', credentialsValidator, updateCredentials);
 router.post('/login', loginData, validator, loginUser);
 router.post('/logout', verifyToken, logoutUser);
 router.get('/user');
-router.post('/register', data, validator, register);
+router.post('/register', registerData, validator, register);
 router.get('/google', passport.authenticate('google', {
   scope: [
     'https://www.googleapis.com/auth/userinfo.profile',

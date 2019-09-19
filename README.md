@@ -21,4 +21,7 @@ create database locally then remember to make .env file with required environmen
 and run :
 ```shell
 $ npm run migrate
+
+# Roles and permissions 
+Role system used to generate role_value is a sum of all permissions from the role table.
 ```
