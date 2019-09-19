@@ -27,7 +27,7 @@ describe('SOCIAL LOGIN', () => {
     assert(cb.withArgs(null, {
       firstname: 'Fred',
       lastname: 'Mucyo',
-      email: 'mucyomiller@gmail.com',
+      email: 'testemail@gmail.com',
       is_verified: true
     }).calledOnce);
     done();

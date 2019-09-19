@@ -13,12 +13,8 @@ class UserAuthentication {
    * @description verifies the token of a user about to login
    * @param {*} req Object with the user data
    * @param {*} res  Object with respose to the user
-<<<<<<< HEAD
    * @param {*} next  Calls the next route passing the user and the verified token
    * in the request object
-=======
-   * @param {*} next  Calls the next route handler
->>>>>>>  - set up migrations to add role column
    * @returns {Object} Response
    */
   static async verifyToken(req, res, next) {
