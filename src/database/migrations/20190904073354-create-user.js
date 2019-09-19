@@ -32,6 +32,54 @@ export function up(queryInterface, Sequelize) {
       allowNull: false,
       defaultValue: false
     },
+    role_value: {
+      type: Sequelize.INTEGER,
+      defaultValue: 1
+    },
+    phone: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    gender: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    dob: {
+      allowNull: true,
+      type: Sequelize.DATE
+    },
+    address: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    country: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    language: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    currency: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    image_url: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    company: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    department: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
+    line_manager: {
+      allowNull: true,
+      type: Sequelize.STRING
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

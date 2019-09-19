@@ -46,4 +46,23 @@ export default class Validation {
     });
     genericValidator(req, res, schema, next);
   }
+  static updateProfileValidator(req, res, next) {
+    const schema = Joi.object().keys({
+      email: Joi.string().email({ minDomainSegments: 2 }),
+      firstname: Joi.string().min(2).max(30),
+      lastname: Joi.string().min(2).max(30),
+      username: Joi.string().min(2).max(30),
+      phone: Joi.string().min(9).max(10),
+      gender: Joi.string().regex(/^(Male|Female|MALE|FEMALE|male|female)$/),
+      dob: Joi.date(),
+      address: Joi.string().min(2).max(30),
+      country: Joi.string().min(2).max(30),
+      language: Joi.string().min(2).max(30),
+      currency: Joi.string().min(2).max(30),
+      company: Joi.string().min(2).max(30),
+      department: Joi.string().min(2).max(30),
+      line_manager: Joi.string(),
+    });
+    genericValidator(req, res, schema, next);
+  }
 }

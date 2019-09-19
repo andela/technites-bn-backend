@@ -21,6 +21,8 @@
     "@sendgrid/mail": "^6.4.0",
     "bcrypt": "^3.0.6",
     "body-parser": "^1.18.3",
+    "cloudinary": "^1.15.0",
+    "connect-multiparty": "^2.2.0",
     "cors": "^2.8.4",
     "dotenv": "^6.2.0",
     "errorhandler": "^1.5.0",
