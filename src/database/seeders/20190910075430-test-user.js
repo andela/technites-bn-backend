@@ -37,7 +37,18 @@ export function up(queryInterface, Sequelize) {
     role_value: 7,
     createdAt: new Date(),
     updatedAt: new Date()
-  }
+  },
+  {
+    firstname: 'Travel',
+    lastname: 'Admin',
+    username: 'TravelAdmin',
+    email: 'travel@admin.com',
+    password: 'travel@dm1n',
+    is_verified: true,
+    role_value: 4,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
 ], {});
 }
 

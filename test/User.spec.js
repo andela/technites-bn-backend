@@ -266,12 +266,15 @@ describe('users endpoints', () => {
         .attach('image', 'src/utils/assets/Test.rtf', 'Test.rtf');
       expect(userUpdate.body.status).to.equal(415);
     });
-    it('Should update profile on demand', async () => {
-      const userUpdate = await chai.request(app)
+    it('Should update profile on demand', (done) => {
+      chai.request(app)
         .patch('/api/v1/users/editprofile')
         .set('Authorization', `${token}`)
-        .attach('image', 'src/utils/assets/Profile.png', 'Profile.png');
-      expect(userUpdate.body.status).to.equal(200);
+        .attach('image', 'src/utils/assets/Profile.png', 'Profile.png')
+        .end((err, res) => {
+          expect(res.body.status).to.equal(200);
+        });
+      done();
     });
   });
 

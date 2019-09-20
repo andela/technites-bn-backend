@@ -78,6 +78,32 @@ export const registerData = [
     .escape(),
   sanitizeBody('notifyOnReply').toBoolean()
 ];
+
+export const accommodationData = [
+  check('accommodation_name')
+    .exists()
+    .withMessage('Accommodation name is required')
+    .trim(),
+  check('room_type')
+    .exists()
+    .withMessage('Room type is required')
+    .trim(),
+  check('description')
+    .exists()
+    .withMessage('Description of the rooms is required')
+    .trim(),
+  check('location')
+    .exists()
+    .withMessage('Location of the accommodation facility is required')
+    .trim(),
+  check('quantity')
+    .exists()
+    .isInt()
+    .withMessage('Quantity should be an integer and is required')
+    .trim(),
+  sanitizeBody('notifyOnReply').toBoolean()
+];
+
 export const validator = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

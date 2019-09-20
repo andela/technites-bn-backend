@@ -240,71 +240,7 @@
         "tags": [
           "User can Edit Profile"
         ],
-        "operationId": "UserEditprofilePatch",
-        "deprecated": false,
-        "produces": [
-          "application/json"
-        ],
-        "consumes": [
-          "multipart/form-data"
-        ],
-        "parameters": [
-          {
-            "name": "Authorization",
-            "in": "header",
-            "required": false,
-            "default": "Bearer {token}",
-            "type": "string"
-          },
-          {
-            "name": "email",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "description": ""
-          },
-          {
-            "name": "firstname",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "description": ""
-          },
-          {
-            "name": "phone",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "description": ""
-          },
-          {
-            "name": "gender",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "description": ""
-          },
-          {
-            "name": "dob",
-            "in": "formData",
-            "required": false,
-            "type": "string",
-            "description": ""
-          },
-          {
-            "name": "image",
-            "in": "formData",
-            "required": false,
-            "type": "file",
-            "description": ""
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "headers": {}
-          }
-        }
+        "operationId": "UserEditprofilePatch"
       }
     },
     "/user/2": {
@@ -440,6 +376,81 @@
           "403": {
             "status": 401,
             "message": "Authorization error"
+          }
+        }
+      }
+    },
+    "/accommodations": {
+      "post": {
+        "description": "add an accomodation facility",
+        "summary": "Accomodation  facility",
+        "tags": [
+          "Accomodations"
+        ],
+        "operationId": "AccommodationsPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "accommodation_name",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "room_type",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "location",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "quantity",
+            "in": "formData",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
           }
         }
       }
