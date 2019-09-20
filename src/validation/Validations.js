@@ -72,13 +72,27 @@ export default class Validation {
    * @returns {Object} newUser
    */
   static validateRequest(req) {
-    const schema = {
-      request_type: Joi.string().required().min(1).max(255),
-      location_id: Joi.number().integer().required().min(1),
-      departure_date: Joi.string().required().min(1).max(50),
-      destinations: Joi.string().required().min(1).max(255),
-      reason: Joi.string().required().min(1).max(255),
-    };
+    let schema = null;
+
+    if (req.body.request_type === 'ReturnTrip') {
+      schema = {
+        request_type: Joi.string().required().min(1).max(255),
+        location_id: Joi.number().integer().required().min(1),
+        departure_date: Joi.string().required().min(1).max(50),
+        return_date: Joi.string().required().min(1).max(50),
+        destinations: Joi.string().required().min(1).max(255),
+        reason: Joi.string().required().min(1).max(255),
+      };
+    } else {
+      schema = {
+        request_type: Joi.string().required().min(1).max(255),
+        location_id: Joi.number().integer().required().min(1),
+        departure_date: Joi.string().required().min(1).max(50),
+        destinations: Joi.string().required().min(1).max(255),
+        reason: Joi.string().required().min(1).max(255),
+      };
+    }
+
 
     return Joi.validate(req.body, schema);
   }
