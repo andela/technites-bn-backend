@@ -37,4 +37,95 @@ describe('REQUESTS ENDPOINTS', () => {
         });
     });
   });
+
+  describe('POST api/v1/users/:id/requests', () => {
+    const dummyRequest = {
+      request_type: 'OneWay',
+      location_id: '1',
+      departure_date: '2019-10-23',
+      destinations: 'given city',
+      reason: 'my trip reason',
+    };
+
+    it('should return 404 if request_type is invalid', (done) => {
+      dummyRequest.request_type = 'a';
+      chai
+        .request(app)
+        .post('/api/v1/users/1/requests')
+        .set('Authorization', `Bearer ${token}`)
+        .send(dummyRequest)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.have.property('error');
+          done();
+        });
+    });
+    
+    it('it should create a one way trip request', (done) => {
+      dummyRequest.request_type = 'OneWay';
+      chai
+        .request(app)
+        .post('/api/v1/users/1/requests')
+        .set('Authorization', `Bearer ${token}`)
+        .send(dummyRequest)
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.body.should.have.property('message');
+          res.body.should.have.property('data').be.a('object');
+          done();
+        });
+    });
+
+    it('should return 404 when user creates a request with unregistered email', (done) => {
+      const newToken = jwtSign({ email: 'notexists@gmail.com' }, '4m');
+      chai
+        .request(app)
+        .post('/api/v1/users/1/requests')
+        .set('Authorization', `Bearer ${newToken}`)
+        .send(dummyRequest)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.have.property('error');
+          done();
+        });
+    });
+
+    it('it should approve a user request', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users/1/requests/1/approve')
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have.property('message').be.a('string');
+          done();
+        });
+    });
+
+    it('it should reject a user request', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users/1/requests/1/reject')
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have.property('message').be.a('string');
+          done();
+        });
+    });
+
+    it('it should return 400 when data are invalid', (done) => {
+      dummyRequest.reason = 1;
+      chai
+        .request(app)
+        .post('/api/v1/users/1/requests/')
+        .set('Authorization', `Bearer ${token}`)
+        .send(dummyRequest)
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.body.should.have.property('error').be.a('string');
+          done();
+        });
+    });
+  });
 });

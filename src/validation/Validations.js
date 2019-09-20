@@ -65,4 +65,21 @@ export default class Validation {
     });
     genericValidator(req, res, schema, next);
   }
+  /**
+   *
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} newUser
+   */
+  static validateRequest(req) {
+    const schema = {
+      request_type: Joi.string().required().min(1).max(255),
+      location_id: Joi.number().integer().required().min(1),
+      departure_date: Joi.string().required().min(1).max(50),
+      destinations: Joi.string().required().min(1).max(255),
+      reason: Joi.string().required().min(1).max(255),
+    };
+
+    return Joi.validate(req.body, schema);
+  }
 }
