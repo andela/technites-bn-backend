@@ -22,19 +22,18 @@ const {
 
 const { updateProfileValidator } = Validation;
 
+// profilea
 router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);
-
 router.get('/:id', viewSingleProfile);
-
 router.get('/', viewAllProfiles);
-
-router.get('/:id/requests', verifyToken, getRequests);
-
 router.get('/company/:company', viewProfilesByCompany);
 
+// requests
 router.get('/:id/requests', verifyToken, getRequests);
 router.post('/:id/requests', [verifyToken, validate], createRequest);
 router.post('/:id/requests/:req_id/approve', [verifyToken], approveRequest);
 router.post('/:id/requests/:req_id/reject', [verifyToken], rejectRequest);
 
+// comments
+// router.post();
 export default router;
