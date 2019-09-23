@@ -18,7 +18,32 @@ export function up(queryInterface, Sequelize) {
     status: 'Pending',
     createdAt: new Date(),
     updatedAt: new Date()
-  }], {}, { destinations: { type: new Sequelize.JSONB() } });
+  },
+  {
+    user_id: 5,
+    request_type: 'OneWay',
+    location_id: 2,
+    departure_date: moment().toDate(),
+    return_date: moment().add(7, 'days').toDate(),
+    destinations: 1,
+    reason: 'Vacation',
+    status: 'Pending',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    user_id: 5,
+    request_type: 'OneWay',
+    location_id: 2,
+    departure_date: moment().toDate(),
+    return_date: moment().add(7, 'days').toDate(),
+    destinations: 1,
+    reason: 'Vacation',
+    status: 'Rejected',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+  ], {}, { destinations: { type: new Sequelize.JSONB() } });
 }
 
 /* eslint-disable no-unused-vars */

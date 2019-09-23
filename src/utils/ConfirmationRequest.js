@@ -1,4 +1,4 @@
-export default (token, user, request) => {
+export default (token, user, request, origin, destination) => {
   let baseUrl = null;
   let returnDate = null;
 
@@ -22,7 +22,7 @@ export default (token, user, request) => {
      border-radius: 8px;">
 
      <h4 style="color: rgb(93, 93, 93); font-size: 28px; padding-top: 40px;">Request trip confirmation</h4>
-        <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">${user.firstname} has requested a trip from ${request.location_id} to ${request.destinations}</p>
+        <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">${user.firstname} has requested a trip from ${origin} to ${destination}</p>
         <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">Reason: ${request.reason}</p>
         <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">Departure date: ${request.departure_date},</p>
         <p style="text-align: left; margin-left: 30px; margin-top: 20px; line-height: 0; color: rgb(93, 93, 93);">Return date date: ${returnDate}</p>

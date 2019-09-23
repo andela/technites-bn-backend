@@ -238,9 +238,73 @@
         "description": "TODO: Add Description",
         "summary": "Edit Profile",
         "tags": [
-          "User can Edit Profile"
+          "USER"
         ],
-        "operationId": "UserEditprofilePatch"
+        "operationId": "UserEditprofilePatch",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "firstname",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "phone",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "gender",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "dob",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "required": false,
+            "type": "file",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
       }
     },
     "/user/2": {
@@ -248,7 +312,7 @@
         "description": "TODO: Add Description",
         "summary": "Get Single Profile",
         "tags": [
-          "User can view various profiles"
+          "USER"
         ],
         "operationId": "User2Get",
         "deprecated": false,
@@ -269,7 +333,7 @@
         "description": "TODO: Add Description",
         "summary": "Get All Users",
         "tags": [
-          "Misc"
+          "USER"
         ],
         "operationId": "UserGet",
         "deprecated": false,
@@ -290,7 +354,7 @@
         "description": "TODO: Add Description",
         "summary": "Get by company",
         "tags": [
-          "Misc"
+          "USER"
         ],
         "operationId": "UserCompanyAndelaGet",
         "deprecated": false,
@@ -444,6 +508,78 @@
             "in": "formData",
             "required": true,
             "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/requests/{id}": {
+      "patch": {
+        "description": "TODO: Add Description",
+        "summary": "Edit Request",
+        "tags": [
+          "REQUESTS"
+        ],
+        "operationId": "UsersRequests13EditPatch",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "request_type",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "reason",
+            "in": "formData",
+            "required": false,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "location_id",
+            "in": "formData",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          },
+          {
+            "name": "destinations",
+            "in": "formData",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
             "description": ""
           }
         ],
