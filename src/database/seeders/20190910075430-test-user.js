@@ -15,6 +15,7 @@ export function up(queryInterface, Sequelize) {
     company: 'Andela',
     is_verified: true,
     role_value: 7,
+    line_manager: 'technitesdev@gmail.com',
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -25,6 +26,7 @@ export function up(queryInterface, Sequelize) {
     email: 'technitesdev2@gmail.com',
     password,
     is_verified: false,
+    line_manager: 'technitesdev@gmail.com',
     createdAt: new Date(),
     updatedAt: new Date()
   },
