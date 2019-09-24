@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/index';
@@ -8,6 +9,7 @@ chai.should();
 
 const { jwtSign } = AuthHelper;
 const token = jwtSign({ email: 'technitesdev1@gmail.com' }, '4m');
+const token2 = jwtSign({ email: 'technitesdev3@gmail.com' }, '4m');
 const adminToken = jwtSign({ email: 'technitesdev@gmail.com' }, '4m');
 
 describe('REQUESTS ENDPOINTS', () => {
@@ -43,7 +45,7 @@ describe('REQUESTS ENDPOINTS', () => {
       request_type: 'OneWay',
       location_id: '1',
       departure_date: '2019-10-23',
-      destinations: 'given city',
+      destinations: '2',
       reason: 'my trip reason',
     };
 
@@ -140,6 +142,79 @@ describe('REQUESTS ENDPOINTS', () => {
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.have.property('error').be.a('string');
+          done();
+        });
+    });
+  });
+  describe('PATCH api/v1/requests/:id', () => {
+    const Request = {
+      location_id: 2,
+      destinations: '1',
+      reason: 'Vacation',
+    };
+    it('it should update request', (done) => {
+      chai
+        .request(app)
+        .patch('/api/v1/requests/2')
+        .set('Authorization', `Bearer ${token2}`)
+        .send(Request)
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+    it('it should not update request when param is not a valid integer', (done) => {
+      chai
+        .request(app)
+        .patch('/api/v1/requests/a')
+        .set('Authorization', `Bearer ${token2}`)
+        .send(Request)
+        .end((err, res) => {
+          res.should.have.status(403);
+          done();
+        });
+    });
+    it('it should not update request when line manager is not updated in the user profile table', (done) => {
+      chai
+        .request(app)
+        .patch('/api/v1/requests/3')
+        .set('Authorization', `Bearer ${token}`)
+        .send(Request)
+        .end((err, res) => {
+          res.should.have.status(403);
+          done();
+        });
+    });
+    it('it should not update request when not found', (done) => {
+      chai
+        .request(app)
+        .patch('/api/v1/requests/100000')
+        .set('Authorization', `Bearer ${token2}`)
+        .send(Request)
+        .end((err, res) => {
+          res.should.have.status(404);
+          done();
+        });
+    });
+    it('it should not update another users request', (done) => {
+      chai
+        .request(app)
+        .patch('/api/v1/requests/5')
+        .set('Authorization', `Bearer ${token2}`)
+        .send(Request)
+        .end((err, res) => {
+          res.should.have.status(403);
+          done();
+        });
+    });
+    it('it should not update request when it is no longer pending', (done) => {
+      chai
+        .request(app)
+        .patch('/api/v1/requests/3')
+        .set('Authorization', `Bearer ${token2}`)
+        .send(Request)
+        .end((err, res) => {
+          res.should.have.status(403);
           done();
         });
     });

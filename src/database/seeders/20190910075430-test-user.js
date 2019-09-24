@@ -50,6 +50,19 @@ export function up(queryInterface, Sequelize) {
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  {
+    firstname: 'Requester',
+    lastname: 'Doe',
+    username: 'johndoe',
+    email: 'technitesdev3@gmail.com',
+    password,
+    company: 'NewCompany',
+    line_manager: 'travel@admin.com',
+    is_verified: true,
+    role_value: 1,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
 ], {});
 }
 

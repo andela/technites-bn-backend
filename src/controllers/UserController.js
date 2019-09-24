@@ -245,7 +245,7 @@ class UserController {
   static async viewSingleProfile(req, res) {
     // Ensure passed value from the params is an integer value
     if (isNaN(req.params.id)) {
-      util.setError(400, 'Petition id must be an Integer');
+      util.setError(400, 'User id must be an Integer');
       return util.send(res);
     }
     const searchUser = await findUserById(req.params.id);
