@@ -4,7 +4,7 @@ const { validateRequest } = Validation;
 
 export default (req, res, next) => {
   if (req.body.request_type !== 'OneWay' && req.body.request_type !== 'ReturnTrip') {
-    return res.status('404').json({ status: res.statusCode, error: 'request_type field, please use OneWay or ReturnTrip. Note that It\'s case sensitive' });
+    return res.status('404').json({ status: res.statusCode, error: 'Please use OneWay or ReturnTrip for request_type field. Note that It\'s case sensitive' });
   }
 
   const { error } = validateRequest(req);

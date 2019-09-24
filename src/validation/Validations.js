@@ -74,13 +74,19 @@ export default class Validation {
   static validateRequest(req) {
     let schema = null;
 
+    const multiCityRequest = Joi.object({
+      destination_id: Joi.number().integer().required(),
+      check_in: Joi.date().required(),
+      check_out: Joi.date().required(),
+    });
+
     if (req.body.request_type === 'ReturnTrip') {
       schema = {
         request_type: Joi.string().required().min(1).max(255),
         location_id: Joi.number().integer().required().min(1),
         departure_date: Joi.string().required().min(1).max(50),
         return_date: Joi.string().required().min(1).max(50),
-        destinations: Joi.string().required().min(1).max(255),
+        destinations: Joi.array().items(multiCityRequest).min(1),
         reason: Joi.string().required().min(1).max(255),
       };
     } else {
@@ -88,7 +94,7 @@ export default class Validation {
         request_type: Joi.string().required().min(1).max(255),
         location_id: Joi.number().integer().required().min(1),
         departure_date: Joi.string().required().min(1).max(50),
-        destinations: Joi.string().required().min(1).max(255),
+        destinations: Joi.array().items(multiCityRequest).min(1),
         reason: Joi.string().required().min(1).max(255),
       };
     }
