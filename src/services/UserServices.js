@@ -20,8 +20,12 @@ class UserService {
    * @returns {Object} newUser
    */
   static async addUser(newUser) {
-    const addedUser = await database.User.create(newUser);
-    return addedUser;
+    try {
+      const addedUser = await database.User.create(newUser);
+      return addedUser;
+    } catch (e) {
+      throw Error(e);
+    }
   }
 
   /**
