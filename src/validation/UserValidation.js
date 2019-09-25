@@ -103,6 +103,15 @@ export const accommodationData = [
     .trim(),
   sanitizeBody('notifyOnReply').toBoolean()
 ];
+export const commentdata = [
+  check('comment')
+    .not()
+    .isEmpty()
+    .withMessage('comment can not be empty')
+    .exists()
+    .withMessage('comment field required')
+    .trim(),
+];
 
 export const validator = (req, res, next) => {
   const errors = validationResult(req);

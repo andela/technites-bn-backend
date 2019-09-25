@@ -233,6 +233,47 @@ class UserRequest {
     }
     return sgMail.send(message);
   }
+
+  /**
+   *
+   * @param {Integer} requestId
+   * @param {Integer} userId
+   * @param {Object} res
+   * @returns {Object} boolean
+   */
+  static async confirmRequestOwner(requestId, userId) {
+    // checks if its either the owner, manager or Superadmin for posting a comment
+    const check = await database.Request.findAll({ where: { user_id: userId, id: requestId } });
+    if (check.length > 0) return true;
+    const user = await database.User.findOne({ where: { id: userId } });
+    if ((user)
+    && (user.dataValues.role_value === 2 || user.dataValues.role_value === 3
+       || user.dataValues.role_value === 7)
+    ) return true;
+    return false;
+  }
+
+  /**
+   *
+   * @param {Integer} id
+   * @returns {Object} boolean
+   */
+  static async findRequestById(id) {
+    const request = await database.Request.findOne({ where: { id } });
+    if (!request) return false;
+    return true;
+  }
+
+  /**
+   *
+   * @param {Integer} id
+   * @returns {Object} boolean
+   */
+  static async findCommentById(id) {
+    const comment = await database.Comment.findOne({ where: { id } });
+    if (!comment) return false;
+    return comment.dataValues;
+  }
 }
 
 export default UserRequest;

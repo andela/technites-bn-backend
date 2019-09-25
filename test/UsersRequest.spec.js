@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import chai, { expect } from 'chai';
+import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/index';
 import AuthHelper from '../src/utils/AuthHelper';
@@ -219,7 +219,7 @@ describe('REQUESTS ENDPOINTS', () => {
     it('it should not update another users request', (done) => {
       chai
         .request(app)
-        .patch('/api/v1/requests/5')
+        .patch('/api/v1/requests/3')
         .set('Authorization', `Bearer ${token2}`)
         .send(Request)
         .end((err, res) => {

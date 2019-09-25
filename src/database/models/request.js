@@ -45,6 +45,9 @@ export default (sequelize, DataTypes) => {
     Request.belongsTo(models.User, {
       foreignKey: 'user_id',
     });
+    Request.hasMany(models.Comment, {
+      foreignKey: 'request_id',
+    });
   };
   return Request;
 };

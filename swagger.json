@@ -444,6 +444,144 @@
         }
       }
     },
+    "/users/requests/{request_id}/comments": {
+      "post": {
+        "tags": [
+            "REQUEST COMMENTs"
+        ],
+        "summary": "User's request comments",
+        "parameters" : [ 
+      
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+          "name" : "request_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+          
+        }, 
+        {
+          "name": "Body",
+          "in": "body",
+          "required": true,
+          "description": ""
+        }],
+        "description": "User,manager or SuperAdmin can post a comment on their request",
+        "produces": [
+            "application/json"
+        ],
+        "responses": {
+          "200": {
+            "status": 200,
+            "message": "requests retrieved successfully",
+            "data": []
+          }
+        }
+      },
+      "get": {
+        "tags": [
+            "REQUEST COMMENTs"
+        ],
+        "summary": "all request comments",
+        "parameters" : [ 
+      
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+          "name" : "request_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+          
+        }],
+        "description": "User,manager or SuperAdmin can get all comments on their request",
+        "produces": [
+            "application/json"
+        ],
+        "responses": {
+          "200": {
+            "status": 200,
+            "message": "requests retrieved successfully",
+            "data": []
+          }
+        }
+      }
+    },
+    "/users/requests/{request_id}/comments/{comment_id}": {
+      "patch": {
+        "tags": [
+            "REQUEST COMMENTs"
+        ],
+        "summary": "User's request comments",
+        "parameters" : [ 
+      
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+          "name" : "request_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+          
+        },
+        {
+          "name" : "comment_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "integer"
+          }
+          
+        }, 
+        {
+          "name": "Body",
+          "in": "body",
+          "required": true,
+          "description": ""
+        }],
+        "description": "User,manager or SuperAdmin can post a comment on their request",
+        "produces": [
+            "application/json"
+        ],
+        "responses": {
+          "200": {
+            "status": 200,
+            "message": "requests retrieved successfully",
+            "data": []
+          }
+        }
+      }
+    },
     "/accommodations": {
       "post": {
         "description": "add an accomodation facility",
