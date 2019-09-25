@@ -1,12 +1,14 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-restricted-globals */
 import jwt from 'jsonwebtoken';
+import moment from 'moment';
 import RequestServices from '../services/RequestServices';
 import UserService from '../services/UserServices';
 import Util from '../utils/Utils';
 
 const {
-  fetchRequests, createRequest, sendRequestConfirmation, approveTrip, rejectTrip, updateRequest
+  fetchRequests, createRequest, sendRequestConfirmation, approveTrip,
+  rejectTrip, updateRequest, isRequestUnique, isCheckDatesValid, isDatesValid, isSamePlace
 } = RequestServices;
 
 const { findUserByEmail } = UserService;
@@ -52,6 +54,23 @@ class RequestController {
 
     const request = req.body;
     request.user_id = user.id;
+
+
+    if (typeof request.destinations === 'string') {
+      request.destinations = JSON.parse(request.destinations);
+    }
+
+    let message = await isDatesValid(request);
+    if (message) return res.status(400).json(message);
+
+    message = await isCheckDatesValid(request.destinations);
+    if (message) return res.status(400).json(message);
+
+    const samePlace = await isSamePlace(request);
+    if (samePlace) return res.status(400).json({ status: res.statusCode, error: 'Your location and destination should be different' });
+
+    const alreadyExistRequest = await isRequestUnique(request.reason, request.departure_date);
+    if (alreadyExistRequest) return res.status(409).json({ status: res.statusCode, error: 'Request already exists based on your reason and departure date' });
 
     const newRequest = await createRequest(request);
 

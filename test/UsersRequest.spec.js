@@ -43,17 +43,22 @@ describe('REQUESTS ENDPOINTS', () => {
   describe('POST api/v1/users/:id/requests', () => {
     const dummyRequest = {
       request_type: 'OneWay',
-      location_id: '1',
-      departure_date: '2019-10-23',
-      destinations: '2',
-      reason: 'my trip reason',
+      location_id: 1,
+      departure_date: '2020-09-25',
+      destinations: [{
+        destination_id: 2, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25'
+      },
+      {
+        destination_id: 2, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25'
+      }],
+      reason: 'Medical'
     };
 
     it('should return 404 if request_type is invalid', (done) => {
       dummyRequest.request_type = 'a';
       chai
         .request(app)
-        .post('/api/v1/users/1/requests')
+        .post('/api/v1/requests')
         .set('Authorization', `Bearer ${token}`)
         .send(dummyRequest)
         .end((err, res) => {
@@ -66,7 +71,7 @@ describe('REQUESTS ENDPOINTS', () => {
       dummyRequest.request_type = 'OneWay';
       chai
         .request(app)
-        .post('/api/v1/users/1/requests')
+        .post('/api/v1/requests')
         .set('Authorization', `Bearer ${token}`)
         .send(dummyRequest)
         .end((err, res) => {
@@ -77,13 +82,28 @@ describe('REQUESTS ENDPOINTS', () => {
         });
     });
 
+    it('it should return 409 if request already exists', (done) => {
+      dummyRequest.request_type = 'OneWay';
+      chai
+        .request(app)
+        .post('/api/v1/requests')
+        .set('Authorization', `Bearer ${token}`)
+        .send(dummyRequest)
+        .end((err, res) => {
+          res.should.have.status(409);
+          res.body.should.have.property('error');
+          done();
+        });
+    });
+
     it('it should create a return trip request', (done) => {
+      dummyRequest.reason = 'new reason';
       dummyRequest.request_type = 'ReturnTrip';
-      dummyRequest.return_date = '2029-02-10';
+      dummyRequest.return_date = '2020-09-25';
 
       chai
         .request(app)
-        .post('/api/v1/users/1/requests')
+        .post('/api/v1/requests')
         .set('Authorization', `Bearer ${token}`)
         .send(dummyRequest)
         .end((err, res) => {
@@ -98,7 +118,7 @@ describe('REQUESTS ENDPOINTS', () => {
       const newToken = jwtSign({ email: 'notexists@gmail.com' }, '4m');
       chai
         .request(app)
-        .post('/api/v1/users/1/requests')
+        .post('/api/v1/requests')
         .set('Authorization', `Bearer ${newToken}`)
         .send(dummyRequest)
         .end((err, res) => {
@@ -136,7 +156,7 @@ describe('REQUESTS ENDPOINTS', () => {
       dummyRequest.reason = 1;
       chai
         .request(app)
-        .post('/api/v1/users/1/requests/')
+        .post('/api/v1/requests/')
         .set('Authorization', `Bearer ${token}`)
         .send(dummyRequest)
         .end((err, res) => {
