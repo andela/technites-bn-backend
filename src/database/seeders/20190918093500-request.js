@@ -9,10 +9,29 @@ export function up(queryInterface, Sequelize) {
     return_date: moment().add(7, 'days').toDate(),
     destinations: [
       {
-        destination_id: 1,
+        destination_id: 2,
         accomodation_id: 1,
-        checkIn: moment().toDate(),
-        checkOut: moment().add(7, 'days').toDate()
+        check_in: moment().toDate(),
+        check_out: moment().add(7, 'days').toDate()
+      }
+    ],
+    reason: 'some reason',
+    status: 'Pending',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    user_id: 5,
+    request_type: 'OneWay',
+    location_id: 1,
+    departure_date: moment().toDate(),
+    return_date: moment().add(7, 'days').toDate(),
+    destinations: [
+      {
+        destination_id: 3,
+        accomodation_id: 1,
+        check_in: moment().toDate(),
+        check_out: moment().add(7, 'days').toDate()
       }
     ],
     reason: 'some reason',
@@ -23,11 +42,18 @@ export function up(queryInterface, Sequelize) {
   {
     user_id: 7,
     request_type: 'OneWay',
-    location_id: 2,
+    location_id: 3,
     departure_date: moment().toDate(),
     return_date: moment().add(7, 'days').toDate(),
-    destinations: 1,
-    reason: 'Vacation',
+    destinations: [
+      {
+        destination_id: 1,
+        accomodation_id: 1,
+        check_in: moment().toDate(),
+        check_out: moment().add(7, 'days').toDate()
+      }
+    ],
+    reason: 'some reason',
     status: 'Pending',
     createdAt: new Date(),
     updatedAt: new Date()
@@ -35,15 +61,41 @@ export function up(queryInterface, Sequelize) {
   {
     user_id: 5,
     request_type: 'OneWay',
-    location_id: 2,
+    location_id: 3,
     departure_date: moment().toDate(),
     return_date: moment().add(7, 'days').toDate(),
-    destinations: 1,
-    reason: 'Vacation',
+    destinations: [
+      {
+        destination_id: 1,
+        accomodation_id: 1,
+        check_in: moment().toDate(),
+        check_out: moment().add(7, 'days').toDate()
+      }
+    ],
+    reason: 'some reason',
     status: 'Rejected',
     createdAt: new Date(),
     updatedAt: new Date()
-  }
+  },
+  // {
+  //   user_id: 1,
+  //   request_type: 'OneWay',
+  //   location_id: 1,
+  //   departure_date: moment().toDate(),
+  //   return_date: moment().add(7, 'days').toDate(),
+  //   destinations: [
+  //     {
+  //       destination_id: 2,
+  //       accomodation_id: 1,
+  //       check_in: moment().toDate(),
+  //       check_out: moment().add(7, 'days').toDate()
+  //     }
+  //   ],
+  //   reason: 'some reason',
+  //   status: 'Approved',
+  //   createdAt: new Date(),
+  //   updatedAt: new Date()
+  // }
   ], {}, { destinations: { type: new Sequelize.JSONB() } });
 }
 

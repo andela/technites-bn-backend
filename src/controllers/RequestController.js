@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-unused-vars */
 /* eslint-disable camelcase */
 /* eslint-disable no-restricted-globals */
@@ -29,7 +30,11 @@ const {
   isSamePlace,
   searchRequests,
   requestByIds,
-  managerUsers
+  managerUsers,
+  sendRequestConfirmation, approveTrip,
+  rejectTrip,
+  fetchApprovedRequests,
+  isDestinationsDifferent, findMostTravelledDestination
 } = RequestServices;
 
 const { findUserByEmail, findUserById } = UserService;
@@ -89,6 +94,9 @@ class RequestController {
     const samePlace = await isSamePlace(request);
     if (samePlace) return res.status(400).json({ status: res.statusCode, error: 'Your location and destination should be different' });
 
+    const destinationDifferent = await isDestinationsDifferent(request);
+    if (destinationDifferent === false) return res.status(400).json({ status: res.statusCode, error: 'Destination id\'s or accomodation id\'s should be different' });
+
     const alreadyExistRequest = await isRequestUnique(request.reason, request.departure_date);
     if (alreadyExistRequest) return res.status(409).json({ status: res.statusCode, error: 'Request already exists based on your reason and departure date' });
 
@@ -125,6 +133,11 @@ class RequestController {
   static async updateRequest(req, res) {
     const request = req.body;
     const { user } = req;
+
+    if (typeof request.destinations === 'string') {
+      request.destinations = JSON.parse(request.destinations);
+    }
+
     const updatedRequest = await updateRequest(req.userRequest.id, request);
     // send Owner Info E-mail
     const responseOne = RequestController.sendUserEmail('You updated information on this trip',
@@ -185,6 +198,56 @@ class RequestController {
     const result = await sendEmail(EmailTitle, theme, user.line_manager);
     if (result) return true;
     return false;
+  }
+
+  /**
+ * @param {Object} req
+ * @param {Object} res
+ * @returns {Object} updated request
+ */
+  static async mostTravelledDestinations(req, res) {
+    if (req.query.mostTraveledDestination === 'true') {
+      const allDestinations = [];
+      const allDestinationsIds = [];
+
+      const allRequests = await fetchApprovedRequests();
+      if (allRequests.length < 1) return res.status(200).json({ status: res.statusCode, message: 'The most traveled destination is not found because we currently don\'t have requests' });
+      for (let i = 0; i < allRequests.length; i++) {
+        allDestinations.push(allRequests[i].dataValues.destinations);
+      }
+
+      for (let i = 0; i < allDestinations.length; i++) {
+        for (let j = 0; j < allDestinations[i].length; j++) {
+          allDestinationsIds.push(allDestinations[i][j].destination_id);
+        }
+      }
+
+      const mostTravelledCity = await findMostTravelledDestination(allDestinationsIds);
+      if (!mostTravelledCity) return res.status(200).json({ status: res.statusCode, message: 'All the cities have the same amount of trips' });
+
+      return res.status(200).json({
+        status: res.statusCode,
+        message: `${mostTravelledCity.dataValues.name} is the most travelled destination`,
+        data: mostTravelledCity.dataValues
+      });
+    }
+  }
+
+  /**
+    * @function getRequests
+    * @param {Object} req request
+    * @param {Oject} res request
+    * @returns {Object} object
+    */
+  static async approveRequest(req, res) {
+    RequestController.checkIds(req, res);
+
+    RequestController.isTravelAdmin(req, res);
+
+    const result = await approveTrip(req.params.req_id);
+    if (result[0] === 0) return res.status(200).json({ status: '400', message: 'The request with the given id does not exists' });
+
+    return res.status(200).json({ status: '200', message: 'Approved request successfully' });
   }
 
   /**

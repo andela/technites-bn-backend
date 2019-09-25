@@ -10,6 +10,11 @@ export function up(queryInterface, Sequelize) {
     name: 'New York',
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+  {
+    name: 'Lagos',
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
   ], {});
 }
