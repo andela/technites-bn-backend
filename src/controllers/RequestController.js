@@ -1,13 +1,14 @@
 /* eslint-disable no-unused-vars */
+/* eslint-disable camelcase */
 /* eslint-disable no-restricted-globals */
 import jwt from 'jsonwebtoken';
-import moment from 'moment';
+import { Op } from 'sequelize';
 import RequestServices from '../services/RequestServices';
 import UserService from '../services/UserServices';
 import Util from '../utils/Utils';
 
 const {
-  fetchRequests, createRequest, sendRequestConfirmation, approveTrip,
+  fetchRequests, createRequest, searchRequests, sendRequestConfirmation, approveTrip,
   rejectTrip, updateRequest, isRequestUnique, isCheckDatesValid, isDatesValid, isSamePlace
 } = RequestServices;
 
@@ -28,7 +29,7 @@ class RequestController {
     */
   static async getRequests(req, res) {
     if (req.user.id === parseInt(req.params.id, 10) || req.user.role_value === 7) {
-      const requests = await fetchRequests(req, res);
+      const requests = await fetchRequests(req.params.id);
       if (requests && requests.length) {
         return res.status(200).json({
           status: res.statusCode,
@@ -151,6 +152,185 @@ class RequestController {
   static async isTravelAdmin(req, res) {
     if (req.user.role_value < 4) {
       return res.status(403).json({ status: '403', message: 'Forbidden. You are not a travel admin ' });
+    }
+  }
+
+  /**
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} - returns search results from the DB
+   */
+  static async searchRequests(req, res) {
+    const {
+      key_word, beforeDate, afterDate, column
+    } = req.query;
+
+    let where;
+    let searchResults;
+
+    if (key_word) {
+      where = {
+        [Op.or]: [
+          { status: { [Op.iLike]: `%${key_word}%` } },
+          { reason: { [Op.iLike]: `%${key_word}%` } },
+          { request_type: { [Op.iLike]: `%${key_word}%` } },
+        ]
+      };
+      searchResults = await searchRequests(where);
+      return res.status(200).json({
+        status: '200',
+        message: 'Search complete',
+        data: searchResults
+      });
+    }
+
+    if (beforeDate && afterDate) {
+      if (new Date(beforeDate) < new Date(afterDate)) {
+        return res.status(400).json({
+          status: '400',
+          error: 'Invalid search'
+        });
+      }
+      if (column === 'departure_date') {
+        where = {
+          [Op.and]: [
+            {
+              departure_date: {
+                [Op.lte]: new Date(beforeDate),
+                [Op.gte]: new Date(afterDate)
+              }
+            },
+          ]
+        };
+        searchResults = await searchRequests(where);
+        return res.status(200).json({
+          status: '200',
+          message: 'Search complete',
+          data: searchResults
+        });
+      }
+      if (column === 'createdAt') {
+        where = {
+          [Op.and]: [
+            {
+              createdAt: {
+                [Op.lte]: new Date(beforeDate),
+                [Op.gte]: new Date(afterDate)
+              }
+            },
+          ]
+        };
+        searchResults = await searchRequests(where);
+        return res.status(200).json({
+          status: '200',
+          message: 'Search complete',
+          data: searchResults
+        });
+      }
+      where = {
+        [Op.and]: [
+          {
+            createdAt: {
+              [Op.lte]: new Date(beforeDate),
+              [Op.gte]: new Date(afterDate)
+            }
+          },
+          {
+            departure_date: {
+              [Op.lte]: new Date(beforeDate),
+              [Op.gte]: new Date(afterDate)
+            }
+          },
+        ]
+      };
+      searchResults = await searchRequests(where);
+      return res.status(200).json({
+        status: '200',
+        message: 'Search complete',
+        data: searchResults
+      });
+    }
+
+    if (beforeDate) {
+      if (column === 'departure_date') {
+        where = {
+          [Op.or]: [
+            { departure_date: { [Op.lt]: new Date(beforeDate) } },
+          ]
+        };
+        searchResults = await searchRequests(where);
+        return res.status(200).json({
+          status: '200',
+          message: 'Search complete',
+          data: searchResults
+        });
+      }
+      if (column === 'createdAt') {
+        where = {
+          [Op.and]: [
+            { createdAt: { [Op.lt]: new Date(beforeDate) } },
+          ]
+        };
+        searchResults = await searchRequests(where);
+        return res.status(200).json({
+          status: '200',
+          message: 'Search complete',
+          data: searchResults
+        });
+      }
+      where = {
+        [Op.and]: [
+          { departure_date: { [Op.lt]: new Date(beforeDate) } },
+          { createdAt: { [Op.lt]: new Date(beforeDate) } }
+        ]
+      };
+      searchResults = await searchRequests(where);
+      return res.status(200).json({
+        status: '200',
+        message: 'Search complete',
+        data: searchResults
+      });
+    }
+    if (afterDate) {
+      if (column === 'departure_date') {
+        where = {
+          [Op.or]: [
+            { departure_date: { [Op.gte]: new Date(afterDate) } },
+          ]
+        };
+        searchResults = await searchRequests(where);
+        return res.status(200).json({
+          status: '200',
+          message: 'Search complete',
+          data: searchResults
+        });
+      }
+      if (column === 'createdAt') {
+        where = {
+          [Op.or]: [
+            { createdAt: { [Op.gte]: new Date(afterDate) } },
+          ]
+        };
+        searchResults = await searchRequests(where);
+        return res.status(200).json({
+          status: '200',
+          message: 'Search complete',
+          data: searchResults
+        });
+      }
+      where = {
+        [Op.or]: [
+          { departure_date: { [Op.gte]: new Date(afterDate) } },
+          { createdAt: { [Op.gte]: new Date(afterDate) } }
+        ]
+      };
+      searchResults = await searchRequests(where);
+      return res.status(200).json({
+        status: '200',
+        message: 'Search complete',
+        data: searchResults
+      });
     }
   }
 }

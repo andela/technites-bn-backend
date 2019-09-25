@@ -1,5 +1,6 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-unused-vars */
-import chai from 'chai';
+import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/index';
 import AuthHelper from '../src/utils/AuthHelper';
@@ -12,7 +13,7 @@ const token = jwtSign({ email: 'technitesdev1@gmail.com' }, '4m');
 const token2 = jwtSign({ email: 'technitesdev3@gmail.com' }, '4m');
 const adminToken = jwtSign({ email: 'technitesdev@gmail.com' }, '4m');
 
-describe.only('REQUESTS ENDPOINTS', () => {
+describe('REQUESTS ENDPOINTS', () => {
   describe('GET api/v1/users/:id/requests', () => {
     it('it should return user requests', (done) => {
       chai
@@ -235,9 +236,16 @@ describe.only('REQUESTS ENDPOINTS', () => {
         .send(Request)
         .end((err, res) => {
           res.should.have.status(403);
+          done();
+        });
+    });
+  });
 
   describe('GET Search the requests database', () => {
     const keyWord = 'reason';
+    const beforeDate = 2030, afterDate = 2019, unrealisticBefore = 2090;
+    const column1 = 'departure_date', column2 = 'createdAt';
+
     it('should search by key_word', (done) => {
       chai
         .request(app)
@@ -246,6 +254,83 @@ describe.only('REQUESTS ENDPOINTS', () => {
         .end((err, res) => {
           expect(res.statusCode).to.equal(200);
           expect(res.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('should search by a before date', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/requests/search?beforeDate=${beforeDate}`)
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.body.status).to.equal('200');
+          done();
+        });
+    });
+
+    it('should search by a before date in createdAt column', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/requests/search?beforeDate=${beforeDate}&column=${column2}`)
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.body.status).to.equal('200');
+          done();
+        });
+    });
+
+    it('should search by a before date in daparture_time column', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/requests/search?beforeDate=${beforeDate}&column=${column1}`)
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.body.status).to.equal('200');
+          done();
+        });
+    });
+
+    it('should search by an after date', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/requests/search?afterDate=${afterDate}`)
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.body.status).to.equal('200');
+          done();
+        });
+    });
+
+    it('should search in a range of dates', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/requests/search?beforeDate=${beforeDate}&afterDate=${afterDate}`)
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.body.status).to.equal('200');
+          done();
+        });
+    });
+
+    it('should search in a range of dates in the departure column', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/requests/search?beforeDate=${beforeDate}&afterDate=${afterDate}&column=${column1}`)
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.body.status).to.equal('200');
+          done();
+        });
+    });
+
+    it('should search in a range of dates in the createdAt column', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/requests/search?beforeDate=${beforeDate}&afterDate=${afterDate}&column=${column2}`)
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.body.status).to.equal('200');
           done();
         });
     });
