@@ -12,7 +12,7 @@ const token = jwtSign({ email: 'technitesdev1@gmail.com' }, '4m');
 const token2 = jwtSign({ email: 'technitesdev3@gmail.com' }, '4m');
 const adminToken = jwtSign({ email: 'technitesdev@gmail.com' }, '4m');
 
-describe('REQUESTS ENDPOINTS', () => {
+describe.only('REQUESTS ENDPOINTS', () => {
   describe('GET api/v1/users/:id/requests', () => {
     it('it should return user requests', (done) => {
       chai
@@ -235,6 +235,28 @@ describe('REQUESTS ENDPOINTS', () => {
         .send(Request)
         .end((err, res) => {
           res.should.have.status(403);
+
+  describe('GET Search the requests database', () => {
+    const keyWord = 'reason';
+    it('should search by key_word', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/requests/search?key_word=${keyWord}`)
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.statusCode).to.equal(200);
+          expect(res.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('should give errors when search values are invalid', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/requests/search?')
+        .set('Authorization', `Bearer ${token}`)
+        .end((err, res) => {
+          expect(res.body.status).to.equal(400);
           done();
         });
     });
