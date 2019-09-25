@@ -17,7 +17,7 @@ const {
 } = UserController;
 
 const {
-  createRequest, getRequests, approveRequest, rejectRequest,
+  createRequest, getRequests, approveRequest, rejectRequest
 } = RequestController;
 
 const { updateProfileValidator } = Validation;
@@ -26,6 +26,7 @@ const { updateProfileValidator } = Validation;
 router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);
 router.get('/:id', viewSingleProfile);
 router.get('/', viewAllProfiles);
+
 router.get('/company/:company', viewProfilesByCompany);
 
 // requests
@@ -34,6 +35,4 @@ router.post('/:id/requests', [verifyToken, validate], createRequest);
 router.post('/:id/requests/:req_id/approve', [verifyToken], approveRequest);
 router.post('/:id/requests/:req_id/reject', [verifyToken], rejectRequest);
 
-// comments
-// router.post();
 export default router;

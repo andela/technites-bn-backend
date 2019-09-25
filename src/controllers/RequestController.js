@@ -1,14 +1,19 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-restricted-globals */
 import jwt from 'jsonwebtoken';
 import RequestServices from '../services/RequestServices';
 import UserService from '../services/UserServices';
+import Util from '../utils/Utils';
 
 const {
-  fetchRequests, createRequest, sendRequestConfirmation, approveTrip, rejectTrip,
+  fetchRequests, createRequest, sendRequestConfirmation, approveTrip, rejectTrip, updateRequest
 } = RequestServices;
 
 const { findUserByEmail } = UserService;
 
+const util = new Util();
+
+let msgType = null;
 /**
  * @class RequestController
  */
@@ -55,6 +60,21 @@ class RequestController {
     sendRequestConfirmation(token, user, newRequest);
 
     res.status(201).json({ status: res.statusCode, message: 'Sent request. Please wait travel admin to approve it', data: newRequest });
+  }
+
+  /**
+ * @param {Object} req
+ * @param {Object} res
+ * @returns {Object} updated request
+ */
+  static async updateRequest(req, res) {
+    const request = req.body;
+    const { user } = req;
+    const updatedRequest = await updateRequest(req.userRequest.id, request);
+    const token = jwt.sign({ id: req.userRequest.id }, process.env.JWT_SECRET, { expiresIn: '365d' });
+    sendRequestConfirmation(token, user, req.userRequest, msgType = 'Request Update');
+    util.setSuccess(200, 'Request successfully Updated!', updatedRequest);
+    return util.send(res);
   }
 
   /**

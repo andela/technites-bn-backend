@@ -1,7 +1,13 @@
+/* eslint-disable no-restricted-globals */
 /* eslint-disable lines-between-class-members */
 /* eslint-disable require-jsdoc */
 import Joi from '@hapi/joi';
 import PasswordComplexity from 'joi-password-complexity';
+import RequestServices from '../services/RequestServices';
+import Util from '../utils/Utils';
+
+const { searchRequest } = RequestServices;
+const util = new Util();
 
 export const genericValidator = (req, res, schema, next) => {
   const { error } = Joi.validate(req.body, schema, {
@@ -65,6 +71,17 @@ export default class Validation {
     });
     genericValidator(req, res, schema, next);
   }
+  static updateRequestValidator(req, res, next) {
+    const schema = Joi.object().keys({
+      request_type: Joi.string().regex(/^(OneWay|ReturnTrip)$/),
+      location_id: Joi.number().integer().min(1),
+      departure_date: Joi.string().min(1).max(50),
+      return_date: Joi.string().min(1).max(50),
+      destinations: Joi.string().min(1).max(255),
+      reason: Joi.string().min(1).max(255),
+    });
+    genericValidator(req, res, schema, next);
+  }
   /**
    *
    * @param {Object} req
@@ -95,5 +112,35 @@ export default class Validation {
 
 
     return Joi.validate(req.body, schema);
+  }
+  static async validateUpdateRequest(req, res, next) {
+    // Check whether param is a valid Id
+    if (isNaN(req.params.id)) {
+      util.setError(403, 'Request id must be a valid Integer');
+      return util.send(res);
+    }
+    // check whether user has added his line manager
+    if (req.user.line_manager === null) {
+      util.setError(403, 'Kindly edit your profile and add your line manager email');
+      return util.send(res);
+    }
+    const searchReq = await searchRequest(req.params.id);
+    // search if Request exists
+    if (!searchReq) {
+      util.setError(404, 'Request not found');
+      return util.send(res);
+    }
+    // check to whom Request belongs
+    if (searchReq.user_id !== req.user.id) {
+      util.setError(403, 'You are not allowed to edit another user request');
+      return util.send(res);
+    }
+    // check if request is still pending
+    if (searchReq.status !== 'Pending') {
+      util.setError(403, `Request is alredy ${searchReq.status}, you are only allowed to edit Pending requests`);
+      return util.send(res);
+    }
+    req.userRequest = searchReq;
+    next();
   }
 }
