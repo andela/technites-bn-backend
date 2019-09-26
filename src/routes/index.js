@@ -11,7 +11,7 @@ import RequestRoute from './RequestRoutes';
 const router = new Router();
 
 router.use('/auth', AuthRoutes);
-router.use('/users', UserRoutes);
+router.use('/', UserRoutes);
 router.use('/accommodations', AccommodationRoutes);
 
 router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc));

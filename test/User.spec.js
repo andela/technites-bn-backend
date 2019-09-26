@@ -73,7 +73,7 @@ describe('users endpoints', () => {
   describe('PATCH api/v1/user/editprofile', () => {
     it('Should not allow user to edit profile when user is not verified', (done) => {
       chai.request(app)
-        .patch('/api/v1/users/editprofile')
+        .patch('/api/v1/editprofile')
         .set('Authorization', `${token}`)
         .send({ gender: 'Male' })
         .end((err, res) => {
@@ -248,10 +248,10 @@ describe('users endpoints', () => {
     });
   });
   // This test needs to run before logging out user, token is from dummy user
-  describe('PATCH api/v1/user/editprofile', () => {
+  describe('PATCH api/v1/editprofile', () => {
     it('Should not allow user to edit profile to email that already exists', (done) => {
       chai.request(app)
-        .patch('/api/v1/users/editprofile')
+        .patch('/api/v1/editprofile')
         .set('Authorization', `${token}`)
         .send({ email: 'technitesdev@gmail.com' })
         .end((err, res) => {
@@ -261,14 +261,14 @@ describe('users endpoints', () => {
     });
     it('Should not accept uploads that are not images', async () => {
       const userUpdate = await chai.request(app)
-        .patch('/api/v1/users/editprofile')
+        .patch('/api/v1/editprofile')
         .set('Authorization', `${token}`)
         .attach('image', 'src/utils/assets/Test.rtf', 'Test.rtf');
       expect(userUpdate.body.status).to.equal(415);
     });
     it('Should update profile on demand', (done) => {
       chai.request(app)
-        .patch('/api/v1/users/editprofile')
+        .patch('/api/v1/editprofile')
         .set('Authorization', `${token}`)
         .attach('image', 'src/utils/assets/Profile.png', 'Profile.png')
         .end((err, res) => {
@@ -296,7 +296,7 @@ describe('users endpoints', () => {
   describe('GET api/v1/user/1', () => {
     it('Should not return specific profile if parameter is not an integer', (done) => {
       chai.request(app)
-        .get('/api/v1/users/a')
+        .get('/api/v1/a')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -306,7 +306,7 @@ describe('users endpoints', () => {
     });
     it('Should return an appropriate message when user is not found', (done) => {
       chai.request(app)
-        .get('/api/v1/users/100')
+        .get('/api/v1/100')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -316,7 +316,7 @@ describe('users endpoints', () => {
     });
     it('Should return user when found', (done) => {
       chai.request(app)
-        .get(`/api/v1/users/${testId}`)
+        .get(`/api/v1/${testId}`)
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -326,7 +326,7 @@ describe('users endpoints', () => {
     });
     it('Should return all users', (done) => {
       chai.request(app)
-        .get('/api/v1/users')
+        .get('/api/v1/users/all')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
