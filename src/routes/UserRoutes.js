@@ -28,7 +28,7 @@ const { updateProfileValidator } = Validation;
 
 // profiles
 router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);
-router.get('/:id', viewSingleProfile);
+router.get('/user/:id', viewSingleProfile);
 router.get('/users/all', viewAllProfiles);
 router.get('/users/company/:company', viewProfilesByCompany);
 

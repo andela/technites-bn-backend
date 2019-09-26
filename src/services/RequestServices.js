@@ -270,9 +270,9 @@ class UserRequest {
    * @returns {Object} boolean
    */
   static async findCommentById(id) {
-    const comment = await database.Comment.findOne({ where: { id } });
+    const comment = await database.Comment.findOne({ where: { id, active: 'true' } });
     if (!comment) return false;
-    return comment.dataValues;
+    if (comment) return comment.dataValues;
   }
 }
 

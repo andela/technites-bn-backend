@@ -52,8 +52,8 @@ class CommentController {
     if (!result) return res.status(401).send({ status: 401, error: 'Not allowed' });
     // get all comments with request_id
 
-    const comments = await database.Comment.findAll({ where: { request_id } });
-    return res.status(200).send({ status: 200, message: `request id:${request_id} comments`, data: comments });
+    const comments = await database.Comment.findAll({ where: { request_id, active: 'true' } });
+    return res.status(200).send({ status: 200, message: `comments from the request with id :${request_id}`, data: comments });
   }
 
   /**
@@ -64,11 +64,13 @@ class CommentController {
       */
   static async editRequestComment(req, res) {
     const id = Number(req.user.id);
+    const request_id = Number(req.params.request_id);
     const comment_id = Number(req.params.comment_id);
     const { comment } = req.body;
 
-    if (!comment_id) return res.status(400).send({ status: 400, error: 'Invalid request Id parameters' });
-
+    if (!comment_id || !request_id) return res.status(400).send({ status: 400, error: 'Invalid request Id parameters' });
+    const request = await findRequestById(request_id);
+    if (!request) return res.status(404).send({ status: 404, error: 'Request not found' });
     // check if comments exist by get comment, compare user id
     const foundComment = await findCommentById(comment_id);
     if (!foundComment) return res.status(404).send({ status: 404, error: 'Comment not found' });
@@ -88,9 +90,25 @@ class CommentController {
       * @returns {Object} object
       */
   static async deleteComment(req, res) {
-    const comment_id = Number(req.params.comment_id);
+    const id = Number(req.user.id);
     const request_id = Number(req.params.request_id);
-    res.data = comment_id + request_id;
+    const comment_id = Number(req.params.comment_id);
+
+    if (!comment_id || !request_id) return res.status(400).send({ status: 400, error: 'Invalid request Id parameters' });
+    const request = await findRequestById(request_id);
+    if (!request) return res.status(404).send({ status: 404, error: 'Request not found' });
+    // check if comments exist by get comment, compare user id
+    const foundComment = await findCommentById(comment_id);
+    if (!foundComment) return res.status(404).send({ status: 404, error: 'Comment not found' });
+    if (foundComment.user_id !== id) return res.status(401).send({ status: 401, error: 'Not allowed' });
+    try {
+      await database.Comment.update(
+        { active: false }, { where: { id: comment_id } }
+      );
+      res.status(200).send({ status: 200, message: 'comment deleted' });
+    } catch (err) {
+      throw new Error('Error in database connection');
+    }
     // check if request and comment exist
     // change status from active to deleted
     // return a confirmation that the message was deleted
