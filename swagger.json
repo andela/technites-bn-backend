@@ -792,6 +792,30 @@
           }
         }
       }
+    },
+    "/requests/manager":{
+      "get": {
+        "description": "user requests",
+        "summary": "Get by request",
+        "tags": [
+          "REQUESTS"
+        ],
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          },
+          "403": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
     }
   }
 }

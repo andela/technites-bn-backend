@@ -178,6 +178,31 @@ class RequestService {
   }
 
   /**
+   * @func managerUsers
+   * @param {*} managerEmail
+   * @returns {*} users
+   */
+  static async managerUsers(managerEmail) {
+    const result = database.User.findAll({
+      attributes: ['id'],
+      where: { line_manager: managerEmail }
+    });
+    return result.map(({ id }) => id);
+  }
+
+  /**
+   * @func requestByIds
+   * @param {Integer} arrayIds
+   * @param {*} sort
+   * @returns {*} requests
+   */
+  static async requestByIds(arrayIds, sort) {
+    return database.Request.findAll({
+      where: { user_id: { [Op.in]: arrayIds }, status: sort || { [Op.in]: ['Pending', 'Approved', 'Rejected'] } }
+    });
+  }
+
+  /**
    *
    * @param {Integer} requestId
    * @param {Integer} userId

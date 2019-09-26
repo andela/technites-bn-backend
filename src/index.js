@@ -60,8 +60,8 @@ app.use((req, res, next) => {
 // will print stacktrace
 if (!isProduction) {
   app.use((err, req, res, next) => {
-    console.log(err.stack);
-
+    // remove error logs to stdout
+    // we will implement better Error logging
     res.status(err.status || 500);
 
     res.json({

@@ -4,6 +4,7 @@
 import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
 import moment from 'moment';
+import v from 'voca';
 import crypto from 'crypto';
 import { promisify } from 'util';
 import dotenv from 'dotenv';
@@ -26,7 +27,9 @@ const {
   isCheckDatesValid,
   isDatesValid,
   isSamePlace,
-  searchRequests
+  searchRequests,
+  requestByIds,
+  managerUsers
 } = RequestServices;
 
 const { findUserByEmail, findUserById } = UserService;
@@ -269,6 +272,37 @@ class RequestController {
       status: res.statusCode,
       message: action === 'approve'
         ? 'Trip request Approved' : 'Trip request rejected'
+    });
+  }
+
+  /**
+   * @func managerRequests
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} requests
+   */
+  static async managerRequests(req, res) {
+    if (req.user.role_value < 7) {
+      return res.status(403).json({
+        status: res.statusCode,
+        message: 'You must be a manager to access this URL'
+      });
+    }
+    // get array of user ids that i manage
+    const userIds = await managerUsers(req.user.email);
+    // find requests for those above users
+    const { sort } = req.query;
+    const requests = await requestByIds(userIds, v.capitalize(sort, true));
+    if (requests.length > 0) {
+      return res.status(200).json({
+        status: res.statusCode,
+        message: 'requests from user\'s you manage',
+        data: requests
+      });
+    }
+    return res.status(200).json({
+      status: res.statusCode,
+      message: 'No requests found!'
     });
   }
 

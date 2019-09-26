@@ -4,6 +4,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/index';
 import AuthHelper from '../src/utils/AuthHelper';
+import redisClient from '../src/utils/RedisConnection';
 
 chai.use(chaiHttp);
 chai.should();
