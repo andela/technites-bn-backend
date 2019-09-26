@@ -177,15 +177,9 @@ class UserService {
  */
   static async findUserById(id) {
     const searchUser = await database.User.findOne({
-      attributes:
-      ['id', 'firstname',
-        'lastname', 'email',
-        'username', 'is_verified',
-        'role_value', 'phone', 'gender',
-        'dob', 'address', 'country',
-        'language', 'currency', 'image_url',
-        'company', 'department', 'line_manager',
-        'createdAt', 'updatedAt'],
+      attributes: {
+        exclude: ['password']
+      },
       where: {
         id,
         [Op.not]: [{ role_value: 7 }]

@@ -44,6 +44,7 @@ export default (sequelize, DataTypes) => {
     // associations can be defined here
     Request.belongsTo(models.User, {
       foreignKey: 'user_id',
+      as: 'user'
     });
     Request.hasMany(models.Comment, {
       foreignKey: 'request_id',

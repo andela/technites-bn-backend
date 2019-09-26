@@ -1,22 +1,15 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-plusplus */
 /* eslint-disable camelcase */
-/* eslint-disable no-irregular-whitespace */
 import dotenv from 'dotenv';
-import sgMail from '@sendgrid/mail';
 import moment from 'moment';
+import { Op } from 'sequelize';
 import database from '../database/models';
-import getRequestConfirmation from '../utils/ConfirmationRequest';
-import getRequestUpdateConfirmation from '../utils/UpdateRequest';
-import getUserConfirmationEmail from '../utils/UserRequest';
 
 dotenv.config();
-
 /**
  * @class UserService
  * @description user service methods
  */
-class UserRequest {
+class RequestService {
   /**
    *
    * @param {*} user_id
@@ -68,6 +61,7 @@ class UserRequest {
  * @returns {Object} Request
  */
   static async isCheckDatesValid(destinations) {
+    // eslint-disable-next-line no-plusplus
     for (let i = 0; i < destinations.length; i++) {
       const { check_in: checkIn, check_out: checkOut } = destinations[i];
 
@@ -123,31 +117,28 @@ class UserRequest {
  * @returns {Object} updated request
  */
   static async updateRequest(id, request) {
-    await database.Request.update(request, { where: { id } });
-    return request;
+    const [, result] = await database.Request
+      .update(request, { where: { id }, returning: true, plain: true });
+    return result;
   }
 
   /**
    *
    * @param {Integer} requestId
+   * @param {String} action
    * @returns {Object} user
    */
-  static async approveTrip(requestId) {
+  static async actionOnTrip(requestId, action = 'Rejected') {
+    const actionDone = action === 'approve' ? 'Approved' : 'Rejected';
     return database.Request.update(
-      { status: 'Approved' },
-      { where: { id: requestId } }
-    );
-  }
-
-  /**
-   *
-   * @param {Integer} requestId
-   * @returns {Object} user
-   */
-  static async rejectTrip(requestId) {
-    return database.Request.update(
-      { status: 'Rejected' },
-      { where: { id: requestId } }
+      { status: actionDone },
+      {
+        where: { id: requestId },
+        returning: true,
+        include: [{
+          model: database.User
+        }]
+      }
     );
   }
 
@@ -169,80 +160,21 @@ class UserRequest {
     const origin = await database.location.findOne({
       where: { id: locationId }
     });
-    return origin.dataValues.name;
-  }
-
-  /**
- *
- * @param {*} destinations
- * @returns {*} locations
- */
-  static async findDestination(destinations) {
-    const foundDestinations = [];
-    for (let i = 0; i < destinations.length; i++) {
-      const { dataValues } = await database.location.findOne({
-        where: { id: destinations[i].destination_id }
-      });
-
-      foundDestinations.push(dataValues.name);
-    }
-
-    return foundDestinations;
-  }
-
-  /**
-   * @param  {String} token
-   * @param  {Object} user
-   * @param  {Object} request
-   * @param {Object} msgType
-   * @returns {Object} result;
-   */
-  static async sendRequestConfirmation(token, user, request, msgType) {
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-    const origin = await UserRequest.findOrigin(request.location_id);
-    const stopCities = await UserRequest.findDestination(request.destinations);
-    const destination = stopCities[stopCities.length - 1];
-
-    let message = {
-      to: user.line_manager,
-      from: process.env.EMAIL_MESSAGE_FROM,
-      subject: 'Request Confirmation',
-      html: getRequestConfirmation(token, user, request, origin, destination, stopCities),
-    };
-    if (msgType === 'Request Update') {
-      message.subject = 'Request Updated';
-      message.html = getRequestUpdateConfirmation(token, user, request, origin, destination);
-    }
-
-    if (process.env.NODE_ENV === 'test') {
-      message = { ...message, mail_settings: { sandbox_mode: { enable: true } } };
-    }
-    await UserRequest.sendUserEmail(user, request, origin, destination, stopCities);
-    return sgMail.send(message);
+    return origin.name;
   }
 
   /**
    *
-   * @param {*} user
-   * @param {*} request
-   * @param {*} origin
-   * @param {*} destination
-   * @param {*} stopCities
-   * @returns {*}  email sent to requester
+   * @param {*} destinations
+   * @returns {*} locations
    */
-  static async sendUserEmail(user, request, origin, destination, stopCities) {
-    let message = {
-      to: user.email,
-      from: process.env.EMAIL_MESSAGE_FROM,
-      subject: 'Request Confirmation',
-      html: getUserConfirmationEmail(user, request, origin, destination, stopCities),
-    };
-
-    if (process.env.NODE_ENV === 'test') {
-      message = { ...message, mail_settings: { sandbox_mode: { enable: true } } };
-    }
-    return sgMail.send(message);
+  static async findDestination(destinations) {
+    // convert JSONArray of destinations -> Array of id eg: [1,2,3]
+    const arrIds = destinations.map(({ destination_id: id }) => id);
+    return database.location.findAll({
+      attributes: ['id', 'name'],
+      where: { id: { [Op.in]: arrIds } }
+    });
   }
 
   /**
@@ -287,4 +219,4 @@ class UserRequest {
   }
 }
 
-export default UserRequest;
+export default RequestService;

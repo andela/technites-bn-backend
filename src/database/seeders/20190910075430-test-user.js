@@ -37,6 +37,7 @@ export function up(queryInterface, Sequelize) {
     email: 'technitesdev@gmail.com',
     password, // currently in .env
     is_verified: true,
+    line_manager: 'technitesdev@gmail.com',
     role_value: 7,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -48,6 +49,7 @@ export function up(queryInterface, Sequelize) {
     email: 'travel@admin.com',
     password,
     is_verified: true,
+    line_manager: 'technitesdev@gmail.com',
     role_value: 4,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -81,8 +83,9 @@ export function up(queryInterface, Sequelize) {
     username: 'requesting',
     email: 'technitesdev3@gmail.com',
     password,
-    is_verified: true,
+    company: 'NewCompany',
     line_manager: 'manager@admin.com',
+    is_verified: true,
     role_value: 1,
     createdAt: new Date(),
     updatedAt: new Date()
