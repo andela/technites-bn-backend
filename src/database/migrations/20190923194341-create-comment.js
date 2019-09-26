@@ -21,6 +21,11 @@ export function up(queryInterface, Sequelize) {
       allowNull: false,
       type: Sequelize.TEXT
     },
+    active: {
+      allowNull: false,
+      type: Sequelize.TEXT,
+      defaultValue: true
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

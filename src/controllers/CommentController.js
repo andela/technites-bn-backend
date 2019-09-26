@@ -62,7 +62,7 @@ class CommentController {
       * @param {Oject} res request
       * @returns {Object} object
       */
-  static async editRequestComments(req, res) {
+  static async editRequestComment(req, res) {
     const id = Number(req.user.id);
     const comment_id = Number(req.params.comment_id);
     const { comment } = req.body;
@@ -79,6 +79,21 @@ class CommentController {
       { comment }, { where: { id: comment_id } }
     );
     return res.status(200).send({ status: 200, comment });
+  }
+
+  /**
+      * @method deleteComments
+      * @param {Object} req request
+      * @param {Oject} res request
+      * @returns {Object} object
+      */
+  static async deleteComment(req, res) {
+    const comment_id = Number(req.params.comment_id);
+    const request_id = Number(req.params.request_id);
+    res.data = comment_id + request_id;
+    // check if request and comment exist
+    // change status from active to deleted
+    // return a confirmation that the message was deleted
   }
 }
 
