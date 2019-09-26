@@ -4,8 +4,6 @@ import UserController from '../controllers/UserController';
 import UserAuthentication from '../middlewares/UserAuthentication';
 import Validation from '../validation/Validations';
 import RequestController from '../controllers/RequestController';
-import validate from '../middlewares/RequestValidation';
-
 
 const router = new Router();
 
@@ -17,7 +15,7 @@ const {
 } = UserController;
 
 const {
-  createRequest, getRequests, approveRequest, rejectRequest
+  getRequests, approveRequest, rejectRequest
 } = RequestController;
 
 const { updateProfileValidator } = Validation;
@@ -31,7 +29,6 @@ router.get('/company/:company', viewProfilesByCompany);
 
 // requests
 router.get('/:id/requests', verifyToken, getRequests);
-router.post('/:id/requests', [verifyToken, validate], createRequest);
 router.post('/:id/requests/:req_id/approve', [verifyToken], approveRequest);
 router.post('/:id/requests/:req_id/reject', [verifyToken], rejectRequest);
 

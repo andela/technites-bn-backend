@@ -10,6 +10,7 @@ export function up(queryInterface, Sequelize) {
     destinations: [
       {
         destination_id: 1,
+        accomodation_id: 1,
         checkIn: moment().toDate(),
         checkOut: moment().add(7, 'days').toDate()
       }
