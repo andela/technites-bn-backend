@@ -1,5 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
+/* eslint-disable camelcase */
 /* eslint-disable no-irregular-whitespace */
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
@@ -18,12 +19,22 @@ dotenv.config();
 class UserRequest {
   /**
    *
-   * @param {Integer} req
-   * @param {Integer} res
+   * @param {*} user_id
    * @returns {Object} user
    */
-  static async fetchRequests(req) {
-    return database.Request.findAll({ where: { user_id: req.params.id } });
+  static async fetchRequests(user_id) {
+    return database.Request.findAll({ where: { user_id } });
+  }
+
+  /**
+   *
+   * @param {*} where
+   * @param {*} value
+   * @returns {*} returns search results
+   */
+  static async searchRequests(where) {
+    const searchResults = await database.Request.findAll({ where });
+    return searchResults.map((result) => result.dataValues);
   }
 
   /**

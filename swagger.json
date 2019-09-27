@@ -657,7 +657,7 @@
         }
       }
     },
-    "/requests/{id}": {
+    "/requests": {
       "patch": {
         "description": "TODO: Add Description",
         "summary": "Edit Request",
@@ -725,6 +725,40 @@
           "200": {
             "description": "",
             "headers": {}
+          }
+        },
+        "get": {
+          "description": "search requests by key word",
+          "summary": "key_word search",
+          "tags": [
+            "REQUESTS"
+          ],
+          "operationId": "RequestsSearchGet",
+          "deprecated": false,
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": false,
+              "default": "Bearer {token}",
+              "type": "string"
+            },
+            {
+              "name": "key_word",
+              "in": "query",
+              "required": true,
+              "type": "string",
+              "description": ""
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "",
+              "headers": {}
+            }
           }
         }
       }
