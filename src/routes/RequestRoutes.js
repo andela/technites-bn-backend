@@ -18,11 +18,13 @@ const {
   requestAction,
   getRequests,
   searchRequests,
-  managerRequests
+  managerRequests,
+  mostTravelledDestinations
 } = RequestController;
 
 const { validateUpdateRequest, updateRequestValidator } = Validation;
 
+router.get('/', [verifyToken], mostTravelledDestinations);
 router.post('/', [verifyToken, validate], createRequest);
 router.get('/:id([0-9]{1,11})/:action(approve|reject)/:token?', reqAttachUser, requestAction);
 router.patch('/:id', verifyToken, updateRequestValidator, validateUpdateRequest, updateRequest);

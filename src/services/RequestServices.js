@@ -31,6 +31,14 @@ class RequestService {
   }
 
   /**
+   *
+   * @returns {Object} user
+   */
+  static async fetchApprovedRequests() {
+    return database.Request.findAll({ where: { status: 'Approved' } });
+  }
+
+  /**
  *
  * @param {*} id
  * @returns {Object} Request
@@ -102,12 +110,65 @@ class RequestService {
  * @returns {Boolean} true or false
  */
   static async isSamePlace(request) {
-    const finalDestinationId = request.destinations[request.destinations.length - 1].destination_id;
-    const locationId = request.location_id;
+    for (let i = 0; i < request.destinations.length; i++) {
+      const finalDestinationId = request.destinations[i].destination_id;
+      const locationId = request.location_id;
 
-    if (finalDestinationId === locationId) return true;
+      if (finalDestinationId === locationId) return true;
+    }
 
     return false;
+  }
+
+  /**
+*
+* @param {*} request
+* @returns {Boolean} true or false
+*/
+  static async isDestinationsDifferent(request) {
+    for (let i = 0; i < request.destinations.length; i++) {
+      for (let j = i + 1; j < request.destinations.length; j++) {
+        if (request.destinations[i].destination_id === request.destinations[j].destination_id) {
+          return false;
+        }
+      }
+    }
+
+    for (let i = 0; i < request.destinations.length; i++) {
+      for (let j = i + 1; j < request.destinations.length; j++) {
+        if (request.destinations[i].accomodation_id === request.destinations[j].accomodation_id) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+  /**
+*
+* @param {*} destinations
+* @returns {Boolean} true or false
+*/
+  static async findMostTravelledDestination(destinations) {
+    let mostFrequent = 1;
+    let count = 0;
+    let destinationId;
+    for (let i = 0; i < destinations.length; i++) {
+      for (let j = i; j < destinations.length; j++) {
+        if (destinations[i] === destinations[j]) count++;
+        if (mostFrequent < count) {
+          mostFrequent = count;
+          destinationId = destinations[i];
+        }
+      }
+
+      count = 0;
+    }
+
+    if (destinationId === undefined) return null;
+
+    return database.location.findOne({ where: { id: destinationId } });
   }
 
   /**

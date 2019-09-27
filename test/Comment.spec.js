@@ -24,12 +24,12 @@ const dummyRequest = {
   location_id: 1,
   departure_date: '2020-09-25',
   destinations: [{
-    destination_id: 2, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-26'
+    destination_id: 3, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25'
   },
   {
-    destination_id: 3, accomodation_id: 1, check_in: '2020-09-27', check_out: '2020-09-28'
+    destination_id: 2, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25'
   }],
-  reason: 'Sick leave'
+  reason: 'Medical reason'
 };
 
 const commentOne = {

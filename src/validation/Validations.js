@@ -72,19 +72,18 @@ export default class Validation {
     genericValidator(req, res, schema, next);
   }
   static updateRequestValidator(req, res, next) {
+    const multiCityRequest = Joi.object({
+      destination_id: Joi.number().integer(),
+      accomodation_id: Joi.number().integer(),
+      check_in: Joi.date(),
+      check_out: Joi.date(),
+    });
     const schema = Joi.object().keys({
       request_type: Joi.string().regex(/^(OneWay|ReturnTrip)$/),
       location_id: Joi.number().integer().min(1),
-      departure_date: Joi.string().min(1).max(50),
-      return_date: Joi.string().min(1).max(50),
-      destinations: Joi.array().items(
-        Joi.object({
-          destination_id: Joi.number().integer().required(),
-          accomodation_id: Joi.number().integer().required(),
-          check_in: Joi.date().required(),
-          check_out: Joi.date().required(),
-        })
-      ).min(1).required(),
+      departure_date: Joi.date(),
+      return_date: Joi.date(),
+      destinations: Joi.array().items(multiCityRequest).min(1),
       reason: Joi.string().min(1).max(255),
     });
     genericValidator(req, res, schema, next);

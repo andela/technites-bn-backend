@@ -39,6 +39,7 @@ export function up(queryInterface, Sequelize) {
     is_verified: true,
     line_manager: 'technitesdev@gmail.com',
     role_value: 7,
+    line_manager: 'manager@admin.com',
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -51,6 +52,7 @@ export function up(queryInterface, Sequelize) {
     is_verified: true,
     line_manager: 'technitesdev@gmail.com',
     role_value: 4,
+    line_manager: 'manager@admin.com',
     createdAt: new Date(),
     updatedAt: new Date()
   },
@@ -74,6 +76,7 @@ export function up(queryInterface, Sequelize) {
     password,
     is_verified: true,
     role_value: 2,
+    line_manager: 'manager@admin.com',
     createdAt: new Date(),
     updatedAt: new Date()
   },
