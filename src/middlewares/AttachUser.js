@@ -38,18 +38,6 @@ class AttachUser {
       next();
     }
   }
-
-  /**
-   * @description verifies if the user has role admin
-   * @param {*} req Object with the user data
-   * @param {*} res  Object with respose to the user
-   * @param {*} next  Calls the next route handler
-   * @returns {Object} Response
-   */
-  static async isSuperAdmin(req, res, next) {
-    if (req.user.role_value === 7) next();
-    else res.status(401).send({ status: 401, message: 'Not authorized' });
-  }
 }
 
 export default AttachUser;

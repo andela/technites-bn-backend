@@ -181,8 +181,7 @@ class UserService {
         exclude: ['password']
       },
       where: {
-        id,
-        [Op.not]: [{ role_value: 7 }]
+        id
       }
     });
     if (!searchUser) return null;

@@ -7,7 +7,7 @@
     "start": "export NODE_ENV=production && npm run migrate && npm run build && node dist/index.js",
     "build": "rm -rf dist && mkdir dist && babel src -s -d dist",
     "dev": "export NODE_ENV=development && nodemon --exec babel-node src/index.js",
-    "test": "export NODE_ENV=test && npm run migrate:refresh && npm run seed && nyc --reporter=html --reporter=text mocha src/**/*.js --timeout 15000 --require @babel/register ./test --exit",
+    "test": "export NODE_ENV=test && npm run migrate:refresh && npm run seed && nyc --reporter=html --reporter=text mocha src/**/*.js --timeout 15000 --require @babel/register test/index.spec.js --exit",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "migrate": "sequelize db:migrate",
     "seed": "sequelize db:seed:undo:all && sequelize db:seed:all",
@@ -48,7 +48,8 @@
     "request": "^2.87.0",
     "sequelize": "^5.18.1",
     "swagger-ui-express": "^4.0.7",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "voca": "^1.4.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
