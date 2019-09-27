@@ -25,6 +25,9 @@ export default (sequelize, DataTypes) => {
     User.hasMany(models.PasswordResets, {
       foreignKey: 'user_id',
     });
+    User.hasMany(models.Comment, {
+      foreignKey: 'user_id',
+    });
   };
   return User;
 };
