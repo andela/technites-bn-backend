@@ -293,10 +293,10 @@ describe('users endpoints', () => {
     });
   });
 
-  describe('GET api/v1/user/1', () => {
+  describe('GET api/v1/users/1', () => {
     it('Should not return specific profile if parameter is not an integer', (done) => {
       chai.request(app)
-        .get('/api/v1/a')
+        .get('/api/v1/user/a')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -306,7 +306,7 @@ describe('users endpoints', () => {
     });
     it('Should return an appropriate message when user is not found', (done) => {
       chai.request(app)
-        .get('/api/v1/100')
+        .get('/api/v1/user/100')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -316,7 +316,7 @@ describe('users endpoints', () => {
     });
     it('Should return user when found', (done) => {
       chai.request(app)
-        .get(`/api/v1/${testId}`)
+        .get(`/api/v1/user/${testId}`)
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {

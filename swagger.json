@@ -233,7 +233,7 @@
         }
       }
     },
-    "/user/editprofile": {
+    "/editprofile": {
       "patch": {
         "description": "TODO: Add Description",
         "summary": "Edit Profile",
@@ -307,7 +307,7 @@
         }
       }
     },
-    "/user/2": {
+    "/2": {
       "get": {
         "description": "TODO: Add Description",
         "summary": "Get Single Profile",
@@ -328,7 +328,7 @@
         }
       }
     },
-    "/user": {
+    "/users/all": {
       "get": {
         "description": "TODO: Add Description",
         "summary": "Get All Users",
@@ -349,7 +349,7 @@
         }
       }
     },
-    "/user/company/Andela": {
+    "/company/Andela": {
       "get": {
         "description": "TODO: Add Description",
         "summary": "Get by company",
@@ -372,7 +372,7 @@
     },
     "/admin/users": {
       "put": {
-        "description": "rchange a new role",
+        "description": "change a new role",
         "summary": "change role",
         "tags": [
           "Super Admin"
@@ -444,7 +444,7 @@
         }
       }
     },
-    "/users/requests/{request_id}/comments": {
+    "/requests/{request_id}/comments": {
       "post": {
         "tags": [
             "REQUEST COMMENTs"
@@ -465,10 +465,7 @@
           "required" : true,
           "style" : "simple",
           "explode" : false,
-          "schema" : {
-            "type" : "integer"
-          }
-          
+          "type" : "integer"
         }, 
         {
           "name": "Body",
@@ -480,13 +477,7 @@
         "produces": [
             "application/json"
         ],
-        "responses": {
-          "200": {
-            "status": 200,
-            "message": "requests retrieved successfully",
-            "data": []
-          }
-        }
+        "responses": {}
       },
       "get": {
         "tags": [
@@ -508,9 +499,7 @@
           "required" : true,
           "style" : "simple",
           "explode" : false,
-          "schema" : {
-            "type" : "integer"
-          }
+          "type" : "integer"
           
         }],
         "description": "User,manager or SuperAdmin can get all comments on their request",
@@ -526,7 +515,7 @@
         }
       }
     },
-    "/users/requests/{request_id}/comments/{comment_id}": {
+    "requests/{request_id}/comments/{comment_id}": {
       "patch": {
         "tags": [
             "REQUEST COMMENTs"
@@ -546,10 +535,7 @@
           "in" : "path",
           "required" : true,
           "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer"
-          }
+          "type" : "integer"
           
         },
         {
@@ -558,9 +544,7 @@
           "required" : true,
           "style" : "simple",
           "explode" : false,
-          "schema" : {
-            "type" : "integer"
-          }
+          "type" : "integer"
           
         }, 
         {
@@ -580,8 +564,54 @@
             "data": []
           }
         }
+      },
+      "delete": {
+        "tags": [
+            "REQUEST COMMENTs"
+        ],
+        "summary": "delete comment",
+        "parameters" : [ 
+      
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+          "name" : "request_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "type" : "integer"
+          
+        },
+        {
+          "name" : "comment_id",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "type" : "integer"
+          
+        }],
+        "description": "User,manager or SuperAdmin can post a comment on their request",
+        "produces": [
+            "application/json"
+        ],
+        "responses": {
+          "200": {
+            "status": 200,
+            "message": "requests retrieved successfully",
+            "data": []
+          }
+        }
       }
     },
+
+
     "/accommodations": {
       "post": {
         "description": "add an accomodation facility",

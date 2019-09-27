@@ -33,7 +33,7 @@ export function up(queryInterface, Sequelize) {
     updatedAt: new Date()
   },
   {
-    user_id: 7,
+    user_id: 5,
     request_type: 'OneWay',
     location_id: 2,
     departure_date: moment().toDate(),

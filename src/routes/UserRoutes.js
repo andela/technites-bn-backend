@@ -21,12 +21,14 @@ const {
   getRequests, approveRequest, rejectRequest
 } = RequestController;
 
-const { createComment, getUserRequestComments, editRequestComments } = CommentController;
+const {
+  createComment, getUserRequestComments, editRequestComment, deleteComment
+} = CommentController;
 const { updateProfileValidator } = Validation;
 
 // profiles
 router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);
-router.get('/:id', viewSingleProfile);
+router.get('/user/:id', viewSingleProfile);
 router.get('/users/all', viewAllProfiles);
 router.get('/users/company/:company', viewProfilesByCompany);
 
@@ -38,5 +40,6 @@ router.post('/users/:id/requests/:req_id/reject', [verifyToken], rejectRequest);
 // comments
 router.post('/requests/:request_id/comments', commentdata, validator, verifyToken, createComment);
 router.get('/requests/:request_id/comments', verifyToken, getUserRequestComments);
-router.patch('/requests/:request_id/comments/:comment_id', commentdata, validator, verifyToken, editRequestComments);
+router.patch('/requests/:request_id/comments/:comment_id', commentdata, validator, verifyToken, editRequestComment);
+router.delete('/requests/:request_id/comments/:comment_id', verifyToken, deleteComment);
 export default router;

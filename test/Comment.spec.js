@@ -17,6 +17,7 @@ let requestId;
 let travelAdminToken;
 let travelAdminId;
 let commentId;
+let commentTwoId;
 
 const dummyRequest = {
   request_type: 'OneWay',
@@ -141,6 +142,19 @@ describe('Change user roles', () => {
       .end((err, res) => {
         res.should.have.status(200);
         commentId = res.body.data.id;
+        done();
+      });
+  });
+
+  it('it should create a comment from user when authenticated', (done) => {
+    chai
+      .request(app)
+      .post(`/api/v1/requests/${requestId}/comments`)
+      .set('Authorization', `Bearer ${requesterToken}`)
+      .send(commentTwo)
+      .end((err, res) => {
+        res.should.have.status(200);
+        commentTwoId = res.body.data.id;
         done();
       });
   });
@@ -307,6 +321,61 @@ describe('Change user roles', () => {
       .set('Authorization', `Bearer ${travelAdminToken}`)
       .end((err, res) => {
         res.should.have.status(401);
+        done();
+      });
+  });
+
+  it('it should not be able to delete comment if  not owner', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/v1/requests/${requestId}/comments/${commentTwoId}`)
+      .set('Authorization', `Bearer ${travelAdminToken}`)
+      .end((err, res) => {
+        res.should.have.status(401);
+        done();
+      });
+  });
+
+  it('it should not be able to delete comment if  request does not exist', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/v1/requests/40000/comments/${commentTwoId}`)
+      .set('Authorization', `Bearer ${travelAdminToken}`)
+      .end((err, res) => {
+        res.should.have.status(404);
+        done();
+      });
+  });
+
+  it('it should not be able to delete comment if does not exist', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/v1/requests/${requestId}/comments/40000`)
+      .set('Authorization', `Bearer ${travelAdminToken}`)
+      .end((err, res) => {
+        res.should.have.status(404);
+        done();
+      });
+  });
+
+  it('it should be able to delete your own comment', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/v1/requests/${requestId}/comments/${commentTwoId}`)
+      .set('Authorization', `Bearer ${requesterToken}`)
+      .end((err, res) => {
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  it('it should not be able to delete a comment that does not exist', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/v1/requests/${requestId}/comments/${commentTwoId}`)
+      .set('Authorization', `Bearer ${requesterToken}`)
+      .end((err, res) => {
+        res.should.have.status(404);
         done();
       });
   });
