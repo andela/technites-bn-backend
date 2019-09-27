@@ -77,7 +77,14 @@ export default class Validation {
       location_id: Joi.number().integer().min(1),
       departure_date: Joi.string().min(1).max(50),
       return_date: Joi.string().min(1).max(50),
-      destinations: Joi.string().min(1).max(255),
+      destinations: Joi.array().items(
+        Joi.object({
+          destination_id: Joi.number().integer().required(),
+          accomodation_id: Joi.number().integer().required(),
+          check_in: Joi.date().required(),
+          check_out: Joi.date().required(),
+        })
+      ).min(1).required(),
       reason: Joi.string().min(1).max(255),
     });
     genericValidator(req, res, schema, next);
@@ -143,7 +150,7 @@ export default class Validation {
     }
     // check if request is still pending
     if (searchReq.status !== 'Pending') {
-      util.setError(403, `Request is alredy ${searchReq.status}, you are only allowed to edit Pending requests`);
+      util.setError(403, `Request is already ${searchReq.status}, you are only allowed to edit Pending requests`);
       return util.send(res);
     }
     req.userRequest = searchReq;

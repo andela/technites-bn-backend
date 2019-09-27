@@ -41,18 +41,20 @@ describe('REQUESTS ENDPOINTS', () => {
     });
   });
 
-  describe('POST api/v1/users/:id/requests', () => {
+  describe('POST/GET on api/v1/users/:id/requests or api/requests/:id', () => {
     const dummyRequest = {
       request_type: 'OneWay',
-      location_id: 1,
-      departure_date: '2020-09-25',
-      destinations: [{
-        destination_id: 2, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25'
-      },
-      {
-        destination_id: 2, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25'
-      }],
-      reason: 'Medical'
+      location_id: '1',
+      departure_date: '2019-10-23',
+      destinations: [
+        {
+          destination_id: 1,
+          accomodation_id: 1,
+          check_in: '2020-10-10',
+          check_out: '2020-10-10'
+        }
+      ],
+      reason: 'my trip reason',
     };
 
     it('should return 404 if request_type is invalid', (done) => {
@@ -132,11 +134,11 @@ describe('REQUESTS ENDPOINTS', () => {
     it('it should approve a user request', (done) => {
       chai
         .request(app)
-        .post('/api/v1/users/1/requests/1/approve')
-        .set('Authorization', `Bearer ${token}`)
+        .get('/api/v1/requests/1/approve')
+        .set('Authorization', `Bearer ${adminToken}`)
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.have.property('message').be.a('string');
+          res.body.should.have.property('message').be.eql('Trip request Approved');
           done();
         });
     });
@@ -144,11 +146,11 @@ describe('REQUESTS ENDPOINTS', () => {
     it('it should reject a user request', (done) => {
       chai
         .request(app)
-        .post('/api/v1/users/1/requests/1/reject')
-        .set('Authorization', `Bearer ${token}`)
+        .get('/api/v1/requests/1/reject')
+        .set('Authorization', `Bearer ${adminToken}`)
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.have.property('message').be.a('string');
+          res.body.should.have.property('message').be.eql('Trip request rejected');
           done();
         });
     });
@@ -170,8 +172,16 @@ describe('REQUESTS ENDPOINTS', () => {
   describe('PATCH api/v1/requests/:id', () => {
     const Request = {
       location_id: 2,
-      destinations: '1',
-      reason: 'Vacation',
+      departure_date: '2020-10-10',
+      destinations: [
+        {
+          destination_id: 1,
+          accomodation_id: 1,
+          check_in: '2020-10-10',
+          check_out: '2020-10-10'
+        }
+      ],
+      reason: 'Vac',
     };
     it('it should update request', (done) => {
       chai
@@ -220,7 +230,7 @@ describe('REQUESTS ENDPOINTS', () => {
     it('it should not update another users request', (done) => {
       chai
         .request(app)
-        .patch('/api/v1/requests/3')
+        .patch('/api/v1/requests/1')
         .set('Authorization', `Bearer ${token2}`)
         .send(Request)
         .end((err, res) => {

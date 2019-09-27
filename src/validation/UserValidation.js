@@ -32,22 +32,11 @@ export const changeRoleData = [
     .withMessage('new_role value can only take a value between 1 and 7')
 ];
 export const registerData = [
-  check('firstname').isLength({ min: 2, max: 30 })
+  check(['firstname', 'lastname']).isLength({ min: 2, max: 30 })
     .withMessage('Firstname must have 2 or more characters')
     .not()
     .isInt()
     .withMessage('Integer is not allowed as a first name')
-    .trim()
-    .isAlpha()
-    .withMessage('Should only contain letters')
-    .escape(),
-  check('lastname').isLength({ min: 2, max: 30 })
-    .withMessage('Lastname must have 2 or more characters')
-    .not()
-    .isEmpty()
-    .not()
-    .isInt()
-    .withMessage('Integer not allowed as  lastname')
     .trim()
     .isAlpha()
     .withMessage('Should only contain letters')
