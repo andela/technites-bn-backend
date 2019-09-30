@@ -325,4 +325,10 @@ export default class Validation {
     }
     next();
   }
+  static validateRating(req, res, next) {
+    const schema = Joi.object().keys({
+      rating: Joi.number().integer().valid([1, 2, 3, 4, 5]).required(),
+    });
+    genericValidator(req, res, schema, next);
+  }
 }

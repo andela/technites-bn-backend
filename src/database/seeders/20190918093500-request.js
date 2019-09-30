@@ -77,25 +77,44 @@ export function up(queryInterface, Sequelize) {
     createdAt: new Date(),
     updatedAt: new Date()
   },
-  // {
-  //   user_id: 1,
-  //   request_type: 'OneWay',
-  //   location_id: 1,
-  //   departure_date: moment().toDate(),
-  //   return_date: moment().add(7, 'days').toDate(),
-  //   destinations: [
-  //     {
-  //       destination_id: 2,
-  //       accomodation_id: 1,
-  //       check_in: moment().toDate(),
-  //       check_out: moment().add(7, 'days').toDate()
-  //     }
-  //   ],
-  //   reason: 'some reason',
-  //   status: 'Approved',
-  //   createdAt: new Date(),
-  //   updatedAt: new Date()
-  // }
+  {
+    user_id: 1,
+    request_type: 'OneWay',
+    location_id: 1,
+    departure_date: moment().toDate(),
+    return_date: moment().add(7, 'days').toDate(),
+    destinations: [
+      {
+        destination_id: 2,
+        accomodation_id: 4,
+        check_in: moment().toDate(),
+        check_out: moment().add(7, 'days').toDate()
+      }
+    ],
+    reason: 'visit new york',
+    status: 'Approved',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    user_id: 1,
+    request_type: 'OneWay',
+    location_id: 1,
+    departure_date: moment().toDate(),
+    return_date: moment().add(7, 'days').toDate(),
+    destinations: [
+      {
+        destination_id: 2,
+        accomodation_id: 400, // for testing invalid accommodation
+        check_in: moment().toDate(),
+        check_out: moment().add(7, 'days').toDate()
+      }
+    ],
+    reason: 'visit new york',
+    status: 'Approved',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
   ], {}, { destinations: { type: new Sequelize.JSONB() } });
 }
 
