@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import { parse } from 'url';
 import RatingService from '../services/RatingServices';
 
 dotenv.config();

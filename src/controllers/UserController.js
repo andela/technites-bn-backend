@@ -3,6 +3,8 @@
 /* eslint-disable no-unused-vars */
 import bcrypt from 'bcrypt';
 import cloudinary from 'cloudinary';
+import moment from 'moment';
+import Sequelize from 'sequelize';
 import Util from '../utils/Utils';
 import Mail from '../utils/Mail';
 import redisClient from '../utils/RedisConnection';
@@ -10,6 +12,9 @@ import UserService from '../services/UserServices';
 import { getPublicProfile } from '../utils/UserUtils';
 import AuthenticationHelper from '../utils/AuthHelper';
 import Response from '../utils/Response';
+import database from '../database/models';
+
+const { Op } = Sequelize;
 
 const util = new Util();
 const mail = new Mail();
@@ -45,9 +50,6 @@ class UserController {
   /**
      * @description set the diffrent states of a user
      */
-  constructor() {
-    this.userToken = null;
-  }
 
   /**
    * @param {Object} req object
@@ -303,6 +305,48 @@ class UserController {
     if (req.query.emailAllowed === 'true') return res.status(200).json({ status: res.statusCode, message: 'You subscribed to email notifications' });
 
     return res.status(200).json({ status: res.statusCode, message: 'You unsubscribed to email notifications' });
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns {*} user
+ */
+  static async getUserTrips(req, res, next) {
+    const { years, months, days } = req.query;
+    // convert to days
+    req.user.id = Number(req.user.id);
+    req.params.id = Number(req.params.id);
+    const dataArray = [years * 365, months * 30, days];
+    const daysArray = dataArray.filter((number) => number > 0);
+    const totalDays = daysArray.reduce((a, b) => a + b, 0);
+    if (totalDays === 0) return res.status(400).send({ status: res.statusCode, error: 'Incomplete query params' });
+    // get startt date with moment
+    // moment.utc();
+    const startDate = moment().subtract(totalDays, 'day').toDate();
+    const currentDate = moment().toDate();
+    if ((req.user.id !== req.params.id)
+      && (req.user.role_value === 1 || req.user.role_value === 4 || req.user.role_value <= 0
+      || req.user.role_value > 7)) {
+      return res.status(401).send({ status: res.statusCode, error: 'Not allowed' });
+    }
+    try {
+      const result = await database.Request.findAll({
+        where: {
+          user_id: req.params.id,
+          status: 'Approved',
+          departure_date: {
+            [Op.between]: [startDate, currentDate],
+          }
+        }
+      });
+      const totalTrips = result.length;
+      return res.status(200).send({ status: res.statusCode, totalTrips, data: result });
+    } catch (e) {
+      next(e);
+    }
   }
 }
 

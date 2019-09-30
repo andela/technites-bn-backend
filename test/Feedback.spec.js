@@ -61,13 +61,13 @@ describe('Accommodation feedback', () => {
     done();
   });
 
-  it('Should get all fedbacks for a given accommodation', (done) => {
+  it('Should get all feedbacks for a given accommodation', (done) => {
     chai
       .request(app)
       .get(`/api/v1/accommodations/${accomodation_id}/feedbacks`)
       .set('Authorization', `Bearer ${requesterToken}`)
       .end((err, res) => {
-        expect(res.status).to.equal(200);
+        expect(res.statusCode).to.equal(200);
         expect(res.body.message).to.be.a('string');
       });
     done();
