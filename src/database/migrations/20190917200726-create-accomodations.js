@@ -8,10 +8,11 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.INTEGER
     },
     accommodation_name: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
     },
     room_type: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: true,
     },
     description: {
       type: Sequelize.STRING
@@ -23,7 +24,25 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.JSONB
     },
     quantity: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      allowNull: true,
+    },
+    services: {
+      type: Sequelize.JSONB,
+      allowNull: true,
+    },
+    amenities: {
+      type: Sequelize.JSONB,
+      allowNull: true,
+    },
+    available_space: {
+      type: Sequelize.INTEGER,
+      allowNull: true,
+      defaultValue: 0
+    },
+    owner: {
+      type: Sequelize.INTEGER,
+      allowNull: true
     },
     createdAt: {
       allowNull: false,

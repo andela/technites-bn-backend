@@ -119,6 +119,7 @@ class UserService {
       if (userToUpdate) {
         const newUser = {
           password,
+          is_verified: true,
         };
         await database.User.update(newUser, { where: { email: userEmail } });
         return newUser;

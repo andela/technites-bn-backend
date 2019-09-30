@@ -156,6 +156,43 @@ class MailHelper {
      </body>
       `;
   }
+    /**
+   * @func UserConfirmTheme
+   * @param {*} content
+   * @returns {String} html
+   */
+  static hostTheme(content) {
+    const {
+host,
+title,
+password
+    } = content;
+
+    return `
+      <body style="font-family: sans-serif;">
+       <div style="
+       margin: auto;
+       background-color: rgb(245, 245, 245);
+       width: 650px;
+       height: 400px;
+       text-align: center;
+       box-shadow: 0px 5px 15px 0px rgb(153, 153, 153, 0.5);
+       border-radius: 8px;">
+  
+       <h4 style="color: rgb(93, 93, 93); font-size: 28px; padding-top: 40px;">${title}</h4>
+          <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);"> Dear ${host.firstname} you were recently added as a host to Barefoot
+Nomad.</p>
+          <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">Here below are your credentials:</p>
+          <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">Username: ${host.username}</p>
+          <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">password: ${password}</p>
+          <p style="text-align: left; margin-left: 30px; margin-top: 20px; line-height: 0; color: rgb(93, 93, 93);">Please Remember to change your password
+ after logging in.</p>
+
+     
+     </div>
+     </body>
+      `;
+  }
 }
 
 export default MailHelper;

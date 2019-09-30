@@ -6,10 +6,21 @@ export default (sequelize, DataTypes) => {
     description: DataTypes.STRING,
     location: DataTypes.STRING,
     images: DataTypes.JSONB,
-    quantity: DataTypes.INTEGER
+    quantity: DataTypes.INTEGER,
+    services: DataTypes.JSONB,
+    amenities: DataTypes.JSONB,
+    available_space: DataTypes.INTEGER,
+    owner: DataTypes.INTEGER
   }, {});
   Accomodations.associate = (models) => {
     // associations can be defined here
+    Accomodations.hasMany(models.Room, {
+      foreignKey: 'accommodation_id',
+    });
+    Accomodations.belongsTo(models.User, {
+      onDelete: 'CASCADE',
+      foreignKey: 'owner',
+    });
   };
   return Accomodations;
 };
