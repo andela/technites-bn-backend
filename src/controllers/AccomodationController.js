@@ -17,9 +17,10 @@ class AccomodationControler {
      *
      * @param {*} req
      * @param {*} res
+     * @param {*} next
      * @returns {object} returns an object of the newly added accomodation
      */
-  static async createAccomodation(req, res) {
+  static async createAccomodation(req, res, next) {
     const { accommodation_name, location, room_type } = req.body;
 
     if (req.user.role_value < 4) {
@@ -51,7 +52,7 @@ class AccomodationControler {
         });
       });
     } catch (error) {
-      return res.status(500).send({ status: 500, error: 'Something unexpected happened' });
+      return next(error);
     }
   }
 }

@@ -1,3 +1,4 @@
+/* eslint-disable import/newline-after-import */
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 import dotenv from 'dotenv';
@@ -9,9 +10,10 @@ import bodyParser from 'body-parser';
 import session from 'express-session';
 import cors from 'cors';
 import errorhandler from 'errorhandler';
-import expressValidator from 'express-validator';
+import * as Sentry from '@sentry/node';
 import passport from './config/passport';
 import routes from './routes';
+import errorLogger from './utils/ErrorLogger';
 
 dotenv.config();
 
@@ -19,6 +21,9 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Create global app object
 const app = express();
+
+Sentry.init({ dsn: process.env.SENTRY_DSN });
+app.use(Sentry.Handlers.requestHandler());
 
 app.enable('trust proxy');
 
@@ -60,8 +65,7 @@ app.use((req, res, next) => {
 // will print stacktrace
 if (!isProduction) {
   app.use((err, req, res, next) => {
-    // remove error logs to stdout
-    // we will implement better Error logging
+    errorLogger.error(err.stack);
     res.status(err.status || 500);
 
     res.json({
@@ -74,8 +78,11 @@ if (!isProduction) {
 }
 
 // production error handler
+app.use(Sentry.Handlers.errorHandler());
+
 // no stacktraces leaked to user
 app.use((err, req, res, next) => {
+  errorLogger.error(err.stack);
   res.status(err.status || 500);
   res.json({
     errors: {
