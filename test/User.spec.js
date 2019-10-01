@@ -266,15 +266,12 @@ describe('users endpoints', () => {
         .attach('image', 'src/utils/assets/Test.rtf', 'Test.rtf');
       expect(userUpdate.body.status).to.equal(415);
     });
-    it('Should update profile on demand', (done) => {
-      chai.request(app)
-        .patch('/api/v1/editprofile')
+    it('Should update profile on demand', async () => {
+      const userUpdate = await chai.request(app)
+        .patch('/api/v1/users/editprofile')
         .set('Authorization', `${token}`)
-        .attach('image', 'src/utils/assets/Profile.png', 'Profile.png')
-        .end((err, res) => {
-          expect(res.body.status).to.equal(200);
-        });
-      done();
+        .attach('image', 'src/utils/assets/Profile.png', 'Profile.png');
+      expect(userUpdate.body.status).to.equal(200);
     });
   });
 
@@ -336,11 +333,21 @@ describe('users endpoints', () => {
     });
     it('Should not return users of a specific company in case they are not found', (done) => {
       chai.request(app)
-        .get('/api/v1/users/company/Andela')
+        .get('/api/v1/users/company/NonExisting')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
           expect(res.body.status).to.equal(404);
+          done();
+        });
+    });
+    it('Should return users of a specific company in case they are found', (done) => {
+      chai.request(app)
+        .get('/api/v1/users/company/NewCompany')
+        .set('Accept', 'application/json')
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(200);
           done();
         });
     });

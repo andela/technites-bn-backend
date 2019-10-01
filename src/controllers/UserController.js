@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-unused-vars */
 import bcrypt from 'bcrypt';
@@ -12,7 +13,9 @@ import Response from '../utils/Response';
 
 const util = new Util();
 const mail = new Mail();
-const { jwtSign, jwtVerify, comparePassword } = AuthenticationHelper;
+const {
+  jwtSign, jwtVerify, comparePassword, hashPassword
+} = AuthenticationHelper;
 const response = new Response();
 const {
   addUser,
@@ -72,6 +75,7 @@ class UserController {
       });
     }
   }
+
 
   /**
    * @description contoller function that logs a user in

@@ -2,13 +2,26 @@
 import cloudinary from 'cloudinary';
 import dotenv from 'dotenv';
 import AccomodationServices from '../services/AccomodationServices';
+import RoomServices from '../services/RoomServices';
+import Util from '../utils/Utils';
 
 dotenv.config();
-const { CLOUD_NAME, CLOUD_API_KEY, CLOUD_API_SECRET } = process.env;
-cloudinary.config({ cloud_name: CLOUD_NAME, api_key: CLOUD_API_KEY, api_secret: CLOUD_API_SECRET });
+const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
+cloudinary.config({
+  cloud_name: CLOUDINARY_NAME,
+  api_key: CLOUDINARY_API_KEY,
+  api_secret: CLOUDINARY_API_SECRET,
+});
+const {
+  createAccomodation,
+  getByNameLocationRoom,
+  findAllAccommodations,
+  findAccommodationById,
+  findAllAccommodationsByLocation
+} = AccomodationServices;
+const { addRoom, findRoomById, getAllRoomsByAccommodation } = RoomServices;
 
-const { createAccomodation, getByNameLocationRoom } = AccomodationServices;
-
+const util = new Util();
 /**
  * @class AccomodationControler
  */
@@ -54,6 +67,149 @@ class AccomodationControler {
     } catch (error) {
       return next(error);
     }
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} registered accommodation
+ */
+  static async createHostAccommodation(req, res) {
+    try {
+      const accommodation = req.body;
+      if (req.files && req.files.images) {
+        let image = null;
+        let imgExt = null;
+        const multiImages = [];
+        for (let i = 0; i < req.files.images.length; i++) {
+          image = req.files.images[i].path;
+          // checking if user uploaded valid picture
+          imgExt = image.split('.').pop();
+          if (imgExt !== 'jpg' && imgExt !== 'jpeg' && imgExt !== 'png' && imgExt !== 'bmp' && imgExt !== 'gif') {
+            util.setError(415, 'Please Upload a valid image');
+            return util.send(res);
+          }
+          // uploading to cloudinary
+          const uploadPicture = await cloudinary.uploader.upload(image);
+          multiImages.push({ image_url: uploadPicture.url });
+        }
+        accommodation.images = multiImages;
+        accommodation.owner = req.user.id;
+        createAccomodation(accommodation).then(() => {
+          util.setSuccess(201, 'Accomodation added successfully!', accommodation);
+          return util.send(res);
+        });
+      }
+    } catch (error) {
+      util.setError(500, 'Failed to add accommodation');
+      return util.send(res);
+    }
+  }
+
+  /**
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} room
+   */
+  static async createRoom(req, res) {
+    try {
+      const room = req.body;
+      if (req.files && req.files.images) {
+      let image = null;
+      let imgExt = null;
+      const multiImages = [];
+      for (let i = 0; i < req.files.images.length; i++) {
+        image = req.files.images[i].path;
+        // checking if user uploaded valid picture
+        imgExt = image.split('.').pop();
+        if (imgExt !== 'jpg' && imgExt !== 'jpeg' && imgExt !== 'png' && imgExt !== 'bmp' && imgExt !== 'gif') {
+          util.setError(415, 'Please Upload a valid image');
+          return util.send(res);
+        }
+        // uploading to cloudinary
+        const uploadPicture = await cloudinary.uploader.upload(image);
+        multiImages.push({ image_url: uploadPicture.url });
+      }
+      room.images = multiImages;
+      addRoom(room).then(() => {
+        util.setSuccess(201, 'Accomodation added successfully!', room);
+        return util.send(res);
+      });
+      }
+    } catch (error) {
+      util.setError(500, 'Failed to add room');
+      return util.send(res);
+    }
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} user
+ */
+  static async viewSingleRoom(req, res) {
+    const singleRoom = await findRoomById(req.params.id);
+    if (!singleRoom) {
+      util.setError(404, 'Room not found');
+      return util.send(res);
+    }
+    util.setSuccess(200, 'Room found!', singleRoom);
+    return util.send(res);
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} user
+ */
+  static async viewSingleAccommodation(req, res) {
+    const singleAccommodation = await findAccommodationById(req.params.id);
+    if (!singleAccommodation) {
+      util.setError(404, 'Accommodation not found');
+      return util.send(res);
+    }
+    util.setSuccess(200, 'Accommodation found!', singleAccommodation);
+    return util.send(res);
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} user
+ */
+  static async viewAllRoomsByAccommodation(req, res) {
+    const allRooms = await getAllRoomsByAccommodation(req.params.id);
+    util.setSuccess(200, `All Rooms belonging to ${allRooms.accommodation_name}`, allRooms);
+    return util.send(res);
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} user
+ */
+  static async viewAllAccommodations(req, res) {
+    const accommodation = await findAllAccommodations();
+    util.setSuccess(200, 'All Accommodation', accommodation);
+    return util.send(res);
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} user
+ */
+  static async viewAllAccommodationsByLocation(req, res) {
+    const accommodation = await findAllAccommodationsByLocation(req.params.id);
+    util.setSuccess(200, 'All Accommodation', accommodation);
+    return util.send(res);
   }
 }
 

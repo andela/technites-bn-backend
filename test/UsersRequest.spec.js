@@ -49,7 +49,6 @@ describe('REQUESTS ENDPOINTS', () => {
         .get('/api/v1/requests?mostTraveledDestination=true')
         .set('Authorization', `Bearer ${token}`)
         .end((err, res) => {
-          console.log('the res is : ', res.body);
           res.should.have.status(200);
           res.body.should.have.property('message').be.a('string');
           res.body.should.not.have.property('data');

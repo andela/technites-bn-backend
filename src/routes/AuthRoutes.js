@@ -6,7 +6,6 @@ import database from '../database/models';
 import passport from '../config/passport';
 import OAuthController from '../controllers/OAuthController';
 import RequestController from '../controllers/RequestController';
-
 import { registerData, validator, loginData } from '../validation/UserValidation';
 
 const router = new Router();
