@@ -2,8 +2,9 @@ import { Router } from 'express';
 import multiparty from 'connect-multiparty';
 import AccomodationController from '../controllers/AccomodationController';
 import RatingController from '../controllers/RatingController';
+import FeedbackController from '../controllers/FeedbackController';
 import UserAuthentication from '../middlewares/UserAuthentication';
-import { validator, accommodationData } from '../validation/UserValidation';
+import { validator, commentdata, accommodationData } from '../validation/UserValidation';
 import Validation from '../validation/Validations';
 
 const multipartyMiddle = multiparty();
@@ -26,6 +27,10 @@ const {
   validateHostAccommodations, validateAccommodations, validateRooms, validateNewRoom, validateLike
 } = Validation;
 
+const {
+  addFeedback, getAllFeedbacks, getFeedbackById
+} = FeedbackController;
+
 router.post('/', verifyToken, multipartyMiddle, accommodationData, validator, createAccomodation);
 router.post('/hosts', verifyToken, multipartyMiddle, validateHostAccommodations, validateAccommodations, createHostAccommodation);
 router.post('/rooms', verifyToken, multipartyMiddle, validateRooms, validateNewRoom, createRoom);
@@ -38,5 +43,10 @@ router.post('/:id/like', verifyToken, validateLike, likeAccommodation);
 router.get('/:accommodation_id([0-9]{1,11})/rating', verifyToken, getRate);
 router.patch('/:accommodation_id([0-9]{1,11})/rating', verifyToken, validateRating, addRate);
 router.get('/:accommodation_id([0-9]{1,11})/ratings', rating);
+
+// Accommodation feedback
+router.post('/:accommodation_id/feedbacks', commentdata, validator, verifyToken, addFeedback);
+router.get('/:accommodation_id/feedbacks', verifyToken, getAllFeedbacks);
+router.get('/:accommodation_id/feedbacks/:feedback_id', verifyToken, getFeedbackById);
 
 export default router;
