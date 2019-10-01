@@ -312,4 +312,17 @@ export default class Validation {
     }
     next();
   }
+  static async validateLike(req, res, next) {
+    if (isNaN(req.params.id)) {
+      util.setError(400, 'Accommodation id must be a valid Integer');
+      return util.send(res);
+    }
+    // accommodation exist
+    const accommodation = await findAccommodationById(req.params.id);
+    if (!accommodation) {
+      util.setError(404, 'Accommodation does not exist');
+      return util.send(res);
+    }
+    next();
+  }
 }

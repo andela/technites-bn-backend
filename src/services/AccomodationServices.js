@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 import database from '../database/models';
-
 /**
  * @class AccomodationServices
  */

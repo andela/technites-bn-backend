@@ -34,6 +34,9 @@ export default (sequelize, DataTypes) => {
     User.hasMany(models.Accomodations, {
       foreignKey: 'owner',
     });
+    User.hasMany(models.Likes, {
+      foreignKey: 'user_id',
+    });
   };
   return User;
 };

@@ -21,6 +21,7 @@ const { addUser } = UserService;
 const accomodationUrl = '/api/v1/accommodations';
 const hostToken = jwtSign({ email: 'host@gmail.com' });
 const hostToken2 = jwtSign({ email: 'host2@gmail.com' });
+let accId = null;
 describe('Accomodations', () => {
   // mock cloudinary response
   const cloudnaryRes = {
@@ -348,6 +349,90 @@ describe('Accomodations', () => {
         .send()
         .end((err, res) => {
           expect(res.body.status).to.equal(200);
+          done();
+        });
+    });
+  });
+  describe('POST rooms to accommodation', () => {
+    before(async () => {
+      const location = {
+        name: 'My2TestLocation',
+      };
+      const newLocation = await addLocation(location);
+      locationId = newLocation.id;
+      const host = {
+        firstname: 'host',
+        lastname: 'fortest',
+        email: 'host2@gmail.com',
+        is_verified: true,
+        role_value: 1,
+      };
+      const host2 = await addUser(host);
+      const newAccommodation = {
+        accommodation_name: 'NewAccommodation',
+        description: 'greate place',
+        location: locationId,
+        services: '[{"service":"hello"}]',
+        amenities: '[{"amenity":"hello"}]',
+        images: '[{"image_url":"src/utils/assets/accommodation1.jpg"},{"image_url":"src/utils/assets/accommodation2.jpg"}]',
+        owner: host2.id
+      };
+      await createAccomodation(newAccommodation);
+      accommodation = await findAccommodationByName(newAccommodation.accommodation_name);
+      accId = accommodation.id;
+    });
+    after(async () => {
+      await database.location.destroy({ where: { name: 'My2TestLocation' } });
+      await database.User.destroy({ where: { email: 'host2@gmail.com' } });
+      await database.Accomodations.destroy({ where: { accommodation_name: 'NewAccommodation' } });
+    });
+    it('Should create new like', (done) => {
+      chai.request(app)
+        .post(`/api/v1/accommodations/${accId}/like`)
+        .set('Authorization', `${hostToken2}`)
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(201);
+          done();
+        });
+    });
+    it('Should dislike', (done) => {
+      chai.request(app)
+        .post(`/api/v1/accommodations/${accId}/like`)
+        .set('Authorization', `${hostToken2}`)
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(200);
+          done();
+        });
+    });
+    it('Should like it back', (done) => {
+      chai.request(app)
+        .post(`/api/v1/accommodations/${accId}/like`)
+        .set('Authorization', `${hostToken2}`)
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(200);
+          done();
+        });
+    });
+    it('Should not like when parameter is not a valid integer', (done) => {
+      chai.request(app)
+        .post('/api/v1/accommodations/test/like')
+        .set('Authorization', `${hostToken2}`)
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(400);
+          done();
+        });
+    });
+    it('Should not like when accommodation does not exist', (done) => {
+      chai.request(app)
+        .post('/api/v1/accommodations/100/like')
+        .set('Authorization', `${hostToken2}`)
+        .send()
+        .end((err, res) => {
+          expect(res.body.status).to.equal(404);
           done();
         });
     });

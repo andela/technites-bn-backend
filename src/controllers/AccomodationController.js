@@ -3,6 +3,7 @@ import cloudinary from 'cloudinary';
 import dotenv from 'dotenv';
 import AccomodationServices from '../services/AccomodationServices';
 import RoomServices from '../services/RoomServices';
+import LikeServices from '../services/LikeServices';
 import Util from '../utils/Utils';
 
 dotenv.config();
@@ -20,7 +21,7 @@ const {
   findAllAccommodationsByLocation
 } = AccomodationServices;
 const { addRoom, findRoomById, getAllRoomsByAccommodation } = RoomServices;
-
+const { addLike, updateLike, findLike, countLikes } = LikeServices;
 const util = new Util();
 /**
  * @class AccomodationControler
@@ -117,26 +118,26 @@ class AccomodationControler {
     try {
       const room = req.body;
       if (req.files && req.files.images) {
-      let image = null;
-      let imgExt = null;
-      const multiImages = [];
-      for (let i = 0; i < req.files.images.length; i++) {
-        image = req.files.images[i].path;
-        // checking if user uploaded valid picture
-        imgExt = image.split('.').pop();
-        if (imgExt !== 'jpg' && imgExt !== 'jpeg' && imgExt !== 'png' && imgExt !== 'bmp' && imgExt !== 'gif') {
-          util.setError(415, 'Please Upload a valid image');
-          return util.send(res);
+        let image = null;
+        let imgExt = null;
+        const multiImages = [];
+        for (let i = 0; i < req.files.images.length; i++) {
+          image = req.files.images[i].path;
+          // checking if user uploaded valid picture
+          imgExt = image.split('.').pop();
+          if (imgExt !== 'jpg' && imgExt !== 'jpeg' && imgExt !== 'png' && imgExt !== 'bmp' && imgExt !== 'gif') {
+            util.setError(415, 'Please Upload a valid image');
+            return util.send(res);
+          }
+          // uploading to cloudinary
+          const uploadPicture = await cloudinary.uploader.upload(image);
+          multiImages.push({ image_url: uploadPicture.url });
         }
-        // uploading to cloudinary
-        const uploadPicture = await cloudinary.uploader.upload(image);
-        multiImages.push({ image_url: uploadPicture.url });
-      }
-      room.images = multiImages;
-      addRoom(room).then(() => {
-        util.setSuccess(201, 'Accomodation added successfully!', room);
-        return util.send(res);
-      });
+        room.images = multiImages;
+        addRoom(room).then(() => {
+          util.setSuccess(201, 'Accomodation added successfully!', room);
+          return util.send(res);
+        });
       }
     } catch (error) {
       util.setError(500, 'Failed to add room');
@@ -172,6 +173,8 @@ class AccomodationControler {
       util.setError(404, 'Accommodation not found');
       return util.send(res);
     }
+    const likes = await countLikes(req.params.id)
+    singleAccommodation.likes = likes;
     util.setSuccess(200, 'Accommodation found!', singleAccommodation);
     return util.send(res);
   }
@@ -210,6 +213,44 @@ class AccomodationControler {
     const accommodation = await findAllAccommodationsByLocation(req.params.id);
     util.setSuccess(200, 'All Accommodation', accommodation);
     return util.send(res);
+  }
+
+  /**
+  *
+  * @param {*} req
+  * @param {*} res
+  * @returns {*} like
+  */
+  static async likeAccommodation(req, res) {
+    const like = await findLike(req.params.id, req.user.id);
+    if (!like) {
+      // create like
+      const newLike = {
+        user_id: req.user.id,
+        accommodation_id: req.params.id,
+        status: true
+      };
+      addLike(newLike).then(() => {
+        util.setSuccess(201, 'Liked succesfully');
+        return util.send(res);
+      }).catch(() => {
+        util.setError(500, 'Failed to add like');
+        return util.send(res);
+      });
+    } else {
+      const updatedLike = {
+        status: false,
+      };
+      if (like.status === false) {
+        updatedLike.status = true;
+        await updateLike(req.params.id, req.user.id, updatedLike);
+        util.setSuccess(200, 'Liked succesfully');
+        return util.send(res);
+      }
+      await updateLike(req.params.id, req.user.id, updatedLike);
+      util.setSuccess(200, 'Disliked succesfully');
+      return util.send(res);
+    }
   }
 }
 

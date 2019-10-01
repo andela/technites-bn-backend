@@ -307,7 +307,7 @@
         }
       }
     },
-    "/2": {
+    "/{user_id}": {
       "get": {
         "description": "TODO: Add Description",
         "summary": "Get Single Profile",
@@ -319,7 +319,18 @@
         "produces": [
           "application/json"
         ],
-
+        "parameters": [
+          {
+            "name" : "user_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -349,7 +360,7 @@
         }
       }
     },
-    "/company/Andela": {
+    "/company/{company_name}": {
       "get": {
         "description": "TODO: Add Description",
         "summary": "Get by company",
@@ -361,7 +372,18 @@
         "produces": [
           "application/json"
         ],
-
+        "parameters": [
+          {
+            "name" : "company_name",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -617,7 +639,7 @@
         "description": "add an accomodation facility",
         "summary": "Accomodation  facility",
         "tags": [
-          "Accomodations"
+          "Accommodations"
         ],
         "operationId": "AccommodationsPost",
         "deprecated": false,
@@ -677,6 +699,315 @@
             "required": true,
             "type": "string",
             "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/accommodations/hosts": {
+      "post": {
+        "description": "Host adds accommodation",
+        "summary": "Host Add accomodation",
+        "tags": [
+          "Accommodations"
+        ],
+        "operationId": "AccommodationsHostsPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "images",
+            "in": "formData",
+            "required": true,
+            "type": "file",
+            "description": ""
+          },
+          {
+            "name": "accommodation_name",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "location",
+            "in": "formData",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          },
+          {
+            "name": "services",
+            "in": "formData",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": ""
+          },
+          {
+            "name": "amenities",
+            "in": "formData",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/accommodations/rooms": {
+      "post": {
+        "description": "Add a room to accommodation",
+        "summary": "Add room to accommodation",
+        "tags": [
+          "Accommodations"
+        ],
+        "operationId": "AccommodationsRoomsPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "accommodation_id",
+            "in": "formData",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "room_type",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "cost",
+            "in": "formData",
+            "required": true,
+            "type": "integer",
+            "format": "int32",
+            "description": ""
+          },
+          {
+            "name": "status",
+            "in": "formData",
+            "required": true,
+            "type": "boolean",
+            "description": ""
+          },
+          {
+            "name": "images",
+            "in": "formData",
+            "required": true,
+            "type": "file",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/accommodations/{accommodation_id}": {
+      "get": {
+        "description": "Get specific accommodation",
+        "summary": "Get specific Accommodation",
+        "tags": [
+          "Accommodations"
+        ],
+        "operationId": "Accommodations1Rooms1Get",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name" : "accommodation_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/accommodations/{accommodation_id}/rooms": {
+      "get": {
+        "description": "Get all rooms in an accommocation",
+        "summary": "Get all rooms in an Accommodations",
+        "tags": [
+          "Accommodations"
+        ],
+        "operationId": "Accommodations1Rooms1Get2",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name" : "accommodation_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/accommodations/{accommodation_id}/rooms/{room_id}": {
+      "get": {
+        "description": "Get a specifc room inside an accommodation",
+        "summary": "Get a specific room inside an Accommodations",
+        "tags": [
+          "Accommodations"
+        ],
+        "operationId": "Accommodations1Rooms1Get",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name" : "accommodation_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
+          },
+          {
+            "name" : "room_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/accommodations/{accommodation_id}/like": {
+      "post": {
+        "description": "Like and Unlike an accommodation",
+        "summary": "Like/Unlike",
+        "tags": [
+          "Accommodations"
+        ],
+        "operationId": "Accommodations2LikePost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name" : "accommodation_id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "schema" : {
+              "type" : "integer"
+            }
           }
         ],
         "responses": {
@@ -811,6 +1142,133 @@
             "headers": {}
           },
           "403": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/hosts": {
+      "post": {
+        "description": "Adding a host",
+        "summary": "Add host",
+        "tags": [
+          "HOST"
+        ],
+        "operationId": "HostsPost",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "firstname",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "lastname",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/hosts/reset": {
+      "patch": {
+        "description": "TODO: Add Description",
+        "summary": "reset password host",
+        "tags": [
+          "HOST"
+        ],
+        "operationId": "HostsResetPatch",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": false,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "email",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "password",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "confirm_password",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "old_password",
+            "in": "formData",
+            "required": true,
+            "type": "string",
+            "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
             "description": "",
             "headers": {}
           }

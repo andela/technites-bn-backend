@@ -17,10 +17,11 @@ const {
   viewSingleAccommodation,
   viewAllRoomsByAccommodation,
   viewAllAccommodations,
-  viewAllAccommodationsByLocation
+  viewAllAccommodationsByLocation,
+  likeAccommodation
 } = AccomodationController;
 const {
-  validateHostAccommodations, validateAccommodations, validateRooms, validateNewRoom
+  validateHostAccommodations, validateAccommodations, validateRooms, validateNewRoom, validateLike
 } = Validation;
 
 router.post('/', verifyToken, multipartyMiddle, accommodationData, validator, createAccomodation);
@@ -31,5 +32,5 @@ router.get('/location/:id', viewAllAccommodationsByLocation);
 router.get('/:id', viewSingleAccommodation);
 router.get('/:id/rooms', viewAllRoomsByAccommodation);
 router.get('/:accomodationid/rooms/:id', viewSingleRoom);
-
+router.post('/:id/like', verifyToken, validateLike, likeAccommodation);
 export default router;
