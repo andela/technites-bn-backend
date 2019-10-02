@@ -37,14 +37,12 @@ export default (sequelize, DataTypes) => {
     User.hasMany(models.Likes, {
       foreignKey: 'user_id',
     });
-<<<<<<< HEAD
     User.hasMany(models.Rating, {
       foreignKey: 'user_id',
       as: 'ratings'
-=======
+    });
     User.hasMany(models.Feedback, {
       foreignKey: 'user_id',
->>>>>>> feat(accommodation-feedback):
     });
   };
   return User;

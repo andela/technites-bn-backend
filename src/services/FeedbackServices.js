@@ -34,14 +34,17 @@ class FeedbackServices {
 
   /**
      *
-     * @param {*} user_id
+     * @param {*} accommodation_id
+     * @param {*} id
      * @param {*} feedback
      * @returns {*} object
      */
-  static async getSpecificFeedbackByUser(user_id, feedback) {
+  static async getSpecificFeedbackByUser(accommodation_id, id, feedback) {
     const gotenFeedback = await db.Feedback.findAll({
       where: {
-        user_id, feedback
+        accommodation_id,
+        user_id: id,
+        feedback
       }
     });
     return gotenFeedback;
@@ -50,13 +53,19 @@ class FeedbackServices {
   /**
      *
      * @param {*} id
+     * @param {*} accommodation_id
      * @returns {*} object
      */
-  static async getById(id) {
+  static async getById(id, accommodation_id) {
     const gotenFeedback = await db.Feedback.findAll({
       where: {
-        id
-      }
+        id, accommodation_id
+      },
+      include: [{
+        model: db.User,
+        required: true,
+        attributes: ['id', 'email', 'username']
+      }]
     });
     return gotenFeedback;
   }

@@ -18,7 +18,8 @@ const {
   getByNameLocationRoom,
   findAllAccommodations,
   findAccommodationById,
-  findAllAccommodationsByLocation
+  findAllAccommodationsByLocation,
+  findAccommodationFeedback
 } = AccomodationServices;
 const { addRoom, findRoomById, getAllRoomsByAccommodation } = RoomServices;
 const { addLike, updateLike, findLike, countLikes } = LikeServices;
@@ -168,12 +169,18 @@ class AccomodationControler {
  * @returns {*} user
  */
   static async viewSingleAccommodation(req, res) {
-    const singleAccommodation = await findAccommodationById(req.params.id);
+    let singleAccommodation;
+    singleAccommodation = await findAccommodationFeedback(req.params.id);
+    if (singleAccommodation) {
+      util.setSuccess(200, 'Accommodation found!', singleAccommodation);
+      return util.send(res);
+    }
+    singleAccommodation = await findAccommodationById(req.params.id);
     if (!singleAccommodation) {
       util.setError(404, 'Accommodation not found');
       return util.send(res);
     }
-    const likes = await countLikes(req.params.id)
+    const likes = await countLikes(req.params.id);
     singleAccommodation.likes = likes;
     util.setSuccess(200, 'Accommodation found!', singleAccommodation);
     return util.send(res);
