@@ -17,6 +17,9 @@ export default (sequelize, DataTypes) => {
     Accomodations.hasMany(models.Room, {
       foreignKey: 'accommodation_id',
     });
+    Accomodations.hasMany(models.Likes, {
+      foreignKey: 'accommodation_id',
+    });
     Accomodations.belongsTo(models.User, {
       onDelete: 'CASCADE',
       foreignKey: 'owner',
