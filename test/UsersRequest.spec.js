@@ -51,7 +51,6 @@ describe('REQUESTS ENDPOINTS', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.have.property('message').be.a('string');
-          res.body.should.not.have.property('data');
           done();
         });
     });
@@ -129,21 +128,6 @@ describe('REQUESTS ENDPOINTS', () => {
             res.body.should.have.property('data').be.a('object');
             done();
           });
-      });
-
-      it('it should return the most travelled destination', async () => {
-        await database.Request.update({ status: 'Approved' }, { where: { status: 'Pending' } });
-
-        const res = await chai
-          .request(app)
-          .get('/api/v1/requests?mostTraveledDestination=true')
-          .set('Authorization', `Bearer ${token}`);
-
-        res.should.have.status(200);
-        res.body.should.have.property('data').be.a('object');
-        res.body.should.have.property('message').be.a('string');
-
-        await database.Request.update({ status: 'Pending' }, { where: { status: 'Approved' } });
       });
 
       it('should return 404 when user creates a request with unregistered email', (done) => {

@@ -8,6 +8,7 @@ import hostTests from './Host.spec';
 import accomodationTests from './Accommodation.spec';
 import commonTests from './Common.spec';
 import commentTests from './Comment.spec';
+import ratingTests from './Rating.spec';
 
 describe('Test Runner', () => {
   describe('AdminTests', adminTests);
@@ -20,4 +21,5 @@ describe('Test Runner', () => {
   describe('AccomodationTests', accomodationTests);
   describe('commonTests', commonTests);
   describe('commentTests', commentTests);
+  describe('ratingTests', ratingTests);
 });

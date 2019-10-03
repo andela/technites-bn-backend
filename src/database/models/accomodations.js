@@ -14,6 +14,10 @@ export default (sequelize, DataTypes) => {
   }, {});
   Accomodations.associate = (models) => {
     // associations can be defined here
+    Accomodations.hasMany(models.Rating, {
+      foreignKey: 'accommodation_id',
+      as: 'ratings'
+    });
     Accomodations.hasMany(models.Room, {
       foreignKey: 'accommodation_id',
     });

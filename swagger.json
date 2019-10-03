@@ -1,13 +1,17 @@
 {
-  "swagger" : "2.0",
-  "info" : {
-    "title" : "Barefoot Nomad",
-    "description" : "Make company global travel and accommodation easy and convenient for the strong workforce of savvy members of staff, by leveraging the modern web."
+  "swagger": "2.0",
+  "info": {
+    "title": "Barefoot Nomad",
+    "description": "Make company global travel and accommodation easy and convenient for the strong workforce of savvy members of staff, by leveraging the modern web."
   },
   "host": "localhost:3000",
   "basePath": "/api/v1/",
   "securityDefinitions": {
-    "Bearer": { "type": "apiKey", "name": "Authorization", "in": "header" }
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
   },
   "security": [
     {
@@ -56,7 +60,6 @@
         },
         "security": []
       }
-
     },
     "/auth/reset": {
       "post": {
@@ -321,13 +324,13 @@
         ],
         "parameters": [
           {
-            "name" : "user_id",
-            "in" : "path",
-            "required" : true,
-            "style" : "simple",
-            "explode" : false,
-            "schema" : {
-              "type" : "integer"
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -351,7 +354,6 @@
         "produces": [
           "application/json"
         ],
-
         "responses": {
           "200": {
             "description": "",
@@ -374,13 +376,13 @@
         ],
         "parameters": [
           {
-            "name" : "company_name",
-            "in" : "path",
-            "required" : true,
-            "style" : "simple",
-            "explode" : false,
-            "schema" : {
-              "type" : "integer"
+            "name": "company_name",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -427,27 +429,28 @@
         },
         "security": []
       }
-    
     },
     "/users/{id}/requests": {
       "get": {
         "tags": [
-            "REQUESTS"
+          "REQUESTS"
         ],
         "summary": "User's requests",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "schema" : {
-            "type" : "integer"
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
           }
-        } ],
+        ],
         "description": "User can view all the requests made overtime",
         "produces": [
-            "application/json"
+          "application/json"
         ],
         "responses": {
           "200": {
@@ -469,11 +472,10 @@
     "/requests/{request_id}/comments": {
       "post": {
         "tags": [
-            "REQUEST COMMENTs"
+          "REQUEST COMMENTs"
         ],
         "summary": "User's request comments",
-        "parameters" : [ 
-      
+        "parameters": [
           {
             "name": "Authorization",
             "in": "header",
@@ -482,32 +484,32 @@
             "type": "string"
           },
           {
-          "name" : "request_id",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "type" : "integer"
-        }, 
-        {
-          "name": "Body",
-          "in": "body",
-          "required": true,
-          "description": ""
-        }],
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "type": "integer"
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": ""
+          }
+        ],
         "description": "User,manager or SuperAdmin can post a comment on their request",
         "produces": [
-            "application/json"
+          "application/json"
         ],
         "responses": {}
       },
       "get": {
         "tags": [
-            "REQUEST COMMENTs"
+          "REQUEST COMMENTs"
         ],
         "summary": "all request comments",
-        "parameters" : [ 
-      
+        "parameters": [
           {
             "name": "Authorization",
             "in": "header",
@@ -516,17 +518,17 @@
             "type": "string"
           },
           {
-          "name" : "request_id",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "type" : "integer"
-          
-        }],
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "type": "integer"
+          }
+        ],
         "description": "User,manager or SuperAdmin can get all comments on their request",
         "produces": [
-            "application/json"
+          "application/json"
         ],
         "responses": {
           "200": {
@@ -540,11 +542,10 @@
     "requests/{request_id}/comments/{comment_id}": {
       "patch": {
         "tags": [
-            "REQUEST COMMENTs"
+          "REQUEST COMMENTs"
         ],
         "summary": "User's request comments",
-        "parameters" : [ 
-      
+        "parameters": [
           {
             "name": "Authorization",
             "in": "header",
@@ -553,31 +554,30 @@
             "type": "string"
           },
           {
-          "name" : "request_id",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "type" : "integer"
-          
-        },
-        {
-          "name" : "comment_id",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "type" : "integer"
-          
-        }, 
-        {
-          "name": "Body",
-          "in": "body",
-          "required": true,
-          "description": ""
-        }],
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "type": "integer"
+          },
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "type": "integer"
+          },
+          {
+            "name": "Body",
+            "in": "body",
+            "required": true,
+            "description": ""
+          }
+        ],
         "description": "User,manager or SuperAdmin can post a comment on their request",
         "produces": [
-            "application/json"
+          "application/json"
         ],
         "responses": {
           "200": {
@@ -589,11 +589,10 @@
       },
       "delete": {
         "tags": [
-            "REQUEST COMMENTs"
+          "REQUEST COMMENTs"
         ],
         "summary": "delete comment",
-        "parameters" : [ 
-      
+        "parameters": [
           {
             "name": "Authorization",
             "in": "header",
@@ -602,26 +601,25 @@
             "type": "string"
           },
           {
-          "name" : "request_id",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "type" : "integer"
-          
-        },
-        {
-          "name" : "comment_id",
-          "in" : "path",
-          "required" : true,
-          "style" : "simple",
-          "explode" : false,
-          "type" : "integer"
-          
-        }],
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "type": "integer"
+          },
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "type": "integer"
+          }
+        ],
         "description": "User,manager or SuperAdmin can post a comment on their request",
         "produces": [
-            "application/json"
+          "application/json"
         ],
         "responses": {
           "200": {
@@ -632,8 +630,6 @@
         }
       }
     },
-
-
     "/accommodations": {
       "post": {
         "description": "add an accomodation facility",
@@ -894,13 +890,13 @@
         ],
         "parameters": [
           {
-            "name" : "accommodation_id",
-            "in" : "path",
-            "required" : true,
-            "style" : "simple",
-            "explode" : false,
-            "schema" : {
-              "type" : "integer"
+            "name": "accommodation_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -926,13 +922,13 @@
         ],
         "parameters": [
           {
-            "name" : "accommodation_id",
-            "in" : "path",
-            "required" : true,
-            "style" : "simple",
-            "explode" : false,
-            "schema" : {
-              "type" : "integer"
+            "name": "accommodation_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -958,23 +954,23 @@
         ],
         "parameters": [
           {
-            "name" : "accommodation_id",
-            "in" : "path",
-            "required" : true,
-            "style" : "simple",
-            "explode" : false,
-            "schema" : {
-              "type" : "integer"
+            "name": "accommodation_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
             }
           },
           {
-            "name" : "room_id",
-            "in" : "path",
-            "required" : true,
-            "style" : "simple",
-            "explode" : false,
-            "schema" : {
-              "type" : "integer"
+            "name": "room_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -1000,13 +996,92 @@
         ],
         "parameters": [
           {
-            "name" : "accommodation_id",
-            "in" : "path",
-            "required" : true,
-            "style" : "simple",
-            "explode" : false,
-            "schema" : {
-              "type" : "integer"
+            "name": "accommodation_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/accommodations/{accommodation_id}/rating": {
+      "get": {
+        "description": "get your rating for this accommodation facility",
+        "summary": "get your rating",
+        "tags": [
+          "RATINGS"
+        ],
+        "parameters": [
+          {
+            "name": "accommodation_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      },
+      "patch": {
+        "description": "submit your rating for specified accommodation",
+        "summary": "submit rating",
+        "tags": [
+          "RATINGS"
+        ],
+        "parameters": [
+          {
+            "name": "accommodation_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/accommodations/{accommodation_id}/ratings": {
+      "get": {
+        "description": "get average rating for this accommodation facility",
+        "summary": "get total rating for this facility",
+        "tags": [
+          "RATINGS"
+        ],
+        "parameters": [
+          {
+            "name": "accommodation_id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
             }
           }
         ],
@@ -1035,13 +1110,13 @@
         ],
         "parameters": [
           {
-            "name" : "id",
-            "in" : "path",
-            "required" : true,
-            "style" : "simple",
-            "explode" : false,
-            "schema" : {
-              "type" : "integer"
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "integer"
             }
           },
           {
@@ -1124,7 +1199,7 @@
         }
       }
     },
-    "/requests/manager":{
+    "/requests/manager": {
       "get": {
         "description": "user requests",
         "summary": "Get by request",
@@ -1135,7 +1210,6 @@
         "produces": [
           "application/json"
         ],
-
         "responses": {
           "200": {
             "description": "",
