@@ -1,3 +1,5 @@
+import eventEmitter from '../../utils/EventEmitter';
+
 export default (sequelize, DataTypes) => {
   const Request = sequelize.define('Request', {
     user_id: DataTypes.INTEGER,
@@ -50,5 +52,10 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'request_id',
     });
   };
+
+  Request.afterCreate(({ dataValues }) => {
+    eventEmitter.emit('new_travel_request', dataValues);
+  });
+
   return Request;
 };

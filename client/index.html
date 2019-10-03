@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+    <script src="worker.js"></script>
+    <title>Document</title>
+</head>
+
+<script defer >
+/* eslint-disable require-jsdoc */
+
+const button = document.getElementById('send');
+const socket = io('https://technites-bn-backend-sta-pr-58.herokuapp.com');
+const publicKey = 'BDPAlowB9sE_rlRlcJEZZKJbnae338okQwK1b_rKFcBdozZkBfCfx7FaRgfyOckR7qgCzoAV74zonnW7pw2qj2s';
+
+const send = async () => {
+  const register = await navigator.serviceWorker.register('/worker.js', {
+    scope: '/'
+  });
+
+  const subscription = await register.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(publicKey)
+  });
+}
+
+const urlBase64ToUint8Array = (base64String) => {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+// check if the service worker is in the browser's api
+if ('serviceWorker' in navigator) {
+  send().catch((err) => console.log(err));
+}
+
+
+socket.on('welcome', (data) => {
+  console.log(data);
+});
+
+socket.on('new_travel_request', (data) => {
+  console.log(data);
+  showNewTravelRequestNotification(data);
+});
+
+</script>
+<body>
+
+</body>
+
+</html>

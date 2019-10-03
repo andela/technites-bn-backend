@@ -81,6 +81,11 @@ export function up(queryInterface, Sequelize) {
       allowNull: true,
       type: Sequelize.STRING
     },
+    isEmailAllowed: {
+      type: Sequelize.STRING,
+      allowNull: false,
+      defaultValue: true,
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

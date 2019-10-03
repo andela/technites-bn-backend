@@ -5,6 +5,7 @@ import userTests from './User.spec';
 import usersRequestTests from './UsersRequest.spec';
 import utilsUnitTests from './UtilsUnitTest.spec';
 import hostTests from './Host.spec';
+import NotificationUnitTest from './NotificationUnitTest.spec';
 import accomodationTests from './Accommodation.spec';
 import commonTests from './Common.spec';
 import commentTests from './Comment.spec';
@@ -22,4 +23,6 @@ describe('Test Runner', () => {
   describe('commonTests', commonTests);
   describe('commentTests', commentTests);
   describe('ratingTests', ratingTests);
+  describe('ratingTests', ratingTests);
+  describe('NotificationUnitTest', NotificationUnitTest);
 });

@@ -17,7 +17,12 @@ export default (sequelize, DataTypes) => {
     image_url: DataTypes.STRING,
     company: DataTypes.STRING,
     department: DataTypes.STRING,
-    line_manager: DataTypes.STRING
+    line_manager: DataTypes.STRING,
+    isEmailAllowed: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: true,
+    },
   }, {});
   // eslint-disable-next-line no-unused-vars
   User.associate = (models) => {
