@@ -23,6 +23,5 @@ describe('Test Runner', () => {
   describe('commonTests', commonTests);
   describe('commentTests', commentTests);
   describe('ratingTests', ratingTests);
-  describe('ratingTests', ratingTests);
   describe('NotificationUnitTest', NotificationUnitTest);
 });

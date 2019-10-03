@@ -15,14 +15,14 @@ class NotificationService {
       */
   static async sendNewTravelRequestNotification(data) {
     const notification = {};
-    // const { username, line_manager } = await userService.findUserById(data.user_id);
-    // const { id } = await userService.findUserByEmail(line_manager);
+    const { username, line_manager } = await userService.findUserById(data.user_id);
+    const { id } = await userService.findUserByEmail(line_manager);
 
     notification.title = data.request_type;
-    notification.from = 'amily';
+    notification.from = username;
 
     const notificationToSave = {};
-    notificationToSave.user_id = 1;
+    notificationToSave.user_id = id;
     notificationToSave.message = data.reason;
     notificationToSave.type = data.request_type;
 

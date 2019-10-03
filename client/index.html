@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.dev.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="worker.js"></script>
     <title>Document</title>
 </head>
@@ -13,8 +13,7 @@
 <script defer >
 /* eslint-disable require-jsdoc */
 
-const button = document.getElementById('send');
-const socket = io('https://technites-bn-backend-sta-pr-58.herokuapp.com');
+const socket = io();
 const publicKey = 'BDPAlowB9sE_rlRlcJEZZKJbnae338okQwK1b_rKFcBdozZkBfCfx7FaRgfyOckR7qgCzoAV74zonnW7pw2qj2s';
 
 const send = async () => {
