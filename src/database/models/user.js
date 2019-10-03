@@ -41,6 +41,9 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'user_id',
       as: 'ratings'
     });
+    User.hasMany(models.Feedback, {
+      foreignKey: 'user_id',
+    });
   };
   return User;
 };

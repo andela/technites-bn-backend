@@ -57,7 +57,7 @@ describe('Hosts endpoints', () => {
         .post('/api/v1/hosts')
         .set('Authorization', `Bearer ${token}`)
         .send(host);
-        expect(newHost.body.status).to.equal(201);
+      expect(newHost.body.status).to.equal(201);
     });
     it('it should not add a new host while he is already registered', (done) => {
       chai.request(app)

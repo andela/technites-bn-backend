@@ -69,6 +69,23 @@ class AccomodationServices {
   }
 
   /**
+   *
+   * @param {*} id
+   * @returns {*} accomodation
+   */
+  static async findAccommodationFeedback(id) {
+    const accommodation = await database.Accomodations.findOne({
+      where: { id },
+      include: [{
+        model: database.Feedback,
+        required: false
+      }]
+    });
+    if (!accommodation) return null;
+    return accommodation.dataValues;
+  }
+
+  /**
  *
  * @returns {*} accommodations
  */

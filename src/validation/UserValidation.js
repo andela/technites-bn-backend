@@ -1,6 +1,6 @@
 import { sanitizeBody } from 'express-validator';
 
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, sanitize } = require('express-validator');
 
 export const loginData = [
   check('email')
@@ -100,6 +100,26 @@ export const commentdata = [
     .exists()
     .withMessage('comment field required')
     .trim(),
+];
+
+export const feedbackData = [
+  check('feedback')
+    .not()
+    .isEmpty()
+    .withMessage('feedback can not be empty')
+    .exists()
+    .withMessage('feedback field required')
+    .trim(),
+];
+
+export const checkIsInt = [
+  check(['years', 'months', 'days', 'id', 'accommodation_id', 'feedback_id'])
+    .blacklist(',')
+    .matches(/^(\s*|\d+)$/)
+    .withMessage('needs to be an integer')
+    .toInt()
+    .trim(),
+  sanitize(['years', 'months', 'days', 'accommodation_id', 'feedback_id']).toInt(),
 ];
 
 export const validator = (req, res, next) => {
