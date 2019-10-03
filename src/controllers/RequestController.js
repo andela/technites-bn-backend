@@ -107,11 +107,16 @@ class RequestController {
     // send Request Email to Line Manager
     const responseOne = RequestController.sendRequestEmail(user, dbRequest, baseUrl);
     // send info e-mail to the user
-    const responseTwo = RequestController.sendUserEmail(
-      'You sent new trip request',
-      'Trip request confirmation sent',
-      'was succesfully received', user, request
-    );
+    let responseTwo = true;
+
+    if (user.isEmailAllowed === 'true') {
+      responseTwo = RequestController.sendUserEmail(
+        'You sent new trip request',
+        'Trip request confirmation sent',
+        'was succesfully received', user, request
+      );
+    }
+
     if (responseOne && responseTwo) {
       return res.status(201).json({
         status: res.statusCode,

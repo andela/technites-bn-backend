@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable import/newline-after-import */
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
@@ -11,9 +12,14 @@ import session from 'express-session';
 import cors from 'cors';
 import errorhandler from 'errorhandler';
 import * as Sentry from '@sentry/node';
+import expressValidator from 'express-validator';
+import path from 'path';
+import http from 'http';
+import socketIo from 'socket.io';
 import passport from './config/passport';
 import routes from './routes';
 import errorLogger from './utils/ErrorLogger';
+import initializeEventListeners from './utils/EventListeners';
 
 dotenv.config();
 
@@ -21,6 +27,10 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Create global app object
 const app = express();
+const httpServer = http.createServer(app);
+const io = socketIo(httpServer);
+
+app.use(express.static(path.join(__dirname, '../client')));
 
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 app.use(Sentry.Handlers.requestHandler());
@@ -92,9 +102,14 @@ app.use((err, req, res, next) => {
   });
 });
 
+io.on('connection', (socket) => socket.emit('welcome', 'Welcome to barefoot nomad'));
+
 // finally, let's start our server...
-const server = app.listen(process.env.PORT || 3000, () => {
+const server = httpServer.listen(process.env.PORT || 3000, () => {
+  initializeEventListeners();
   console.log(`Listening on port ${server.address().port}`);
 });
+
+export { io };
 
 export default server;
