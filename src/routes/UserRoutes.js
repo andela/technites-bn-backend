@@ -14,7 +14,8 @@ const connection = connect();
 
 const { verifyToken } = UserAuthentication;
 const {
-  editProfile, viewSingleProfile, viewAllProfiles, viewProfilesByCompany
+  editProfile, viewSingleProfile, viewAllProfiles,
+  viewProfilesByCompany, enableOrDisableEmailNotifications,
 } = UserController;
 
 const { getRequests } = RequestController;
@@ -29,6 +30,7 @@ router.patch('/editprofile', verifyToken, connection, updateProfileValidator, ed
 router.get('/user/:id', viewSingleProfile);
 router.get('/users/all', viewAllProfiles);
 router.get('/users/company/:company', viewProfilesByCompany);
+router.post('/users/notifications', [verifyToken], enableOrDisableEmailNotifications);
 
 // get requests
 router.get('/users/:id/requests', verifyToken, getRequests);

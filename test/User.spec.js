@@ -232,6 +232,31 @@ describe('users endpoints', () => {
         });
     });
   });
+  describe('POST: /api/v1/users/notifications enable or disable', () => {
+    it('Should disable the email notifications', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users/notifications?emailAllowed=false')
+        .set('Authorization', `${token}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('Should disable the email notifications', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users/notifications?emailAllowed=true')
+        .set('Authorization', `${token}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.a('string');
+          done();
+        });
+    });
+  });
 
   describe('POST api/v1/auth/login/:token', () => {
     let confirmationToken = jwt.sign(dummyUser, process.env.JWT_SECRET, { expiresIn: '24h' });

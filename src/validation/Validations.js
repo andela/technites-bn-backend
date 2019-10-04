@@ -97,6 +97,7 @@ export default class Validation {
       company: Joi.string().min(2).max(30),
       department: Joi.string().min(2).max(30),
       line_manager: Joi.string(),
+      isEmailAllowed: Joi.boolean(),
     });
     genericValidator(req, res, schema, next);
   }
@@ -250,7 +251,7 @@ export default class Validation {
       name: Joi.string().min(2).max(30).required(),
       room_type: Joi.string().regex(/^(single|double|triple|quad|queen|king|twin|studio)$/).required(),
       description: Joi.string().required(),
-      cost: Joi.number().integer().required(),
+      cost: Joi.number().integer().min(1).required(),
       status: Joi.boolean().required()
     });
     genericValidator(req, res, schema, next);
