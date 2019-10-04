@@ -219,6 +219,15 @@ class UserService {
     });
     return checkService(users);
   }
+
+  /**
+   * @param {String} userEmail
+   * @param {String} option
+   * @returns {Integer} userId
+   */
+  static async updateEmailNotification(userEmail, option) {
+    return database.User.update({ isEmailAllowed: option }, { where: { email: userEmail } });
+  }
 }
 
 export default UserService;

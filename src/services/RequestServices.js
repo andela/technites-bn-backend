@@ -172,6 +172,23 @@ class RequestService {
   }
 
   /**
+*
+* @param {Array} destinationsIds
+* @returns {Boolean} true or false
+*/
+  static async findIfLocationsExists(destinationsIds) {
+    const nonExistentIds = [];
+    for (let i = 0; i < destinationsIds.length; i++) {
+      // eslint-disable-next-line no-await-in-loop
+      const origin = await database.location.findOne({
+        where: { id: destinationsIds[i] }
+      });
+      if (origin === null) nonExistentIds.push(destinationsIds[i]);
+    }
+    return nonExistentIds;
+  }
+
+  /**
  *
  * @param {*} id
  * @param {*} request

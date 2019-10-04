@@ -28,7 +28,8 @@ const {
   updateProfile,
   findUserById,
   displayAllUsers,
-  findUserByCompany
+  findUserByCompany,
+  updateEmailNotification
 } = UserService;
 let msgType = null;
 const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
@@ -289,6 +290,19 @@ class UserController {
     }
     util.setSuccess(200, 'All users!', allUsers);
     return util.send(res);
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} all users
+ */
+  static async enableOrDisableEmailNotifications(req, res) {
+    await updateEmailNotification(req.user.email, req.query.emailAllowed);
+    if (req.query.emailAllowed === 'true') return res.status(200).json({ status: res.statusCode, message: 'You subscribed to email notifications' });
+
+    return res.status(200).json({ status: res.statusCode, message: 'You unsubscribed to email notifications' });
   }
 }
 

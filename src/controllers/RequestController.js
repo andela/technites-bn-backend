@@ -34,7 +34,8 @@ const {
   sendRequestConfirmation, approveTrip,
   rejectTrip,
   fetchApprovedRequests,
-  isDestinationsDifferent, findMostTravelledDestination
+  isDestinationsDifferent, findMostTravelledDestination,
+  findIfLocationsExists,
 } = RequestServices;
 
 const { findUserByEmail, findUserById } = UserService;
@@ -81,10 +82,29 @@ class RequestController {
     const user = await findUserByEmail(req.user.email);
     const request = req.body;
     request.user_id = user.id;
+
     // attach user_id on payload to save it directly
     if (typeof request.destinations === 'string') {
       request.destinations = JSON.parse(request.destinations);
     }
+
+
+    const allDestinationsIds = [];
+
+    // getting all destinations ids
+    allDestinationsIds.push(request.location_id);
+    for (let i = 0; i < request.destinations.length; i++) {
+      allDestinationsIds.push(request.destinations[i].destination_id);
+    }
+
+    // find if all locations ids provided exists or not
+    const nonExistentIds = await findIfLocationsExists(allDestinationsIds);
+    if (nonExistentIds.length > 0) return res.status(404).json({ status: res.statusCode, error: `the location ${nonExistentIds} does not exists, please enter valid locations` });
+
+    // find if the user has a valid line manager
+    const lineManager = await findUserByEmail(user.line_manager);
+    if (lineManager === null) return res.status(400).json({ status: res.statusCode, error: 'Your line manager does not exists in our database, please edit your profile and add a valid line manager' });
+
     let message = await isDatesValid(request);
     if (message) return res.status(400).json(message);
 

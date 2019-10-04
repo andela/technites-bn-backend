@@ -22,7 +22,9 @@ const {
   findAccommodationFeedback
 } = AccomodationServices;
 const { addRoom, findRoomById, getAllRoomsByAccommodation } = RoomServices;
-const { addLike, updateLike, findLike, countLikes } = LikeServices;
+const {
+ addLike, updateLike, findLike, countLikes 
+} = LikeServices;
 const util = new Util();
 /**
  * @class AccomodationControler
@@ -169,13 +171,8 @@ class AccomodationControler {
  * @returns {*} user
  */
   static async viewSingleAccommodation(req, res) {
-    let singleAccommodation;
-    singleAccommodation = await findAccommodationFeedback(req.params.id);
-    if (singleAccommodation) {
-      util.setSuccess(200, 'Accommodation found!', singleAccommodation);
-      return util.send(res);
-    }
-    singleAccommodation = await findAccommodationById(req.params.id);
+  // let singleAccommodation;
+    const singleAccommodation = await findAccommodationFeedback(req.params.id);
     if (!singleAccommodation) {
       util.setError(404, 'Accommodation not found');
       return util.send(res);
