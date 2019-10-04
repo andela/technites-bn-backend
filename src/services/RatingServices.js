@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { Op } from 'sequelize';
+import moment from 'moment';
 import database from '../database/models';
 
 dotenv.config();
@@ -88,6 +89,7 @@ class RatingServices {
    */
   static async IsAccepted(userId, accommodationId) {
     const requests = await database.Request.findAll({
+      attributes: ['destinations'],
       where: {
         user_id: userId,
         status: 'Approved',
@@ -98,7 +100,12 @@ class RatingServices {
         }
       }
     });
-    if (requests.length > 0) return true;
+    const checks = requests.map(({ destinations }) => destinations)
+      .flat().filter(
+        (i) => moment().isSameOrAfter(i.check_in, 'D')
+        && moment().isSameOrBefore(i.check_out, 'D')
+      );
+    if (checks.length > 0) return true;
     return false;
   }
 }
