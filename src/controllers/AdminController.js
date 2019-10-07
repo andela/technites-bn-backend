@@ -24,7 +24,7 @@ class AdminController {
         { role_value: req.body.new_role },
         { where: { email: req.body.email } }
       );
-      res.status(200).send({
+      return res.status(200).send({
         status: 200, message: 'successful', oldRole: getRoleName(oldRole), newRole: getRoleName(req.body.new_role)
       });
     } catch (e) {

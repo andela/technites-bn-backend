@@ -15,7 +15,7 @@ services:
       - POSTGRES_USER= ${DB_USER}
       - POSTGRES_PASSWORD= ${DB_PASS}
  web:
-   command: npm run dev
+   command: bash -c "npm run db:reset && npm run dev"
 
    build: .
    depends_on:

@@ -236,7 +236,7 @@
         }
       }
     },
-    "/editprofile": {
+    "/users/editprofile": {
       "patch": {
         "description": "TODO: Add Description",
         "summary": "Edit Profile",
@@ -342,7 +342,7 @@
         }
       }
     },
-    "/users/all": {
+    "/users": {
       "get": {
         "description": "TODO: Add Description",
         "summary": "Get All Users",
@@ -1339,6 +1339,66 @@
             "required": true,
             "type": "string",
             "description": ""
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "headers": {}
+          }
+        }
+      }
+    },
+    "/users/{id}/trips?": {
+      "get": {
+        "description": "Get user trip stats",
+        "summary": "Get by company",
+        "tags": [
+          "USER"
+        ],
+        "operationId": "usertrip",
+        "deprecated": false,
+        "produces": [
+          "application/json"
+        ],
+        "parameters" : [ 
+      
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "default": "Bearer {token}",
+            "type": "string"
+          },
+          {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "style" : "simple",
+            "explode" : false,
+            "type" : "integer"
+            
+          },
+          {
+            "name" : "years",
+            "in" : "query",
+            "required" : false,
+            "style" : "simple",
+            "explode" : false
+          },
+          {
+            "name" : "months",
+            "in" : "query",
+            "required" : false,
+            "style" : "simple",
+            "explode" : false
+          },
+          {
+            "name" : "days",
+            "in" : "query",
+            "required" : false,
+            "style" : "simple",
+            "explode" : false
           }
         ],
         "responses": {

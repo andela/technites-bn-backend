@@ -105,13 +105,10 @@ class CommentController {
       await database.Comment.update(
         { active: false }, { where: { id: comment_id } }
       );
-      res.status(200).send({ status: 200, message: 'comment deleted' });
+      return res.status(200).send({ status: 200, message: 'comment deleted' });
     } catch (err) {
       throw new Error('Error in database connection');
     }
-    // check if request and comment exist
-    // change status from active to deleted
-    // return a confirmation that the message was deleted
   }
 }
 

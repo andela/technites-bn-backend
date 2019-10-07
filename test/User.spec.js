@@ -17,6 +17,8 @@ let validtoken = null;
 const invalidtoken = jwt.sign({ email: 'technites@gmail.com', use: 'Reset' }, JWT_SECRET, { expiresIn: '1ms' });
 const invalidtoken2 = jwt.sign({ email: 'technitesdev@gmail.com' }, JWT_SECRET, { expiresIn: '600s' });
 
+
+let requesterId;
 describe('users endpoints', () => {
   let token;
   let testId;
@@ -70,10 +72,10 @@ describe('users endpoints', () => {
     });
   });
   // This test needs to run before user verification, token is from dummy user
-  describe('PATCH api/v1/user/editprofile', () => {
+  describe('PATCH api/v1/users/editprofile', () => {
     it('Should not allow user to edit profile when user is not verified', (done) => {
       chai.request(app)
-        .patch('/api/v1/editprofile')
+        .patch('/api/v1/users/editprofile')
         .set('Authorization', `${token}`)
         .send({ gender: 'Male' })
         .end((err, res) => {
@@ -273,10 +275,10 @@ describe('users endpoints', () => {
     });
   });
   // This test needs to run before logging out user, token is from dummy user
-  describe('PATCH api/v1/editprofile', () => {
+  describe('PATCH api/v1/users/editprofile', () => {
     it('Should not allow user to edit profile to email that already exists', (done) => {
       chai.request(app)
-        .patch('/api/v1/editprofile')
+        .patch('/api/v1/users/editprofile')
         .set('Authorization', `${token}`)
         .send({ email: 'technitesdev@gmail.com' })
         .end((err, res) => {
@@ -286,7 +288,7 @@ describe('users endpoints', () => {
     });
     it('Should not accept uploads that are not images', async () => {
       const userUpdate = await chai.request(app)
-        .patch('/api/v1/editprofile')
+        .patch('/api/v1/users/editprofile')
         .set('Authorization', `${token}`)
         .attach('image', 'src/utils/assets/Test.rtf', 'Test.rtf');
       expect(userUpdate.body.status).to.equal(415);
@@ -318,7 +320,7 @@ describe('users endpoints', () => {
   describe('GET api/v1/users/1', () => {
     it('Should not return specific profile if parameter is not an integer', (done) => {
       chai.request(app)
-        .get('/api/v1/user/a')
+        .get('/api/v1/users/a')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -328,7 +330,7 @@ describe('users endpoints', () => {
     });
     it('Should return an appropriate message when user is not found', (done) => {
       chai.request(app)
-        .get('/api/v1/user/100')
+        .get('/api/v1/users/100')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -338,7 +340,7 @@ describe('users endpoints', () => {
     });
     it('Should return user when found', (done) => {
       chai.request(app)
-        .get(`/api/v1/user/${testId}`)
+        .get(`/api/v1/users/${testId}`)
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -348,7 +350,7 @@ describe('users endpoints', () => {
     });
     it('Should return all users', (done) => {
       chai.request(app)
-        .get('/api/v1/users/all')
+        .get('/api/v1/users')
         .set('Accept', 'application/json')
         .send()
         .end((err, res) => {
@@ -373,6 +375,157 @@ describe('users endpoints', () => {
         .send()
         .end((err, res) => {
           expect(res.body.status).to.equal(200);
+          done();
+        });
+    });
+  });
+
+  describe('Add requester to create a trip, manger to approve trip', () => {
+    let requesterToken;
+    let superAdminToken;
+    let travelAdminToken;
+    let managerToken;
+    let travelAdminId;
+
+    it('should log in a requester', (done) => {
+      const userData = {
+        email: 'requester@request.com',
+        password: process.env.SUPER_ADMIN_PASS
+      };
+      chai
+        .request(app)
+        .post('/api/v1/auth/login')
+        .send(userData)
+        .end((err, res) => {
+          res.should.have.status(200);
+          requesterToken = res.body.data.token;
+          requesterId = res.body.data.user.id;
+          done();
+        });
+    });
+
+    it('should log in a superadmin', (done) => {
+      const userData = {
+        email: 'technitesdev1@gmail.com',
+        password: process.env.SUPER_ADMIN_PASS
+      };
+      chai
+        .request(app)
+        .post('/api/v1/auth/login')
+        .send(userData)
+        .end((err, res) => {
+          res.should.have.status(200);
+          superAdminToken = res.body.data.token;
+          done();
+        });
+    });
+
+    it('should log in a travel admin', (done) => {
+      const userData = {
+        email: 'travel@admin.com',
+        password: process.env.SUPER_ADMIN_PASS
+      };
+      chai
+        .request(app)
+        .post('/api/v1/auth/login')
+        .send(userData)
+        .end((err, res) => {
+          res.should.have.status(200);
+          travelAdminToken = res.body.data.token;
+          travelAdminId = res.body.data.user.id;
+          done();
+        });
+    });
+
+    it('should log in a manager', (done) => {
+      const userData = {
+        email: 'manager@admin.com',
+        password: process.env.SUPER_ADMIN_PASS
+      };
+      chai
+        .request(app)
+        .post('/api/v1/auth/login')
+        .send(userData)
+        .end((err, res) => {
+          res.should.have.status(200);
+          managerToken = res.body.data.token;
+          done();
+        });
+    });
+
+    it('it should return a list of approved trips that have already started', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/users/${requesterId}/trips?years=2`)
+        .set('Authorization', `Bearer ${requesterToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('it should return a list for a user if logged in user is superadmin', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/users/${requesterId}/trips?years=2`)
+        .set('Authorization', `Bearer ${superAdminToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('it should return a list for a user if logged in user is manager', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/users/${requesterId}/trips?years=2`)
+        .set('Authorization', `Bearer ${managerToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('it should not return a list for a user if logged in user is not superadmin, manager or specific id user', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/users/${requesterId}/trips?years=2`)
+        .set('Authorization', `Bearer ${travelAdminToken}`)
+        .end((err, res) => {
+          res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('it should not return a list for a user if logged in user is not superadmin, manager or specific id user', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/users/${travelAdminId}/trips?years=2`)
+        .set('Authorization', `Bearer ${requesterToken}`)
+        .end((err, res) => {
+          res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('it should not return a list of approved trips given invalid query', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/users/${requesterId}/trips?years=de`)
+        .set('Authorization', `Bearer ${requesterToken}`)
+        .end((err, res) => {
+          res.should.have.status(422);
+          done();
+        });
+    });
+
+    it('it should not return a list of approved trips given invalid params', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users/$rfr/trips?years=22')
+        .set('Authorization', `Bearer ${requesterToken}`)
+        .end((err, res) => {
+          res.should.have.status(422);
           done();
         });
     });

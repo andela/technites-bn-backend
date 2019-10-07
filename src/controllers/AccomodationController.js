@@ -17,13 +17,12 @@ const {
   createAccomodation,
   getByNameLocationRoom,
   findAllAccommodations,
-  findAccommodationById,
   findAllAccommodationsByLocation,
   findAccommodationFeedback
 } = AccomodationServices;
 const { addRoom, findRoomById, getAllRoomsByAccommodation } = RoomServices;
 const {
- addLike, updateLike, findLike, countLikes 
+  addLike, updateLike, findLike, countLikes
 } = LikeServices;
 const util = new Util();
 /**
@@ -44,7 +43,9 @@ class AccomodationControler {
       return res.status(401).send({ status: 401, error: 'Access denied' });
     }
 
-    const checkExist = await getByNameLocationRoom(accommodation_name.toLowerCase(), location.toLowerCase(), room_type.toLowerCase());
+    const checkExist = await getByNameLocationRoom(
+      accommodation_name.toLowerCase(), location.toLowerCase(), room_type.toLowerCase()
+    );
     if (checkExist.length > 0) {
       return res.status(409).send({ status: 409, error: 'Accommodation facility already exist' });
     }
