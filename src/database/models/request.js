@@ -57,5 +57,16 @@ export default (sequelize, DataTypes) => {
     eventEmitter.emit('new_travel_request', dataValues);
   });
 
+  Request.afterBulkUpdate((data) => {
+    data.individualHooks = true;
+    sequelize
+      .query(`SELECT * FROM "Requests" WHERE id = ${data.where.id}`, {
+        type: sequelize.QueryTypes.SELECT
+      })
+      .then((request) => {
+        eventEmitter.emit('travel_request_update', request[0]);
+      });
+  });
+
   return Request;
 };
