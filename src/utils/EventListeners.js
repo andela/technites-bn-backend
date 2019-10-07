@@ -7,4 +7,5 @@ export default () => {
 
   eventEmitter.on('new_travel_request', sendNewTravelRequestNotification);
   eventEmitter.on('new_comment', sendNewCommentNotification);
+  eventEmitter.on('travel_request_response', sendNewTravelRequestNotification);
 };
