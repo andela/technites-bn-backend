@@ -56,6 +56,9 @@ socket.on('new_travel_request', (data) => {
   console.log(data);
   showNewTravelRequestNotification(data);
 });
+socket.on('travel_request_response', (data) => {
+  showNewTravelRequestNotification(data);
+});
 
 </script>
 <body>
