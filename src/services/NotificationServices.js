@@ -27,9 +27,12 @@ class NotificationService {
     notificationToSave.type = data.request_type;
 
     const { dataValues } = await NotificationService.saveNotification(notificationToSave);
-
+    if (data.status === 'Approved') {
+      notification.title = 'Response to your previous';
+      const emitRes = io.emit('travel_request_response', notification);
+      return { dataValues, emitRes };
+    }
     const emitRes = io.emit('new_travel_request', notification);
-
     return { dataValues, emitRes };
   }
 

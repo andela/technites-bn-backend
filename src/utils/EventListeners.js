@@ -6,4 +6,5 @@ export default () => {
   const { sendNewTravelRequestNotification } = notificationService;
 
   eventEmitter.on('new_travel_request', sendNewTravelRequestNotification);
+  eventEmitter.on('travel_request_response', sendNewTravelRequestNotification);
 };
