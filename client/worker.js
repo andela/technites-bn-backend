@@ -4,7 +4,7 @@
 
 const showNewTravelRequestNotification = (data) => {
   navigator.serviceWorker.getRegistration().then((reg) => {
-    reg.showNotification(`New ${data.title} Travel Request`, {
+    reg.showNotification(`New ${data.title} Travel Request`, {  
       body: `${data.from}`
     });
   });

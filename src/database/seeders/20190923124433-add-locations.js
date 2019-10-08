@@ -15,6 +15,21 @@ export function up(queryInterface, Sequelize) {
     name: 'Lagos',
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+  {
+    name: 'Dubai',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: 'Kinshasa',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    name: 'Johanesburg',
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
   ], {});
 }

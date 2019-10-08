@@ -57,7 +57,11 @@ socket.on('new_travel_request', (data) => {
   showNewTravelRequestNotification(data);
 });
 socket.on('travel_request_response', (data) => {
-  showNewTravelRequestNotification(data);
+  navigator.serviceWorker.getRegistration().then((reg) => {
+    reg.showNotification(`Request ${data.status}`, {  
+      body: `${data.from}`
+    });
+  });
 });
 
 </script>

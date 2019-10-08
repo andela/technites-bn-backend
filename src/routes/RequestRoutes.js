@@ -26,11 +26,16 @@ const {
   mostTravelledDestinations
 } = RequestController;
 
-const { validateUpdateRequest, updateRequestValidator } = Validation;
+const {
+  validateUpdateRequest,
+  updateRequestValidator,
+  validateNewRequest,
+  validateRequestAdmin
+} = Validation;
 
 router.get('/', [verifyToken], mostTravelledDestinations);
-router.post('/', [verifyToken, validate], createRequest);
-router.get('/:id([0-9]{1,11})/:action(approve|reject)/:token?', reqAttachUser, requestAction);
+router.post('/', [verifyToken, validate], validateNewRequest, createRequest);
+router.get('/:id([0-9]{1,11})/:action(approve|reject)/:token?', reqAttachUser, validateRequestAdmin, requestAction);
 router.patch('/:id', verifyToken, updateRequestValidator, validateUpdateRequest, updateRequest);
 router.get('/manager', verifyToken, managerRequests);
 router.get('/', verifyToken, getRequests);

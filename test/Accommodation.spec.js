@@ -50,7 +50,7 @@ describe('Accomodations', () => {
         .attach('images', 'test/testPik.png', 'testPik.png')
         .field('accommodation_name', 'Andela suites')
         .field('room_type', '2 bed room')
-        .field('location', 'Kigali')
+        .field('location', 1)
         .field('description', 'best and spacious')
         .field('quantity', 5)
         .end((err, res) => {
@@ -68,7 +68,7 @@ describe('Accomodations', () => {
         .attach('images', 'test/testPik.png', 'testPik.png')
         .field('accommodation_name', 'Andela suites')
         .field('room_type', '2 bed room')
-        .field('location', 'Kigali')
+        .field('location', 1)
         .field('description', 'best and spacious')
         .field('quantity', 5)
         .end((err, res) => {
@@ -86,7 +86,7 @@ describe('Accomodations', () => {
         .attach('images', 'test/testPik.png', 'testPik.png')
         .field('accommodation_name', 'Andela suites')
         .field('room_type', '2 bed room')
-        .field('location', 'Kigali')
+        .field('location', 1)
         .field('description', 'best and spacious')
         .field('quantity', 5)
         .end((err, res) => {
