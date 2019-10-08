@@ -34,7 +34,8 @@ const {
   findUserById,
   displayAllUsers,
   findUserByCompany,
-  updateEmailNotification
+  updateEmailNotification,
+  updateNotificationsAsSeen
 } = UserService;
 let msgType = null;
 const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
@@ -347,6 +348,18 @@ class UserController {
     } catch (e) {
       next(e);
     }
+  }
+
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @returns {*} all users
+ */
+  static async markNotificationsAsSeen(req, res) {
+    await updateNotificationsAsSeen(req.user.id);
+
+    return res.status(200).json({ status: res.statusCode, message: 'All notifications are marked as read' });
   }
 }
 

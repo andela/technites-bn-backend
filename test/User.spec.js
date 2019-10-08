@@ -234,7 +234,7 @@ describe('users endpoints', () => {
         });
     });
   });
-  describe('POST: /api/v1/users/notifications enable or disable', () => {
+  describe('POST: /api/v1/users/notifications', () => {
     it('Should disable the email notifications', (done) => {
       chai
         .request(app)
@@ -251,6 +251,18 @@ describe('users endpoints', () => {
       chai
         .request(app)
         .post('/api/v1/users/notifications?emailAllowed=true')
+        .set('Authorization', `${token}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.a('string');
+          done();
+        });
+    });
+
+    it('Should mark all notifications as read', (done) => {
+      chai
+        .request(app)
+        .patch('/api/v1/users/notifications/seen')
         .set('Authorization', `${token}`)
         .end((err, res) => {
           expect(res.status).to.equal(200);

@@ -13,7 +13,8 @@ const connection = connect();
 const { verifyToken } = UserAuthentication;
 const {
   editProfile, viewSingleProfile, viewAllProfiles,
-  viewProfilesByCompany, enableOrDisableEmailNotifications, getUserTrips
+  viewProfilesByCompany, enableOrDisableEmailNotifications, getUserTrips,
+  markNotificationsAsSeen
 } = UserController;
 
 const { getRequests } = RequestController;
@@ -26,6 +27,7 @@ router.post('/notifications', [verifyToken], enableOrDisableEmailNotifications);
 router.get('/:id', viewSingleProfile);
 router.get('/', viewAllProfiles);
 router.get('/company/:company', viewProfilesByCompany);
+router.patch('/notifications/seen', [verifyToken], markNotificationsAsSeen);
 
 // get requests
 router.get('/:id/requests', verifyToken, getRequests);

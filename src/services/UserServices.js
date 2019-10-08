@@ -228,6 +228,14 @@ class UserService {
   static async updateEmailNotification(userEmail, option) {
     return database.User.update({ isEmailAllowed: option }, { where: { email: userEmail } });
   }
+
+  /**
+   * @param {Integer} userId;
+   * @returns {Object} updated field
+   */
+  static async updateNotificationsAsSeen(userId) {
+    return database.Notification.update({ seen: true }, { where: { user_id: userId } });
+  }
 }
 
 export default UserService;
