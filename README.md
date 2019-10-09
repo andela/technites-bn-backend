@@ -3,7 +3,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a5fa230c63f46d23a649/maintainability)](https://codeclimate.com/github/andela/technites-bn-backend/maintainability)
 [![Build Status](https://travis-ci.org/andela/technites-bn-backend.svg?branch=develop)](https://travis-ci.org/andela/technites-bn-backend)     [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
-Barefoot Nomad - Making company travel and accomodation easy and convinient.
+Barefoot Nomad - Making company travel and accommodation easy and convenient.
 =======
 
 ## Vision
