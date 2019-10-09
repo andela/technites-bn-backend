@@ -15,29 +15,18 @@ import Response from '../utils/Response';
 import database from '../database/models';
 
 const { Op } = Sequelize;
-
 const util = new Util();
 const mail = new Mail();
-const {
-  jwtSign, jwtVerify, comparePassword, hashPassword
-} = AuthenticationHelper;
+const { jwtSign, jwtVerify, comparePassword } = AuthenticationHelper;
 const response = new Response();
 const {
-  addUser,
-  findUserByEmail,
-  storeToken,
-  updateCredentials,
-  sendConfirmationEmail,
-  storedToken,
-  destroyToken,
-  updateProfile,
-  findUserById,
-  displayAllUsers,
-  findUserByCompany,
-  updateEmailNotification,
-  updateNotificationsAsSeen
+  addUser, findUserByEmail, storeToken, updateCredentials, sendConfirmationEmail, storedToken,
+  destroyToken, updateProfile, findUserById, displayAllUsers, findUserByCompany,
+  updateEmailNotification, updateNotificationsAsSeen, getAllUserNotifications
 } = UserService;
+
 let msgType = null;
+
 const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
 cloudinary.config({
   cloud_name: CLOUDINARY_NAME,
@@ -48,10 +37,6 @@ cloudinary.config({
  * @class UserController
  */
 class UserController {
-  /**
-     * @description set the diffrent states of a user
-     */
-
   /**
    * @param {Object} req object
    * @param {Object} res object
@@ -79,7 +64,6 @@ class UserController {
       });
     }
   }
-
 
   /**
    * @description contoller function that logs a user in
@@ -121,7 +105,6 @@ class UserController {
     }
   }
 
-
   /**
  *
  * @param {req} req - Receive Email
@@ -145,7 +128,7 @@ class UserController {
         valid: true
       };
       storeToken(userinfo).then(() => {
-      // send email
+        // send email
         mail.setMessage(req.body.email, token, searchUser.firstname, req.body.email, msgType = 'ResetRequest');
         return mail.send(res);
       });
@@ -266,7 +249,6 @@ class UserController {
     return util.send(res);
   }
 
-
   /**
  *
  * @param {*} req
@@ -325,12 +307,11 @@ class UserController {
     const totalDays = daysArray.reduce((a, b) => a + b, 0);
     if (totalDays === 0) return res.status(400).send({ status: res.statusCode, error: 'Incomplete query params' });
     // get startt date with moment
-    // moment.utc();
     const startDate = moment().subtract(totalDays, 'day').toDate();
     const currentDate = moment().toDate();
     if ((req.user.id !== req.params.id)
       && (req.user.role_value === 1 || req.user.role_value === 4 || req.user.role_value <= 0
-      || req.user.role_value > 7)) {
+        || req.user.role_value > 7)) {
       return res.status(401).send({ status: res.statusCode, error: 'Not allowed' });
     }
     try {
@@ -354,12 +335,53 @@ class UserController {
  *
  * @param {*} req
  * @param {*} res
- * @returns {*} all users
+ * @param {*} next
+ * @returns {*} message
  */
-  static async markNotificationsAsSeen(req, res) {
-    await updateNotificationsAsSeen(req.user.id);
+  static async markNotificationsAsSeen(req, res, next) {
+    try {
+      await updateNotificationsAsSeen(req.user.id);
+      return res.status(200).json({ status: res.statusCode, message: 'All notifications are marked as read' });
+    } catch (e) {
+      next(e);
+    }
+  }
 
-    return res.status(200).json({ status: res.statusCode, message: 'All notifications are marked as read' });
+  /**
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @returns {*} all notifications
+ */
+  static async getAllNotifications(req, res, next) {
+    let results = null;
+    let notifications = null;
+    try {
+      if (req.query.seen) {
+        results = await getAllUserNotifications(req.user.id, req.query.seen);
+        notifications = results.rows.map(({ dataValues: notification }) => notification);
+        return UserController.sendNotificationResponse(res, results.count, notifications);
+      }
+
+      results = await getAllUserNotifications(req.user.id);
+      notifications = results.rows.map(({ dataValues: notification }) => notification);
+      UserController.sendNotificationResponse(res, results.count, notifications);
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  /**
+ * @param {*} res
+ * @param {*} count
+ * @param {*} notifications
+ * @returns {*} all notifications
+ */
+  static async sendNotificationResponse(res, count, notifications) {
+    return res.status(200).json({
+      status: res.statusCode, message: 'All notifications are successfully retrieved', number: count, data: notifications
+    });
   }
 }
 

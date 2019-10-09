@@ -14,7 +14,7 @@ const { verifyToken } = UserAuthentication;
 const {
   editProfile, viewSingleProfile, viewAllProfiles,
   viewProfilesByCompany, enableOrDisableEmailNotifications, getUserTrips,
-  markNotificationsAsSeen
+  markNotificationsAsSeen, getAllNotifications
 } = UserController;
 
 const { getRequests } = RequestController;
@@ -24,6 +24,7 @@ const { updateProfileValidator } = Validation;
 // profiles
 router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);
 router.post('/notifications', [verifyToken], enableOrDisableEmailNotifications);
+router.get('/notifications', [verifyToken], getAllNotifications);
 router.get('/:id', viewSingleProfile);
 router.get('/', viewAllProfiles);
 router.get('/company/:company', viewProfilesByCompany);

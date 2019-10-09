@@ -11,6 +11,10 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.INTEGER,
       allowNull: false
     },
+    request_id: {
+      type: Sequelize.INTEGER,
+      allowNull: false
+    },
     type: {
       type: Sequelize.STRING,
       allowNull: false

@@ -270,6 +270,48 @@ describe('users endpoints', () => {
           done();
         });
     });
+
+    it('Should return all notifications', (done) => {
+      const managerToken = jwt.sign({ email: 'technitesdev@gmail.com' }, JWT_SECRET, { expiresIn: '4m' });
+      chai
+        .request(app)
+        .get('/api/v1/users/notifications')
+        .set('Authorization', `${managerToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.a('string');
+          expect(res.body.data[0]).to.have.property('seen');
+          done();
+        });
+    });
+
+    it('Should return all seen notifications', (done) => {
+      const managerToken = jwt.sign({ email: 'technitesdev@gmail.com' }, JWT_SECRET, { expiresIn: '4m' });
+      chai
+        .request(app)
+        .get('/api/v1/users/notifications?seen=true')
+        .set('Authorization', `${managerToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.a('string');
+          expect(res.body.data[0]).to.have.property('seen').eql('true');
+          done();
+        });
+    });
+
+    it('Should return all unseen notifications', (done) => {
+      const managerToken = jwt.sign({ email: 'technitesdev@gmail.com' }, JWT_SECRET, { expiresIn: '4m' });
+      chai
+        .request(app)
+        .get('/api/v1/users/notifications?seen=false')
+        .set('Authorization', `${managerToken}`)
+        .end((err, res) => {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.be.a('string');
+          expect(res.body.data[0]).to.have.property('seen').eql('false');
+          done();
+        });
+    });
   });
 
   describe('POST api/v1/auth/login/:token', () => {

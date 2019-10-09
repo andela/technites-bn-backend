@@ -23,6 +23,7 @@ class NotificationService {
 
     const notificationToSave = {};
     notificationToSave.user_id = id;
+    notificationToSave.request_id = data.id;
     notificationToSave.message = data.reason;
     notificationToSave.type = data.request_type;
 

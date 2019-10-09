@@ -9,6 +9,7 @@ describe('Testing Notification', () => {
   it('should return a valid object', async () => {
     const data = {
       user_id: 1,
+      id: 3, // this is the request id
       request_type: 'ReturnTrip',
       location_id: 3,
       departure_date: '2030-09-25',
@@ -24,6 +25,7 @@ describe('Testing Notification', () => {
     };
 
     const { dataValues, emitRes } = await sendNewTravelRequestNotification(data);
+
     dataValues.should.have.property('message').be.a('string');
     emitRes.should.have.property('name').be.a('string');
     emitRes.should.have.property('server').be.a('object');

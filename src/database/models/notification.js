@@ -17,6 +17,16 @@ export default (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
+      request_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'Request',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
       type: {
         type: DataTypes.STRING,
         allowNull: false
