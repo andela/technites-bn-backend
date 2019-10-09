@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import moment from 'moment';
 import { Op } from 'sequelize';
 import database from '../database/models';
+import { hasRole } from '../utils/GetRoleUtil';
 
 dotenv.config();
 /**
@@ -91,16 +92,11 @@ class RequestService {
  * @returns {Object} Request
  */
   static async isDatesValid(request) {
-    if (!moment().isSame(request.departure_date, 'day')) {
-      if (moment().isAfter(request.departure_date)) {
-        return { status: 400, error: 'Invalid date. Past dates are not allowed' };
-      }
+    if (moment().isAfter(request.departure_date, 'D')) {
+      return { status: 400, error: 'Invalid date. Past dates are not allowed' };
     }
-
-    if (request.return_date !== undefined) {
-      if (moment(request.departure_date).isAfter(request.return_date)) {
-        return { status: 400, error: 'Return date should be after the departure date' };
-      }
+    if (request.return_date && moment(request.departure_date).isAfter(request.return_date)) {
+      return { status: 400, error: 'Return date should be after the departure date' };
     }
   }
 
@@ -110,14 +106,9 @@ class RequestService {
  * @returns {Boolean} true or false
  */
   static async isSamePlace(request) {
-    for (let i = 0; i < request.destinations.length; i++) {
-      const finalDestinationId = request.destinations[i].destination_id;
-      const locationId = request.location_id;
-
-      if (finalDestinationId === locationId) return true;
-    }
-
-    return false;
+    return request.destinations.some(
+      ({ destination_id }) => destination_id === request.location_id
+    );
   }
 
   /**
@@ -126,23 +117,13 @@ class RequestService {
 * @returns {Boolean} true or false
 */
   static async isDestinationsDifferent(request) {
-    for (let i = 0; i < request.destinations.length; i++) {
-      for (let j = i + 1; j < request.destinations.length; j++) {
-        if (request.destinations[i].destination_id === request.destinations[j].destination_id) {
-          return false;
-        }
-      }
-    }
-
-    for (let i = 0; i < request.destinations.length; i++) {
-      for (let j = i + 1; j < request.destinations.length; j++) {
-        if (request.destinations[i].accomodation_id === request.destinations[j].accomodation_id) {
-          return false;
-        }
-      }
-    }
-
-    return true;
+    // destinations array
+    const destArr = request.destinations.map(({ destination_id }) => destination_id);
+    // accommodations array
+    const accArr = request.destinations.map(({ accomodation_id }) => accomodation_id);
+    // func that checks for duplicate in Array eg: [1,2,3,4] -> true, [1,2,3,1] -> false
+    const check = (arr) => arr.every((item) => arr.indexOf(item) === arr.lastIndexOf(item));
+    return check(destArr) && check(accArr);
   }
 
   /**
@@ -292,10 +273,7 @@ class RequestService {
     const check = await database.Request.findAll({ where: { user_id: userId, id: requestId } });
     if (check.length > 0) return true;
     const user = await database.User.findOne({ where: { id: userId } });
-    if ((user)
-    && (user.dataValues.role_value === 2 || user.dataValues.role_value === 3
-       || user.dataValues.role_value === 7)
-    ) return true;
+    if ((user) && hasRole(user, [2, 3, 7])) return true;
     return false;
   }
 

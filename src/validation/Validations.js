@@ -13,13 +13,17 @@ import LocationServices from '../services/LocationServices';
 import Util from '../utils/Utils';
 import AuthenticationHelper from '../utils/AuthHelper';
 
-const { searchRequest, findRequestById } = RequestServices;
 const { findUserByEmail } = UserServices;
 const { findHostByEmail } = HostService;
 const { comparePassword } = AuthenticationHelper;
 const { findAccommodation, findAccommodationById, findAccommodations } = AccomodationServices;
 const { findLocationById } = LocationServices;
 const { findRoom, findRooms, checkRoomAvailability } = RoomServices;
+const {
+  isSamePlace, isDestinationsDifferent, searchRequest, findRequestById, findIfLocationsExists,
+  isDatesValid, isCheckDatesValid, isRequestUnique
+} = RequestServices;
+
 const util = new Util();
 
 export const genericValidator = (req, res, schema, next) => {
@@ -126,8 +130,6 @@ export default class Validation {
    * @returns {Object} newUser
    */
   static validateRequest(req) {
-    let schema = null;
-
     const multiCityRequest = Joi.object({
       destination_id: Joi.number().integer().required(),
       accomodation_id: Joi.number().integer().required(),
@@ -135,26 +137,17 @@ export default class Validation {
       check_out: Joi.date().required(),
       room_id: Joi.number().integer().required(),
     });
+    const schema = {
+      request_type: Joi.string().required().min(1).max(255),
+      location_id: Joi.number().integer().required().min(1),
+      departure_date: Joi.date().required(),
+      destinations: Joi.array().items(multiCityRequest).min(1).required(),
+      reason: Joi.string().required().min(1).max(255),
+    };
 
     if (req.body.request_type === 'ReturnTrip') {
-      schema = {
-        request_type: Joi.string().required().min(1).max(255),
-        location_id: Joi.number().integer().required().min(1),
-        departure_date: Joi.date().required(),
-        return_date: Joi.date().required(),
-        destinations: Joi.array().items(multiCityRequest).min(1).required(),
-        reason: Joi.string().required().min(1).max(255),
-      };
-    } else {
-      schema = {
-        request_type: Joi.string().required().min(1).max(255),
-        location_id: Joi.number().integer().required().min(1),
-        departure_date: Joi.date().required(),
-        destinations: Joi.array().items(multiCityRequest).min(1).required(),
-        reason: Joi.string().required().min(1).max(255),
-      };
+      schema.return_date = Joi.date().required();
     }
-
     return Joi.validate(req.body, schema);
   }
   static validateAddHostFields(req, res, next) {
@@ -286,19 +279,18 @@ export default class Validation {
     next();
   }
   static async validateNewRoom(req, res, next) {
-    const accommodation = await findAccommodationById(req.body.accommodation_id);
+    const {
+      accommodation_id, name, room_type, description
+    } = req.body;
+    const accommodation = await findAccommodationById(accommodation_id);
     if (!accommodation) {
       util.setError(404, 'Accommodation does not exist');
       return util.send(res);
     }
-    const room = await findRoom(
-      req.body.accommodation_id,
-      req.body.name,
-      req.body.room_type,
-      req.body.description
-    );
+    const room = await findRoom(accommodation_id, name, room_type, description);
     if (room) {
-      util.setError(409, `Room name ${req.body.name}, with the type ${req.body.room_type} already exists at ${accommodation.accommodation_name}`);
+      // eslint-disable-next-line camelcase
+      util.setError(409, `Room name ${name}, with the type ${room_type} already exists at ${accommodation.accommodation_name}`);
       return util.send(res);
     }
     if (req.user.role_value === 1) {
@@ -334,6 +326,43 @@ export default class Validation {
     });
     genericValidator(req, res, schema, next);
   }
+
+  static async validateRequestData(req, res, next) {
+    const request = req.body; request.user_id = req.user.id;
+    // getting all destinations ids
+    const allDestinationsIds = request.destinations.map(({ destination_id }) => destination_id);
+    allDestinationsIds.push(request.location_id);
+    const nonExistentIds = await findIfLocationsExists(allDestinationsIds);
+    if (nonExistentIds.length > 0) return res.status(404).json({ status: res.statusCode, error: `the location ${nonExistentIds} does not exists, please enter valid locations` });
+    // find if the user has a valid line manager
+    const lineManager = await findUserByEmail(req.user.line_manager);
+    if (lineManager === null) {
+      return res.status(400).json({ status: res.statusCode, error: 'Your line manager does not exists in our database, please edit your profile and add a valid line manager' });
+    }
+    await Validation.checkRequest(res, request);
+    const destinationDifferent = await isDestinationsDifferent(request);
+    if (destinationDifferent === false) {
+      util.setError(400, 'Destination id\'s or accomodation id\'s should be different');
+      return util.send(res);
+    }
+    const alreadyExistRequest = await isRequestUnique(request.reason, request.departure_date);
+    if (alreadyExistRequest) {
+      util.setError(409, 'Request already exists based on your reason and departure date');
+      return util.send(res);
+    }
+    next();
+  }
+  static async checkRequest(res, request) {
+    let message = await isDatesValid(request);
+    if (message) return res.status(400).json(message);
+    message = await isCheckDatesValid(request.destinations);
+    if (message) return res.status(400).json(message);
+    const samePlace = await isSamePlace(request);
+    if (samePlace) {
+      util.setError(400, 'Your location and destination should be different');
+      return util.send(res);
+    }
+  }
   static async validateNewRequest(req, res, next) {
     const request = req.body;
     if (typeof request.destinations === 'string') {
@@ -354,8 +383,7 @@ export default class Validation {
     // check rooms in that accommodation
     const noAvailableSpace = [];
     findAcc
-      .map(({ id, accommodation_name, available_space }) => ({ id, accommodation_name, available_space }))
-      .forEach((room) => (room.available_space === 0 ? noAvailableSpace.push(room.accommodation_name) : 1));
+      .map(({ id, accommodation_name, available_space }) => ({ id, accommodation_name, available_space })).forEach((room) => (room.available_space === 0 ? noAvailableSpace.push(room.accommodation_name) : 1));
     if (noAvailableSpace.length !== 0) return res.status(404).json({ status: res.statusCode, error: 'The following accommodations have no available space at this time, Change your choice', noAvailableSpace });
 
     // search Room based  on accommodations provided by the user and if it is available

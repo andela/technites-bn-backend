@@ -33,9 +33,10 @@ const {
   addFeedback, getAllFeedbacks, getFeedbackById
 } = FeedbackController;
 
-router.post('/', verifyToken, multipartyMiddle, accommodationData, validator, createAccomodation);
+
 router.post('/hosts', verifyToken, multipartyMiddle, validateHostAccommodations, validateAccommodations, createHostAccommodation);
 router.post('/rooms', verifyToken, multipartyMiddle, validateRooms, validateNewRoom, createRoom);
+router.post('/', verifyToken, multipartyMiddle, accommodationData, validator, createAccomodation);
 router.get('/', viewAllAccommodations);
 router.get('/location/:id', viewAllAccommodationsByLocation);
 router.get('/:id([0-9]{1,11})', viewSingleAccommodation);

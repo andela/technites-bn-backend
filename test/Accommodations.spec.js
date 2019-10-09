@@ -19,7 +19,7 @@ const { createAccomodation, findAccommodationByName } = AccommodationService;
 const { addLocation } = LocationService;
 const { addUser } = UserService;
 const accomodationUrl = '/api/v1/accommodations';
-const hostToken = jwtSign({ email: 'host@gmail.com' });
+const hostToken = jwtSign({ email: 'host5@gmail.com' });
 const hostToken2 = jwtSign({ email: 'host2@gmail.com' });
 let accId = null;
 describe('Accomodations', () => {
@@ -41,80 +41,9 @@ describe('Accomodations', () => {
   const token2 = jwtSign({ email: 'requesterfortest@gmail.com' });
   let locationId = null;
   let accommodation = null;
-  describe('POST /accommodation', () => {
-    it('creates an accommodation when the user is a travel admin', (done) => {
-      chai
-        .request(app)
-        .post(accomodationUrl)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .attach('images', 'test/testPik.png', 'testPik.png')
-        .field('accommodation_name', 'Andela suites')
-        .field('room_type', '2 bed room')
-        .field('location', 1)
-        .field('description', 'best and spacious')
-        .field('quantity', 5)
-        .end((err, res) => {
-          expect(res.statusCode).to.equal(201);
-          expect(res.body.message).to.equal('Accomodation facility succesifully created');
-        });
-      done();
-    });
 
-    it('should not create an accommodation facility when the user is not a travel admin', (done) => {
-      chai
-        .request(app)
-        .post(accomodationUrl)
-        .set('Authorization', `Bearer ${userToken}`)
-        .attach('images', 'test/testPik.png', 'testPik.png')
-        .field('accommodation_name', 'Andela suites')
-        .field('room_type', '2 bed room')
-        .field('location', 1)
-        .field('description', 'best and spacious')
-        .field('quantity', 5)
-        .end((err, res) => {
-          expect(res.statusCode).to.equal(401);
-          expect(res.body.message).to.equal('Access denied');
-        });
-      done();
-    });
-
-    it('should not duplicate an accommodation facility', (done) => {
-      chai
-        .request(app)
-        .post(accomodationUrl)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .attach('images', 'test/testPik.png', 'testPik.png')
-        .field('accommodation_name', 'Andela suites')
-        .field('room_type', '2 bed room')
-        .field('location', 1)
-        .field('description', 'best and spacious')
-        .field('quantity', 5)
-        .end((err, res) => {
-          expect(res.statusCode).to.equal(409);
-          expect(res.body.message).to.equal('Accommodation facility already exist');
-        });
-      done();
-    });
-
-    it('should not create an accommodation facility with missing fields', (done) => {
-      chai
-        .request(app)
-        .post(accomodationUrl)
-        .set('Authorization', `Bearer ${userToken}`)
-        .attach('images', 'test/testPik.png', 'testPik.png')
-        .field('accommodation_name', 'Andela suites')
-        .field('room_type', '')
-        .field('location', '')
-        .field('description', 'best and spacious')
-        .field('quantity', 5)
-        .end((err, res) => {
-          expect(res.statusCode).to.equal(422);
-        });
-      done();
-    });
-  });
-  describe('POST /accommodation by Host', () => {
-    beforeEach(async () => {
+  describe('POST Accommodation travel admin', () => {
+    before(async () => {
       const location = {
         name: 'MyTestLocation',
       };
@@ -127,9 +56,9 @@ describe('Accomodations', () => {
         is_verified: true,
         role_value: 1,
       };
-      await addUser(requestor);
+      await addUser(requestor);      
     });
-    afterEach(async () => {
+    after(async () => {
       await database.location.destroy({ where: { name: 'MyTestLocation' } });
       await database.User.destroy({ where: { email: 'requesterfortest@gmail.com' } });
     });
@@ -463,6 +392,70 @@ describe('Accomodations', () => {
           expect(res.body.status).to.equal(404);
           done();
         });
+    });
+  });
+  describe('POST /accommodation', () => {
+    it('creates an accommodation when the user is a travel admin', (done) => {
+      chai
+        .request(app)
+        .post(accomodationUrl)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .attach('images', 'test/testPik.png', 'testPik.png')
+        .field('accommodation_name', 'Andela suites')
+        .field('location', 1)
+        .field('description', 'best and spacious')
+        .end((err, res) => {
+          expect(res.statusCode).to.equal(201);
+          expect(res.body.message).to.equal('Accomodation facility succesifully created');
+        });
+      done();
+    });
+
+    it('should not create an accommodation facility when the user is not a travel admin', (done) => {
+      chai
+        .request(app)
+        .post(accomodationUrl)
+        .set('Authorization', `Bearer ${userToken}`)
+        .attach('images', 'test/testPik.png', 'testPik.png')
+        .field('accommodation_name', 'Andela suites')
+        .field('location', 1)
+        .field('description', 'best and spacious')
+        .end((err, res) => {
+          expect(res.statusCode).to.equal(401);
+          expect(res.body.message).to.equal('Access denied');
+        });
+      done();
+    });
+
+    it('should not duplicate an accommodation facility', (done) => {
+      chai
+        .request(app)
+        .post(accomodationUrl)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .attach('images', 'test/testPik.png', 'testPik.png')
+        .field('accommodation_name', 'Andela suites')
+        .field('location', 1)
+        .field('description', 'best and spacious')
+        .end((err, res) => {
+          expect(res.statusCode).to.equal(409);
+          expect(res.body.message).to.equal('Accommodation facility already exist');
+        });
+      done();
+    });
+
+    it('should not create an accommodation facility with missing fields', (done) => {
+      chai
+        .request(app)
+        .post(accomodationUrl)
+        .set('Authorization', `Bearer ${userToken}`)
+        .attach('images', 'test/testPik.png', 'testPik.png')
+        .field('accommodation_name', 'Andela suites')
+        .field('location', '')
+        .field('description', 'best and spacious')
+        .end((err, res) => {
+          expect(res.statusCode).to.equal(422);
+        });
+      done();
     });
   });
 });
