@@ -4,15 +4,16 @@ const { check, validationResult, sanitize } = require('express-validator');
 
 export const loginData = [
   check('email')
-    .exists()
-    .withMessage('Invalid user credentials')
+    .exists({
+      checkNull: true,
+      checkFalsy: true
+    }).withMessage('A valid Email is required')
     .trim(),
   check('password')
     .exists({
       checkNull: true,
       checkFalsy: true
-    })
-    .withMessage('Invalid user credentials'),
+    }).withMessage('Please provide a password to login'),
   sanitizeBody('notifyOnReply').toBoolean()
 ];
 export const changeRoleData = [
@@ -69,27 +70,34 @@ export const registerData = [
 ];
 
 export const accommodationData = [
-  check('accommodation_name')
-    .exists()
+  check('accommodation_name').isLength({ min: 3 })
+    .withMessage('provide at least 3 letters')
+    .exists({
+      checkNull: true,
+      checkFalsy: true
+    })
+    .trim()
     .withMessage('Accommodation name is required')
-    .trim(),
-  check('room_type')
-    .exists()
-    .withMessage('Room type is required')
-    .trim(),
-  check('description')
-    .exists()
-    .withMessage('Description of the rooms is required')
-    .trim(),
+    .escape(),
+  check('description').isLength({ min: 20 })
+    .withMessage('Describe the accommodation in atleast 20 characters')
+    .exists({
+      checkNull: true,
+      checkFalsy: true
+    })
+    .trim()
+    .withMessage('Description of the accommodation is required'),
   check('location')
-    .exists()
+    .exists({
+      checkNull: true,
+      checkFalsy: true
+    })
+    .trim()
     .withMessage('Location of the accommodation facility is required')
-    .trim(),
-  check('quantity')
-    .exists()
-    .isInt()
-    .withMessage('Quantity should be an integer and is required')
-    .trim(),
+    .escape(),
+  check('images')
+    .isEmpty()
+    .withMessage('please provide some images of the accommodation'),
   sanitizeBody('notifyOnReply').toBoolean()
 ];
 export const commentdata = [

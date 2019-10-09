@@ -15,10 +15,11 @@ cloudinary.config({
 });
 const {
   createAccomodation,
-  getByNameLocationRoom,
+  getByNameLocation,
   findAllAccommodations,
   findAllAccommodationsByLocation,
-  findAccommodationFeedback
+  findAccommodationFeedback,
+  findAccommodation
 } = AccomodationServices;
 const { addRoom, findRoomById, getAllRoomsByAccommodation } = RoomServices;
 const {
@@ -37,50 +38,61 @@ class AccomodationControler {
      * @returns {object} returns an object of the newly added accomodation
      */
   static async createAccomodation(req, res, next) {
-    const { accommodation_name, location, room_type } = req.body;
+    const { accommodation_name, description, location } = req.body;
 
     if (req.user.role_value < 4) {
       return res.status(401).send({ status: 401, error: 'Access denied' });
     }
-
-    const checkExist = await getByNameLocationRoom(
-      accommodation_name.toLowerCase(), location.toLowerCase(), room_type.toLowerCase()
-    );
-    if (checkExist.length > 0) {
-      return res.status(409).send({ status: 409, error: 'Accommodation facility already exist' });
-    }
-
-    const imagesPath = req.files.images.path;
     try {
-      cloudinary.uploader.upload(imagesPath, async (result, error) => {
-        if (error) {
-          return res.status(400).send({ status: 400, error });
-        }
+      const checkExist = await getByNameLocation(accommodation_name, location);
 
-        req.body.images = result.url;
-        req.body.accommodation_name = accommodation_name.toLowerCase();
-        req.body.location = location.toLowerCase();
-        req.body.room_type = room_type.toLowerCase();
-        const created = await createAccomodation(req.body);
+      if (checkExist.length > 0) {
+        return res.status(409).send({ status: 409, error: 'Accommodation facility already exist' });
+      }
 
-        return res.status(201).send({
-          status: 201,
-          message: 'Accomodation facility succesifully created',
-          data: created
+      const { images } = req.files;
+
+      let uploadedImageUrl;
+
+      if (!images.length) {
+        const result = await cloudinary.uploader.upload(images.path);
+        uploadedImageUrl = result.url;
+      } else if (images.length >= 2) {
+        const uploads = await images.map(async (image) => {
+          const result = await cloudinary.uploader.upload(image.path);
+          return result.url;
         });
+        uploadedImageUrl = await Promise.all(uploads);
+      } else { uploadedImageUrl = null; }
+
+      const newAccommodation = {
+        accommodation_name,
+        description,
+        location,
+        images: uploadedImageUrl
+      };
+
+      const created = await createAccomodation(newAccommodation);
+
+      return res.status(201).send({
+        status: 201,
+        message: 'Accomodation facility succesifully created',
+        data: created
       });
     } catch (error) {
+      res.status(500).send({ status: 500, error: 'Internal server error' });
       return next(error);
     }
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @returns {*} registered accommodation
- */
-  static async createHostAccommodation(req, res) {
+     *
+     * @param {*} req
+     * @param {*} res
+     * @param {*} next
+     * @returns {*} registered accommodation
+     */
+  static async createHostAccommodation(req, res, next) {
     try {
       const accommodation = req.body;
       if (req.files && req.files.images) {
@@ -107,8 +119,8 @@ class AccomodationControler {
         });
       }
     } catch (error) {
-      util.setError(500, 'Failed to add accommodation');
-      return util.send(res);
+      res.status(500).send({ status: 500, error: 'Internal server error' });
+      return next(error);
     }
   }
 
@@ -172,7 +184,7 @@ class AccomodationControler {
  * @returns {*} user
  */
   static async viewSingleAccommodation(req, res) {
-  // let singleAccommodation;
+    // let singleAccommodation;
     const singleAccommodation = await findAccommodationFeedback(req.params.id);
     if (!singleAccommodation) {
       util.setError(404, 'Accommodation not found');

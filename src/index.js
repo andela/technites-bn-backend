@@ -19,7 +19,7 @@ import socketIo from 'socket.io';
 import passport from './config/passport';
 import routes from './routes';
 import errorLogger from './utils/ErrorLogger';
-import initializeEventListeners from './utils/EventListeners';
+import notifications from './utils/Notifications/index';
 
 dotenv.config();
 
@@ -27,8 +27,6 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Create global app object
 const app = express();
-const httpServer = http.createServer(app);
-const io = socketIo(httpServer);
 
 app.use(express.static(path.join(__dirname, '../client')));
 
@@ -58,6 +56,9 @@ app.use((req, res, next) => {
     next();
   }
 });
+
+// initialize all notifications
+notifications();
 
 app.use('/api/v1/', routes);
 
@@ -102,14 +103,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-io.on('connection', (socket) => socket.emit('welcome', 'Welcome to barefoot nomad'));
-
 // finally, let's start our server...
-const server = httpServer.listen(process.env.PORT || 3000, () => {
-  initializeEventListeners();
+const server = app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on port ${server.address().port}`);
 });
-
+const io = socketIo(server);
+io.on('connection', (socket) => {
+  console.log('socket connected',);
+});
 export { io };
 
 export default server;

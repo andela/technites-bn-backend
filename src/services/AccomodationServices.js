@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import Sequelize, { Op } from 'sequelize';
+import { Op } from 'sequelize';
 import database from '../database/models';
 /**
  * @class AccomodationServices
@@ -22,11 +22,16 @@ class AccomodationServices {
       * @param {*} room_type
       * @returns {object} returns the newly saved accomodation facility
       */
-  static async getByNameLocationRoom(accommodation_name, location, room_type) {
+  static async getByNameLocation(accommodation_name, location) {
     const found = await database.Accomodations.findAll({
-      where: { accommodation_name, location, room_type }
+      where: {
+        [Op.and]: [
+          { accommodation_name: { [Op.iLike]: `%${accommodation_name}%` } },
+          { location: { [Op.iLike]: `%${location}%` } },
+        ]
+      }
     });
-    return found;
+    return found.map((result) => result.dataValues);
   }
 
   /**

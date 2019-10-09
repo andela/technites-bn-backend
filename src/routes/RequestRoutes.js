@@ -6,7 +6,8 @@ import RequestController from '../controllers/RequestController';
 import validate from '../middlewares/RequestValidation';
 import { queryValidation, errorCheck } from '../validation/QueryValidation';
 import CommentController from '../controllers/CommentController';
-import { commentdata, validator } from '../validation/UserValidation';
+import { checkIsInt, commentdata, validator } from '../validation/UserValidation';
+
 
 const router = new Router();
 
@@ -21,9 +22,10 @@ const {
   createRequest,
   requestAction,
   getRequests,
-  searchRequests,
   managerRequests,
-  mostTravelledDestinations
+  mostTravelledDestinations,
+  getRequestById,
+  searchRequests
 } = RequestController;
 
 const {
@@ -37,9 +39,15 @@ router.get('/', [verifyToken], mostTravelledDestinations);
 router.post('/', [verifyToken, validate], validateNewRequest, createRequest);
 router.get('/:id([0-9]{1,11})/:action(approve|reject)/:token?', reqAttachUser, validateRequestAdmin, requestAction);
 router.patch('/:id', verifyToken, updateRequestValidator, validateUpdateRequest, updateRequest);
-router.get('/manager', verifyToken, managerRequests);
-router.get('/', verifyToken, getRequests);
+
+router.get('/', [verifyToken], mostTravelledDestinations);
+router.post('/', [verifyToken, validate], createRequest);
 router.get('/search', verifyToken, queryValidation(), errorCheck, searchRequests);
+router.get('/manager', verifyToken, managerRequests);
+router.get('/:id', verifyToken, checkIsInt, validator, getRequestById);
+router.patch('/:id', verifyToken, checkIsInt, validator, updateRequest);
+router.get('/:id([0-9]{1,11})/:action(approve|reject)/:token?', reqAttachUser, requestAction);
+router.get('/', verifyToken, getRequests);
 
 // comments
 router.post('/:request_id/comments', commentdata, validator, verifyToken, createComment);

@@ -28,7 +28,7 @@ describe('users endpoints', () => {
         });
     });
 
-    it('should log in a user with corrext creds', (done) => {
+    it('should log in a user with correct credentials', (done) => {
       const userData = {
         email: 'technitesdev@gmail.com',
         password: process.env.SUPER_ADMIN_PASS

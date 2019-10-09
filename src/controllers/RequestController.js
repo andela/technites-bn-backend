@@ -6,10 +6,9 @@ import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
 import moment from 'moment';
 import v from 'voca';
-import crypto from 'crypto';
 import { promisify } from 'util';
 import dotenv from 'dotenv';
-import eventEmitter from '../utils/EventEmitter';
+import eventEmitter from '../utils/Notifications/EventEmitter';
 import redisClient from '../utils/RedisConnection';
 import RequestServices from '../services/RequestServices';
 import UserService from '../services/UserServices';
@@ -17,16 +16,17 @@ import Utils from '../utils/Utils';
 import MailHelper from '../utils/MailHelper';
 import AccommodationService from '../services/AccomodationServices';
 import RoomService from '../services/RoomServices';
+import EmailController from '../controllers/EmailController';
 
 dotenv.config();
+
+const { sendRequestEmail, sendUserEmail } = EmailController;
 
 const {
   fetchRequests,
   createRequest,
   actionOnTrip,
   updateRequest,
-  findOrigin,
-  findDestination,
   isRequestUnique,
   isCheckDatesValid,
   isDatesValid,
@@ -39,12 +39,12 @@ const {
   fetchApprovedRequests,
   isDestinationsDifferent, findMostTravelledDestination,
   findIfLocationsExists,
-  findRequestById
+  findRequestById,
+  confirmRequestOwner
 } = RequestServices;
 const { changeRoomStatus } = RoomService;
 const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
 const { findUserByEmail, findUserById } = UserService;
-const { requestEmailTheme, userConfirmTheme, sendEmail } = MailHelper;
 const Util = new Utils();
 let sign;
 let status;
@@ -76,6 +76,25 @@ class RequestController {
     return res.status(403).json({
       status: res.statusCode,
       message: 'You are not allowed to retrieve other users requests'
+    });
+  }
+
+  /**
+    * @function getRequestById
+    * @param {Object} req request
+    * @param {Oject} res request
+    * @returns {Object} object
+    */
+  static async getRequestById(req, res) {
+    const request = await findRequestById(req.params.id);
+    if (!request) return res.status(404).json({ status: 404, message: 'Request not found' });
+    const confirmedOwner = await confirmRequestOwner(req.params.id, req.user.id);
+    if (!confirmedOwner) return res.status(403).json({ status: 403, error: 'Forbidden action. Only owners allowed' });
+
+    return res.status(200).json({
+      status: res.statusCode,
+      message: 'Request',
+      data: request
     });
   }
 
@@ -131,13 +150,13 @@ class RequestController {
     // build base URL
     const baseUrl = `${req.protocol}://${req.header('host')}`;
     // send Request Email to Line Manager
-    const responseOne = RequestController.sendRequestEmail(user, dbRequest, baseUrl);
+    const responseOne = sendRequestEmail(user, dbRequest, baseUrl);
     // send info e-mail to the user
     let responseTwo = true;
 
     if (user.isEmailAllowed === 'true') {
-      responseTwo = RequestController.sendUserEmail(
-        'You sent new trip request',
+      responseTwo = sendUserEmail(
+        'You sent a new trip request',
         'Trip request confirmation sent',
         'was succesfully received', user, request
       );
@@ -169,24 +188,27 @@ class RequestController {
       request.destinations = JSON.parse(request.destinations);
     }
 
-    const updatedRequest = await updateRequest(req.userRequest.id, request);
-    // send Owner Info E-mail
-    const responseOne = RequestController.sendUserEmail('You updated information on this trip',
-      'Trip request update confirmation',
-      'was succesfully updated', user, request);
-    // send Request Email to Line Manager
-    const baseUrl = `${req.protocol}://${req.header('host')}`;
-    // send info e-mail to the user
-    const responseTwo = RequestController.sendRequestEmail(user,
-      updatedRequest,
-      baseUrl,
-      'Trip approval request updated',
-      'Trip request  updated');
+    const requestToUpdate = await findRequestById(req.params.id);
+    if (!requestToUpdate) return res.status(400).json({ status: 400, error: 'This request does not exist' });
+    if (!user.line_manager) return res.status(400).json({ status: 400, error: 'Ensure you have a line manager' });
+    const confirmedOwner = await confirmRequestOwner(req.params.id, user.id);
+    if (!confirmedOwner) return res.status(403).json({ status: 403, error: 'Forbidden action!!! Only owners allowed' });
 
-    if (responseOne && responseTwo) {
+    const updatedRequest = await updateRequest(req.params.id, request);
+
+    // build base URL
+    const baseUrl = `${req.protocol}://${req.header('host')}`;
+    // send Request Email to Line Manager
+
+    // send info e-mail to the user
+    const responseTwo = sendRequestEmail(user, updatedRequest, baseUrl,
+      'Trip request update',
+      'Trip request  update');
+
+    if (responseTwo) {
       return res.status(200).json({
         status: res.statusCode,
-        message: 'Sent request. Please wait travel admin to approve it',
+        message: 'Request Updated and is awaiting review',
         data: updatedRequest
       });
     }
@@ -194,41 +216,6 @@ class RequestController {
       status: res.statusCode,
       message: 'Failed to send request email try again later!',
     });
-  }
-
-  /**
-   * @func sendRequestEmail
-   * @param {*} user
-   * @param {*} request
-   * @param {*} baseUrl
-   * @param {*} emailTitle
-   * @param {*} contentTitle
-   * @returns {Boolean} sended
-   */
-  static async sendRequestEmail(user, request, baseUrl, emailTitle, contentTitle) {
-    const EmailTitle = emailTitle || 'Trip approval requested';
-    const ContentTitle = contentTitle || 'Requesting trip confirmation';
-    // generate token
-    const token = crypto.randomBytes(64).toString('hex');
-
-    redisClient.hset('requests_otp', `${request.id}`, token);
-    const origin = await findOrigin(request.location_id);
-    // destinations locations
-    const destArr = await findDestination(request.destinations);
-    const destinations = destArr.map(({ name }) => name).join(',');
-    const content = {
-      origin,
-      token,
-      user,
-      baseUrl,
-      title: ContentTitle,
-      destination: destinations,
-      request,
-    };
-    const theme = requestEmailTheme(content);
-    const result = await sendEmail(EmailTitle, theme, user.line_manager);
-    if (result) return true;
-    return false;
   }
 
   /**
@@ -279,45 +266,6 @@ class RequestController {
     if (result[0] === 0) return res.status(200).json({ status: '400', message: 'The request with the given id does not exists' });
 
     return res.status(200).json({ status: '200', message: 'Approved request successfully' });
-  }
-
-  /**
-   * @func sendUserEmail
-   * @param {*} emailTitle
-   * @param {*} contentHeader
-   * @param {*} contentMessage
-   * @param {*} user
-   * @param {*} request
-   * @param {*} decision
-   * @returns {Boolean} sent
-   */
-  static async sendUserEmail(emailTitle, contentHeader, contentMessage, user, request, decision) {
-    // departure location name
-    const origin = await findOrigin(request.location_id);
-    // destinations locations
-    const destinationArray = await findDestination(request.destinations);
-    const destinations = destinationArray.map(({ name }, i) => {
-      if (destinationArray.length === i + 1) return `and ${name}`;
-      return name;
-    }).join(', ');
-
-    request = { ...request, origin, destinations };
-    const content = {
-      user,
-      title: contentHeader,
-      message: contentMessage,
-      request,
-      decision
-    };
-    const theme = userConfirmTheme(content);
-    // send e-mail to owner
-    const sent = await sendEmail(
-      emailTitle,
-      theme,
-      user.email
-    );
-    if (sent) return true;
-    return false;
   }
 
   /**

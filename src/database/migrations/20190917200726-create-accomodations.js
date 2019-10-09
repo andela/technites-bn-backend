@@ -10,10 +10,6 @@ export function up(queryInterface, Sequelize) {
     accommodation_name: {
       type: Sequelize.STRING,
     },
-    room_type: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
     description: {
       type: Sequelize.STRING
     },
@@ -22,10 +18,6 @@ export function up(queryInterface, Sequelize) {
     },
     images: {
       type: Sequelize.JSONB
-    },
-    quantity: {
-      type: Sequelize.INTEGER,
-      allowNull: true,
     },
     services: {
       type: Sequelize.JSONB,

@@ -55,6 +55,10 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'user_id',
       as: 'user'
     });
+    Notification.belongsTo(models.Request, {
+      foreignKey: 'request_id',
+      as: 'request'
+    });
   };
   return Notification;
 };

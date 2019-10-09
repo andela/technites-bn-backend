@@ -4,7 +4,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 
-const showNewTravelRequestNotification = (data) => {
+const showNewTravelRequestNotification = (data) => {  
   navigator.serviceWorker.getRegistration().then((reg) => {
     reg.showNotification(`New ${data.title} Travel Request`, {  
       body: `${data.from}`

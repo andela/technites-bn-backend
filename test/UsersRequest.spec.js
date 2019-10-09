@@ -257,21 +257,11 @@ describe('REQUESTS ENDPOINTS', () => {
           .set('Authorization', `Bearer ${token2}`)
           .send(Request)
           .end((err, res) => {
-            res.should.have.status(403);
+            res.should.have.status(422);
             done();
           });
       });
-      it('it should not update request when line manager is not updated in the user profile table', (done) => {
-        chai
-          .request(app)
-          .patch('/api/v1/requests/3')
-          .set('Authorization', `Bearer ${token}`)
-          .send(Request)
-          .end((err, res) => {
-            res.should.have.status(403);
-            done();
-          });
-      });
+
       it('it should not update request when not found', (done) => {
         chai
           .request(app)
@@ -279,7 +269,7 @@ describe('REQUESTS ENDPOINTS', () => {
           .set('Authorization', `Bearer ${token2}`)
           .send(Request)
           .end((err, res) => {
-            res.should.have.status(404);
+            res.should.have.status(400);
             done();
           });
       });

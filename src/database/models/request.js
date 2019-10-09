@@ -1,4 +1,4 @@
-import eventEmitter from '../../utils/EventEmitter';
+import eventEmitter from '../../utils/notifications/EventEmitter';
 
 export default (sequelize, DataTypes) => {
   const Request = sequelize.define('Request', {
@@ -57,16 +57,12 @@ export default (sequelize, DataTypes) => {
     eventEmitter.emit('new_travel_request', dataValues);
   });
 
-  Request.afterBulkUpdate((data) => {
-    data.individualHooks = true;
-    sequelize
-      .query(`SELECT * FROM "Requests" WHERE id = ${data.where.id}`, {
+  Request.afterBulkUpdate(async (data) => {
+    const updatedRequest = await sequelize
+      .query(`SELECT "Requests".*,"Users".email,"Users".line_manager FROM "Requests", "Users" WHERE "Requests".id = ${data.where.id} AND "Users".id = "Requests".user_id`, {
         type: sequelize.QueryTypes.SELECT
-      })
-      .then((request) => {
-        eventEmitter.emit('travel_request_update', request[0]);
       });
+    eventEmitter.emit('request_update', updatedRequest[0]);
   });
-
   return Request;
 };

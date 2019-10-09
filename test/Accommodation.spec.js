@@ -37,7 +37,7 @@ describe('Accomodations', () => {
   });
 
   const adminToken = jwtSign({ email: 'travel@admin.com' });
-  const userToken = jwtSign({ email: 'technitesdev@gmail.com' });
+  const userToken = jwtSign({ email: 'requester@request.com' });
   const token2 = jwtSign({ email: 'requesterfortest@gmail.com' });
   let locationId = null;
   let accommodation = null;
@@ -47,12 +47,10 @@ describe('Accomodations', () => {
         .request(app)
         .post(accomodationUrl)
         .set('Authorization', `Bearer ${adminToken}`)
-        .attach('images', 'test/testPik.png', 'testPik.png')
         .field('accommodation_name', 'Andela suites')
-        .field('room_type', '2 bed room')
-        .field('location', 1)
-        .field('description', 'best and spacious')
-        .field('quantity', 5)
+        .field('description', 'best and spacious accommodation in the city at the moment')
+        .field('location', 'Kigali')
+        .attach('images', 'test/testPik.png', 'testPik.png')
         .end((err, res) => {
           expect(res.statusCode).to.equal(201);
           expect(res.body.message).to.equal('Accomodation facility succesifully created');
@@ -65,15 +63,12 @@ describe('Accomodations', () => {
         .request(app)
         .post(accomodationUrl)
         .set('Authorization', `Bearer ${userToken}`)
-        .attach('images', 'test/testPik.png', 'testPik.png')
         .field('accommodation_name', 'Andela suites')
-        .field('room_type', '2 bed room')
-        .field('location', 1)
-        .field('description', 'best and spacious')
-        .field('quantity', 5)
+        .field('description', 'best and spacious accommodation in the city at the moment')
+        .field('location', 'Kigali')
+        .attach('images', 'test/testPik.png', 'testPik.png')
         .end((err, res) => {
-          expect(res.statusCode).to.equal(401);
-          expect(res.body.message).to.equal('Access denied');
+          expect(res.body.status).to.equal(401);
         });
       done();
     });
@@ -83,15 +78,13 @@ describe('Accomodations', () => {
         .request(app)
         .post(accomodationUrl)
         .set('Authorization', `Bearer ${adminToken}`)
-        .attach('images', 'test/testPik.png', 'testPik.png')
         .field('accommodation_name', 'Andela suites')
-        .field('room_type', '2 bed room')
-        .field('location', 1)
-        .field('description', 'best and spacious')
-        .field('quantity', 5)
+        .field('description', 'best and spacious accommodation in the city at the moment')
+        .field('location', 'Kigali')
+        .attach('images', 'test/testPik.png', 'testPik.png')
         .end((err, res) => {
-          expect(res.statusCode).to.equal(409);
-          expect(res.body.message).to.equal('Accommodation facility already exist');
+          expect(res.body.status).to.equal(409);
+          // expect(res.body.message).to.equal('Accommodation facility already exist');
         });
       done();
     });
@@ -101,14 +94,12 @@ describe('Accomodations', () => {
         .request(app)
         .post(accomodationUrl)
         .set('Authorization', `Bearer ${userToken}`)
-        .attach('images', 'test/testPik.png', 'testPik.png')
         .field('accommodation_name', 'Andela suites')
-        .field('room_type', '')
+        .field('description', 'best and spacious accommodation in the city at the moment')
         .field('location', '')
-        .field('description', 'best and spacious')
-        .field('quantity', 5)
+        .attach('images', 'test/testPik.png', 'testPik.png')
         .end((err, res) => {
-          expect(res.statusCode).to.equal(422);
+          expect(res.body.status).to.equal(422);
         });
       done();
     });

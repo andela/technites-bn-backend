@@ -12,7 +12,6 @@ import HostRoute from './HostRoutes';
 const router = new Router();
 
 router.use('/auth', AuthRoutes);
-// router.use('/', UserRoutes);
 router.use('/users', UserRoutes);
 router.use('/requests', RequestRoutes);
 router.use('/accommodations', AccommodationRoutes);

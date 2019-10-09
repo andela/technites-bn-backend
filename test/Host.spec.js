@@ -46,7 +46,7 @@ describe('Hosts endpoints', () => {
     await database.User.destroy({ where: { email: 'adminfortest@gmail.com' } });
     await database.User.destroy({ where: { email: 'requesterfortest@gmail.com' } });
   });
-  describe('POST api/v1/hosts', () => {
+  xdescribe('POST api/v1/hosts', () => {
     const host = {
       email: 'host@gmail.com',
       firstname: 'new',
@@ -80,7 +80,8 @@ describe('Hosts endpoints', () => {
         });
     });
   });
-  describe('PATCH api/v1/hosts/reset', () => {
+
+  xdescribe('PATCH api/v1/hosts/reset', () => {
     it('it should not reset hosts when email does not exist', (done) => {
       fakeHost = {
         email: 'fakehost@gmail.com',

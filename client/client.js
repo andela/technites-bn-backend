@@ -1,3 +1,5 @@
+/* eslint-disable no-irregular-whitespace */
+/* eslint-disable no-console */
 /* eslint-disable require-jsdoc */
 /* eslint-disable arrow-body-style */
 /* eslint-disable no-plusplus */
@@ -37,17 +39,28 @@ const urlBase64ToUint8Array = (base64String) => {
   return outputArray;
 };
 
+// check if the service worker is in the browser's api
+if ('serviceWorker' in navigator) {
+  send().catch((err) => console.log(err));
+}
+
 socket.on('welcome', (data) => {
   console.log(data);
 });
 
 socket.on('new_travel_request', (data) => {
-  console.log(data);
   showNewTravelRequestNotification(data);
 });
 
 socket.on('request_update', async (data) => {
-  console.log('socket data:', data);
-  // from worker
   requestUpdateNotification(data);
+});
+
+socket.on('travel_request_response', (data) => {
+  showRequestDecisionNotification(data);
+});
+
+socket.on('travel_request_update', (data) => {
+  console.log(data);
+  showTravelRequestUpdateNotification(data);
 });

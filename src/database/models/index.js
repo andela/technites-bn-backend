@@ -9,7 +9,7 @@ const env = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 const config = configJs[env];
 
 const db = {};
-
+config.logging = false;
 let sequelize;
 if (env === 'production') {
   sequelize = new Sequelize(

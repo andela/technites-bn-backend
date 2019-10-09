@@ -307,7 +307,7 @@ class RequestService {
   static async findRequestById(id) {
     const request = await database.Request.findOne({ where: { id } });
     if (!request) return false;
-    return request;
+    return request.dataValues;
   }
 
   /**

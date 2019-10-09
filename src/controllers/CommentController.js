@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import RequestServices from '../services/RequestServices';
 import database from '../database/models';
-import eventEmitter from '../utils/EventEmitter';
+import eventEmitter from '../utils/Notifications/EventEmitter';
 
 const { confirmRequestOwner, findRequestById, findCommentById } = RequestServices;
 

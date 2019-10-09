@@ -214,7 +214,7 @@ describe('users endpoints', () => {
         .send(userData)
         .end((err, res) => {
           expect(res.body.status).to.equal(422);
-          expect(res.body.error[0].msg).to.equal('Invalid user credentials');
+          expect(res.body.error[0].msg).to.equal('Please provide a password to login');
           done();
         });
     });
@@ -228,8 +228,7 @@ describe('users endpoints', () => {
         .post(loginUrl)
         .send(userData)
         .end((err, res) => {
-          expect(res.status).to.equal(401);
-          expect(res.body.error).to.equal('Invalid user credentials');
+          expect(res.status).to.equal(422);
           done();
         });
     });

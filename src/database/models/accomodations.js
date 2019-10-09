@@ -2,11 +2,9 @@
 export default (sequelize, DataTypes) => {
   const Accomodations = sequelize.define('Accomodations', {
     accommodation_name: DataTypes.STRING,
-    room_type: DataTypes.STRING,
     description: DataTypes.STRING,
     location: DataTypes.STRING,
     images: DataTypes.JSONB,
-    quantity: DataTypes.INTEGER,
     services: DataTypes.JSONB,
     amenities: DataTypes.JSONB,
     available_space: DataTypes.INTEGER,
