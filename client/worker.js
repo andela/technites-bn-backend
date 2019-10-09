@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
+/* eslint-disable camelcase */
 /* eslint-disable no-restricted-globals */
-/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
-/* eslint-disable require-jsdoc */
+/* eslint-disable no-unused-vars */
 
 const showNewTravelRequestNotification = (data) => {
   navigator.serviceWorker.getRegistration().then((reg) => {
