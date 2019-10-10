@@ -5,8 +5,27 @@
 
 const showNewTravelRequestNotification = (data) => {
   navigator.serviceWorker.getRegistration().then((reg) => {
-    reg.showNotification(`New ${data.title} Travel Request`, {
+    reg.showNotification(`New ${data.title} Travel Request`, {  
       body: `${data.from}`
+    });
+  });
+};
+const showRequestDecisionNotification = (data) => {
+  navigator.serviceWorker.getRegistration().then((reg) => {
+    reg.showNotification(`Request ${data.status}`, {
+      body: `${data.from}`,
+      data: { ...data },
+      icon: 'https://res.cloudinary.com/technites/image/upload/v1570698565/uploads/updated-barefoot-logo_imccx3.png',
+      actions: [
+        {
+          action: 'show',
+          title: 'View'
+        },
+        {
+          action: 'close',
+          title: 'Close'
+        },
+      ]
     });
   });
 };

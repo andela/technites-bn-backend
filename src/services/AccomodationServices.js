@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import Sequelize, { Op } from 'sequelize';
 import database from '../database/models';
 /**
  * @class AccomodationServices
@@ -104,6 +105,28 @@ class AccomodationServices {
     const accommodation = await database.Accomodations.findAll({ where: { location } });
     if (!accommodation) return null;
     return accommodation;
+  }
+
+  /**
+   *
+   * @param {*} accommodationIds
+   * @returns {*} accommodations
+   */
+  static async findAccommodations(accommodationIds) {
+    return database.Accomodations.findAll({
+      where: { id: { [Op.in]: accommodationIds } }
+    });
+  }
+
+  /**
+   *
+   * @param {*} accommodationId
+   * @param {*} sign
+   * @returns {*} bookedAccommodation
+   */
+  static async updateAccommodations(accommodationId, sign) {
+    const accommodations = await database.Accomodations.update({ available_space: Sequelize.literal(`available_space ${sign} 1`) }, { where: { id: accommodationId } });
+    return accommodations;
   }
 }
 

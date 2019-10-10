@@ -9,11 +9,14 @@ import v from 'voca';
 import crypto from 'crypto';
 import { promisify } from 'util';
 import dotenv from 'dotenv';
+import eventEmitter from '../utils/EventEmitter';
 import redisClient from '../utils/RedisConnection';
 import RequestServices from '../services/RequestServices';
 import UserService from '../services/UserServices';
 import Utils from '../utils/Utils';
 import MailHelper from '../utils/MailHelper';
+import AccommodationService from '../services/AccomodationServices';
+import RoomService from '../services/RoomServices';
 
 dotenv.config();
 
@@ -36,11 +39,15 @@ const {
   fetchApprovedRequests,
   isDestinationsDifferent, findMostTravelledDestination,
   findIfLocationsExists,
+  findRequestById
 } = RequestServices;
-
+const { changeRoomStatus } = RoomService;
+const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
 const { findUserByEmail, findUserById } = UserService;
 const { requestEmailTheme, userConfirmTheme, sendEmail } = MailHelper;
 const Util = new Utils();
+let sign;
+let status;
 /**
  * @class RequestController
  */
@@ -84,19 +91,14 @@ class RequestController {
     request.user_id = user.id;
 
     // attach user_id on payload to save it directly
-    if (typeof request.destinations === 'string') {
-      request.destinations = JSON.parse(request.destinations);
-    }
 
 
     const allDestinationsIds = [];
-
     // getting all destinations ids
     allDestinationsIds.push(request.location_id);
     for (let i = 0; i < request.destinations.length; i++) {
       allDestinationsIds.push(request.destinations[i].destination_id);
     }
-
     // find if all locations ids provided exists or not
     const nonExistentIds = await findIfLocationsExists(allDestinationsIds);
     if (nonExistentIds.length > 0) return res.status(404).json({ status: res.statusCode, error: `the location ${nonExistentIds} does not exists, please enter valid locations` });
@@ -119,9 +121,13 @@ class RequestController {
 
     const alreadyExistRequest = await isRequestUnique(request.reason, request.departure_date);
     if (alreadyExistRequest) return res.status(409).json({ status: res.statusCode, error: 'Request already exists based on your reason and departure date' });
-
-    // save request into DB
     const dbRequest = await createRequest(request);
+    // Update accommodations table
+    sign = '-';
+    req.accommodations.forEach((accommodation) => updateAccommodations(accommodation, sign));
+    // Update rooms table
+    status = false;
+    req.requestedRooms.forEach((requestedRoom) => changeRoomStatus(requestedRoom, status));
     // build base URL
     const baseUrl = `${req.protocol}://${req.header('host')}`;
     // send Request Email to Line Manager
@@ -327,7 +333,6 @@ class RequestController {
     // making redis client.hget & hdel return promise
     const hGetAsync = promisify(redisClient.hget).bind(redisClient);
     const hDelAsync = promisify(redisClient.hdel).bind(redisClient);
-
     // only manager can approve/reject w/o hash token if authenticated
     if (!token && role < 4) {
       return res.status(403).json({
@@ -347,6 +352,8 @@ class RequestController {
     }
     const [rowUpdated, rows] = await actionOnTrip(id, action);
     const [request] = rows;
+
+
     const user = await findUserById(request.user_id);
     if (rowUpdated === 0) {
       return res.status(200).json({
@@ -359,6 +366,19 @@ class RequestController {
     // sending action made emails
     const decision = action === 'approve' ? 'congratulation We accepted It ' : 'Sorry am affraid to tell that we can\'t accept it';
     RequestController.sendUserEmail('Trip request update', 'Decision made', 'was carefully review', user, request, decision);
+    // emit notification
+    eventEmitter.emit('travel_request_response', request);
+    // release room in accommodation
+    if (request.status === 'Rejected') {
+      sign = '+';
+      status = true;
+      request.destinations
+        .map((destination) => destination.accomodation_id)
+        .forEach((accommodation) => updateAccommodations(accommodation, sign));
+      request.destinations
+        .map((destination) => destination.room_id)
+        .forEach((room) => changeRoomStatus(room, status))
+    }
     // return reponse to user
     return res.status(200).json({
       status: res.statusCode,

@@ -21,13 +21,13 @@ let commentTwoId;
 
 const dummyRequest = {
   request_type: 'OneWay',
-  location_id: 1,
+  location_id: 3,
   departure_date: '2020-09-25',
   destinations: [{
-    destination_id: 3, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25'
+    destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 3
   },
   {
-    destination_id: 2, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25'
+    destination_id: 5, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 6
   }],
   reason: 'Medical reason'
 };
