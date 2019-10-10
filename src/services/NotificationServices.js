@@ -34,6 +34,30 @@ class NotificationService {
   }
 
   /**
+   * @func sendNewCommentNotification
+   * @param {*} data
+   * @returns {*} notification
+   */
+  static async sendNewCommentNotification(data) {
+    const notification = {};
+    const { username, line_manager } = await userService.findUserById(data.user_id);
+    const { id } = await userService.findUserByEmail(line_manager);
+
+    notification.title = `${username} commented on your request`;
+    notification.from = username;
+    notification.data = data;
+
+    const notificationToSave = {};
+    notificationToSave.user_id = id;
+    notificationToSave.message = data.comment;
+    notificationToSave.type = 'comments';
+
+    const { dataValues } = await NotificationService.saveNotification(notificationToSave);
+    const emitRes = io.emit('new_comment', notification);
+    return { dataValues, emitRes };
+  }
+
+  /**
       *
       * @param {Object} notification
       * @returns {object} returns the notification

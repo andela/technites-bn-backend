@@ -53,8 +53,11 @@ socket.on('welcome', (data) => {
 });
 
 socket.on('new_travel_request', (data) => {
-  console.log(data);
   showNewTravelRequestNotification(data);
+});
+
+socket.on('new_comment', (data) => {
+  showNewCommentNotification(data);
 });
 
 </script>

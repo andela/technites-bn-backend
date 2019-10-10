@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import RequestServices from '../services/RequestServices';
 import database from '../database/models';
+import eventEmitter from '../utils/EventEmitter';
 
 const { confirmRequestOwner, findRequestById, findCommentById } = RequestServices;
 
@@ -29,9 +30,11 @@ class CommentController {
       user_id,
       comment
     });
-
+    // emit notification Event
+    const data = sentData.dataValues;
+    eventEmitter.emit('new_comment', data);
     // post comment on req
-    return res.status(200).send({ status: 200, message: 'comment posted', data: sentData.dataValues });
+    return res.status(200).send({ status: 200, message: 'comment posted', data });
   }
 
   /**
