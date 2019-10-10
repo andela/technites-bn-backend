@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import Sequelize from 'sequelize';
+import Sequelize, { Op } from 'sequelize';
 import database from '../database/models';
 
 /**
@@ -55,6 +55,28 @@ class RoomService {
     });
     if (!room) return null;
     return room.dataValues;
+  }
+
+  /**
+   *
+   * @param {*} accommodationIds
+   * @returns {*} accommodations
+   */
+  static async findRooms(accommodationIds) {
+    return database.Room.findAll({
+      where: { accommodation_id: { [Op.in]: accommodationIds }, status: true }
+    });
+  }
+
+  /**
+   *
+   * @param {*} roomId
+   * @param {*} status
+   * @returns {*} updatedroom
+   */
+  static async changeRoomStatus(roomId, status) {
+    const rooms = await database.Room.update({ status }, { where: { id: roomId } });
+    return rooms;
   }
 }
 

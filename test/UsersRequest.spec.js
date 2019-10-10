@@ -59,13 +59,13 @@ describe('REQUESTS ENDPOINTS', () => {
     describe('POST api/v1/requests', () => {
       const dummyRequest = {
         request_type: 'OneWay',
-        location_id: 1,
+        location_id: 3,
         departure_date: '2020-09-25',
         destinations: [{
-          destination_id: 3, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25'
+          destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 1
         },
         {
-          destination_id: 2, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25'
+          destination_id: 5, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 4
         }],
         reason: 'Medical'
       };
@@ -132,6 +132,12 @@ describe('REQUESTS ENDPOINTS', () => {
 
       it('it should return 409 if request already exists', (done) => {
         dummyRequest.request_type = 'OneWay';
+        dummyRequest.destinations = [{
+          destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 6
+        },
+        {
+          destination_id: 5, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 7
+        }];
         chai
           .request(app)
           .post('/api/v1/requests')
@@ -148,6 +154,12 @@ describe('REQUESTS ENDPOINTS', () => {
         dummyRequest.reason = 'new reason';
         dummyRequest.request_type = 'ReturnTrip';
         dummyRequest.return_date = '2020-09-25';
+        dummyRequest.destinations = [{
+          destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 2
+        },
+        {
+          destination_id: 5, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 5
+        }];
 
         chai
           .request(app)
@@ -191,7 +203,7 @@ describe('REQUESTS ENDPOINTS', () => {
       it('it should reject a user request', (done) => {
         chai
           .request(app)
-          .get('/api/v1/requests/1/reject')
+          .get('/api/v1/requests/2/reject')
           .set('Authorization', `Bearer ${adminToken}`)
           .end((err, res) => {
             res.should.have.status(200);
@@ -294,6 +306,7 @@ describe('REQUESTS ENDPOINTS', () => {
           });
       });
     });
+    
     describe('GET Search the requests database', () => {
       const keyWord = 'reason';
       const beforeDate = 2030, afterDate = 2019, unrealisticBefore = 2090;

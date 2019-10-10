@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable lines-between-class-members */
 /* eslint-disable require-jsdoc */
@@ -12,13 +13,13 @@ import LocationServices from '../services/LocationServices';
 import Util from '../utils/Utils';
 import AuthenticationHelper from '../utils/AuthHelper';
 
-const { searchRequest } = RequestServices;
+const { searchRequest, findRequestById } = RequestServices;
 const { findUserByEmail } = UserServices;
 const { findHostByEmail } = HostService;
 const { comparePassword } = AuthenticationHelper;
-const { findAccommodation, findAccommodationById } = AccomodationServices;
+const { findAccommodation, findAccommodationById, findAccommodations } = AccomodationServices;
 const { findLocationById } = LocationServices;
-const { findRoom } = RoomServices;
+const { findRoom, findRooms } = RoomServices;
 const util = new Util();
 
 export const genericValidator = (req, res, schema, next) => {
@@ -132,6 +133,7 @@ export default class Validation {
       accomodation_id: Joi.number().integer().required(),
       check_in: Joi.date().required(),
       check_out: Joi.date().required(),
+      room_id: Joi.number().integer().required(),
     });
 
     if (req.body.request_type === 'ReturnTrip') {
@@ -331,5 +333,62 @@ export default class Validation {
       rating: Joi.number().integer().valid([1, 2, 3, 4, 5]).required(),
     });
     genericValidator(req, res, schema, next);
+  }
+  static async validateNewRequest(req, res, next) {
+    const request = req.body;
+    if (typeof request.destinations === 'string') {
+      request.destinations = JSON.parse(request.destinations);
+    }
+
+    // check accommodation if exists
+    const accommodations = request.destinations.map((destination) => destination.accomodation_id);
+    const findAcc = await findAccommodations(accommodations);
+
+    if (accommodations.length !== findAcc.length) return res.status(404).json({ status: res.statusCode, error: 'Please fill in existing accommodations' });
+
+    // check if accommodation exist in that location
+    const requestLocations = request.destinations.map((destination) => destination.destination_id);
+    const accLocations = findAcc.map((accommodation) => accommodation.location);
+    if (requestLocations.sort().toString() !== accLocations.sort().toString()) return res.status(401).json({ status: res.statusCode, error: 'The Accommodations you picked do not belong to the location specified' });
+
+    // check rooms in that accommodation
+    const noAvailableSpace = [];
+    findAcc
+      .map(({ id, accommodation_name, available_space }) => ({ id, accommodation_name, available_space }))
+      .forEach((room) => (room.available_space === 0 ? noAvailableSpace.push(room.accommodation_name) : 1));
+    if (noAvailableSpace.length !== 0) return res.status(404).json({ status: res.statusCode, error: 'The following accommodations have no available space at this time, Change your choice', noAvailableSpace });
+
+    // search Room based  on accommodations provided by the user and if it is available
+    const searchRooms = await findRooms(accommodations);
+
+    // mapping rooms ids from search
+    const availableRooms = searchRooms.map((room) => room.id);
+
+    // mapping requested rooms ids
+    const requestedRooms = request.destinations.map((destination) => destination.room_id);
+
+    // checking rooms requested by user if they are valid
+    const checkRooms = requestedRooms.every((requestedRoom) => availableRooms.includes(requestedRoom));
+    if (checkRooms !== true) return res.status(404).json({ status: res.statusCode, error: 'The rooms you are choosing are not available' });
+    req.accommodations = accommodations;
+    req.requestedRooms = requestedRooms;
+
+    next();
+  }
+  static async validateRequestAdmin(req, res, next) {
+    const userRequest = await findRequestById(req.params.id);
+    if (!userRequest) {
+      return res.status(404).json({
+        status: res.statusCode,
+        message: 'The request with the given id does not exist'
+      });
+    }
+    if (userRequest.status !== 'Pending') {
+      return res.status(401).json({
+        status: res.statusCode,
+        message: 'The request with the given id has already been responded to'
+      });
+    }
+    next();
   }
 }

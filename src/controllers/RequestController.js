@@ -16,6 +16,7 @@ import UserService from '../services/UserServices';
 import Utils from '../utils/Utils';
 import MailHelper from '../utils/MailHelper';
 import AccommodationService from '../services/AccomodationServices';
+import RoomService from '../services/RoomServices';
 
 dotenv.config();
 
@@ -40,11 +41,13 @@ const {
   findIfLocationsExists,
   findRequestById
 } = RequestServices;
-const { findAccommodations, updateAccommodations } = AccommodationService;
+const { changeRoomStatus } = RoomService;
+const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
 const { findUserByEmail, findUserById } = UserService;
 const { requestEmailTheme, userConfirmTheme, sendEmail } = MailHelper;
 const Util = new Utils();
 let sign;
+let status;
 /**
  * @class RequestController
  */
@@ -88,9 +91,6 @@ class RequestController {
     request.user_id = user.id;
 
     // attach user_id on payload to save it directly
-    if (typeof request.destinations === 'string') {
-      request.destinations = JSON.parse(request.destinations);
-    }
 
 
     const allDestinationsIds = [];
@@ -121,21 +121,13 @@ class RequestController {
 
     const alreadyExistRequest = await isRequestUnique(request.reason, request.departure_date);
     if (alreadyExistRequest) return res.status(409).json({ status: res.statusCode, error: 'Request already exists based on your reason and departure date' });
-    // check accommodation if exists
-    const accommodations = request.destinations.map((destination) => destination.accomodation_id);
-    const findAcc = await findAccommodations(accommodations);
-    if (accommodations.length !== findAcc.length) return res.status(404).json({ status: res.statusCode, error: 'Please fill in existing accommodations' });
-    // check rooms in that accommodation
-    const noAvailableSpace = [];
-    findAcc
-      .map(({ id, accommodation_name, available_space }) => ({ id, accommodation_name, available_space }))
-      .forEach((room) => (room.available_space === 0 ? noAvailableSpace.push(room.accommodation_name) : 1));
-    if (noAvailableSpace.length !== 0) return res.status(404).json({ status: res.statusCode, error: 'The following accommodations have no available space at this time, Change your choice', noAvailableSpace });
-    // Save request
     const dbRequest = await createRequest(request);
     // Update accommodations table
     sign = '-';
-    accommodations.forEach((accommodation) => updateAccommodations(accommodation, sign));
+    req.accommodations.forEach((accommodation) => updateAccommodations(accommodation, sign));
+    // Update rooms table
+    status = false;
+    req.requestedRooms.forEach((requestedRoom) => changeRoomStatus(requestedRoom, status));
     // build base URL
     const baseUrl = `${req.protocol}://${req.header('host')}`;
     // send Request Email to Line Manager
@@ -341,19 +333,6 @@ class RequestController {
     // making redis client.hget & hdel return promise
     const hGetAsync = promisify(redisClient.hget).bind(redisClient);
     const hDelAsync = promisify(redisClient.hdel).bind(redisClient);
-    const userRequest = await findRequestById(req.params.id);
-    if (!userRequest) {
-      return res.status(404).json({
-        status: res.statusCode,
-        message: 'The request with the given id does not exist'
-      });
-    }
-    if (userRequest.status !== 'Pending') {
-      return res.status(401).json({
-        status: res.statusCode,
-        message: 'The request with the given id has already been responded to'
-      });
-    }
     // only manager can approve/reject w/o hash token if authenticated
     if (!token && role < 4) {
       return res.status(403).json({
@@ -392,9 +371,13 @@ class RequestController {
     // release room in accommodation
     if (request.status === 'Rejected') {
       sign = '+';
+      status = true;
       request.destinations
         .map((destination) => destination.accomodation_id)
         .forEach((accommodation) => updateAccommodations(accommodation, sign));
+      request.destinations
+        .map((destination) => destination.room_id)
+        .forEach((room) => changeRoomStatus(room, status))
     }
     // return reponse to user
     return res.status(200).json({
