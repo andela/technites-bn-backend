@@ -236,6 +236,22 @@ class UserService {
   static async updateNotificationsAsSeen(userId) {
     return database.Notification.update({ seen: true }, { where: { user_id: userId } });
   }
+
+  /**
+   * @param {Integer} userId;
+   * @param {Boolean} seen;
+   * @returns {Object} updated field
+   */
+  static async getAllUserNotifications(userId, seen) {
+    if (seen === 'false') {
+      return database.Notification.findAndCountAll({ where: { user_id: userId, seen } });
+    }
+    if (seen === 'true') {
+      return database.Notification.findAndCountAll({ where: { user_id: userId, seen } });
+    }
+
+    return database.Notification.findAndCountAll({ where: { user_id: userId } });
+  }
 }
 
 export default UserService;

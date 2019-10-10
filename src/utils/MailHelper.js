@@ -156,16 +156,17 @@ class MailHelper {
      </body>
       `;
   }
-    /**
+
+  /**
    * @func UserConfirmTheme
    * @param {*} content
    * @returns {String} html
    */
   static hostTheme(content) {
     const {
-host,
-title,
-password
+      host,
+      title,
+      password
     } = content;
 
     return `

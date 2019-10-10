@@ -70,6 +70,21 @@ describe('REQUESTS ENDPOINTS', () => {
         reason: 'Medical'
       };
 
+      const newToken = jwtSign({ email: 'dummyuser@gmail.com' }, '4m');
+
+      it('should return 400 if a user doesn\'t have the line manager', (done) => {
+        dummyRequest.request_type = 'a';
+        chai
+          .request(app)
+          .post('/api/v1/requests')
+          .set('Authorization', `Bearer ${newToken}`)
+          .send(dummyRequest)
+          .end((err, res) => {
+            res.should.have.status(400);
+            res.body.should.have.property('error');
+            done();
+          });
+      });
       it('should return 404 if request_type is invalid', (done) => {
         dummyRequest.request_type = 'a';
         chai
@@ -83,8 +98,25 @@ describe('REQUESTS ENDPOINTS', () => {
             done();
           });
       });
+
+      it('it should return 404 if a location does not exists', (done) => {
+        dummyRequest.request_type = 'OneWay';
+        dummyRequest.location_id = 100;
+        chai
+          .request(app)
+          .post('/api/v1/requests')
+          .set('Authorization', `Bearer ${token}`)
+          .send(dummyRequest)
+          .end((err, res) => {
+            res.should.have.status(404);
+            res.body.should.have.property('error');
+            done();
+          });
+      });
+
       it('it should create a one way trip request', (done) => {
         dummyRequest.request_type = 'OneWay';
+        dummyRequest.location_id = 1;
         chai
           .request(app)
           .post('/api/v1/requests')

@@ -289,8 +289,12 @@ class RequestController {
     // departure location name
     const origin = await findOrigin(request.location_id);
     // destinations locations
-    const destionsArray = await findDestination(request.destinations);
-    const destinations = destionsArray.map(({ name }) => name).join(',');
+    const destinationArray = await findDestination(request.destinations);
+    const destinations = destinationArray.map(({ name }, i) => {
+      if (destinationArray.length === i + 1) return `and ${name}`;
+      return name;
+    }).join(', ');
+
     request = { ...request, origin, destinations };
     const content = {
       user,
