@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { Op } from 'sequelize';
 import moment from 'moment';
+import _ from 'lodash';
 import database from '../database/models';
 
 dotenv.config();
@@ -100,11 +101,14 @@ class RatingServices {
         }
       }
     });
-    const checks = requests.map(({ destinations }) => destinations)
-      .flat().filter(
-        (i) => moment().isSameOrAfter(i.check_in, 'D')
-        && moment().isSameOrBefore(i.check_out, 'D')
-      );
+
+    // flat func works with node v11.0 and up
+    // currently we are using v10.x on Heroku
+    const checks = _.chain(requests).map(({ destinations }) => destinations)
+      .flatten()
+      .filter((i) => moment().isSameOrAfter(i.check_in, 'D')
+        && moment().isSameOrBefore(i.check_out, 'D'))
+      .value();
     if (checks.length > 0) return true;
     return false;
   }
