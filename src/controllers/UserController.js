@@ -20,9 +20,20 @@ const util = new Util();
 const mail = new Mail();
 const { jwtSign, jwtVerify, comparePassword } = AuthenticationHelper;
 const {
-  addUser, findUserByEmail, storeToken, updateCredentials, sendConfirmationEmail, storedToken,
-  destroyToken, updateProfile, findUserById, displayAllUsers, findUserByCompany,
-  updateEmailNotification, updateNotificationsAsSeen, getAllUserNotifications
+  addUser,
+  findUserByEmail,
+  storeToken,
+  updateCredentials,
+  sendConfirmationEmail,
+  storedToken,
+  destroyToken,
+  updateProfile,
+  findUserById,
+  displayAllUsers,
+  findUserByCompany,
+  updateEmailNotification,
+  updateNotificationsAsSeen,
+  getAllUserNotifications
 } = UserService;
 
 let msgType = null;
@@ -30,7 +41,7 @@ const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.e
 cloudinary.config({
   cloud_name: CLOUDINARY_NAME,
   api_key: CLOUDINARY_API_KEY,
-  api_secret: CLOUDINARY_API_SECRET,
+  api_secret: CLOUDINARY_API_SECRET
 });
 /**
  * @class UserController
@@ -51,15 +62,17 @@ class UserController {
       req.body.password = bcrypt.hashSync(req.body.password, 8);
       const newUser = await addUser(req.body);
       const token = jwtSign({ email: req.body.email });
-
-      // check if user is registered before sending user a verification email
       const searchUser = await findUserByEmail(req.body.email);
-      if (!searchUser) return res.status(404).json({ status: 404, error: 'Email is not registered' });
-
+      if (!searchUser) {
+        return res.status(404).json({ status: 404, error: 'Email is not registered' });
+      }
       sendConfirmationEmail(token, searchUser.email);
-
       res.status(201).send({
-        status: 201, message: 'Sign up successful. Please confirm your account by clicking on the verification link in the email we sent you', data: getPublicProfile(newUser), token
+        status: 201,
+        message:
+          'Sign up successful. Please confirm your account by clicking on the verification link in the email we sent you',
+        data: getPublicProfile(newUser),
+        token
       });
     }
   }
@@ -73,11 +86,23 @@ class UserController {
   static async loginUser(req, res) {
     const { email, password } = req.body;
     const searchUser = await findUserByEmail(email);
-    if (!searchUser) return res.status(401).json({ status: 401, error: 'Invalid user credentials' });
+    if (!searchUser) {
+      return res
+        .status(401)
+        .json({ status: 401, error: 'Invalid user credentials' });
+    }
     const isVerified = searchUser.is_verified;
-    if (!isVerified) return res.status(401).json({ status: 401, error: 'Email verification required' });
+    if (!isVerified) {
+      return res
+        .status(401)
+        .json({ status: 401, error: 'Email verification required' });
+    }
     const comparePass = comparePassword(password, searchUser.password);
-    if (!comparePass) return res.status(404).json({ status: 404, error: 'Invalid user credentials' });
+    if (!comparePass) {
+      return res
+        .status(404)
+        .json({ status: 404, error: 'Invalid user credentials' });
+    }
     const {
       password: xx, createdAt, updatedAt, ...user
     } = searchUser;
@@ -129,18 +154,24 @@ class UserController {
       };
       storeToken(userinfo).then(() => {
         // send email
-        mail.setMessage(req.body.email, token, searchUser.firstname, req.body.email, msgType = 'ResetRequest');
+        mail.setMessage(
+          req.body.email,
+          token,
+          searchUser.firstname,
+          req.body.email,
+          (msgType = 'ResetRequest')
+        );
         return mail.send(res);
       });
     } catch (error) { return next(error); }
   }
 
   /**
- *
- * @param {req} req - Receive Email
- * @param {res} res for reset
- * @returns {message} - it returns a successful message
- */
+   *
+   * @param {req} req - Receive Email
+   * @param {res} res for reset
+   * @returns {message} - it returns a successful message
+   */
   static async updateCredentials(req, res) {
     // check if password looks alike
     if (req.body.password === req.body.confirm_password) {
@@ -148,14 +179,20 @@ class UserController {
         // check whether token is valid
         const verifyToken = await storedToken(req.params.token);
         if (!verifyToken.valid === true) {
-          util.setError(400, 'You have already reset your password, request another reset if you dont remember your password');
+          util.setError(
+            400,
+            'You have already reset your password, request another reset if you dont remember your password'
+          );
           return util.send(res);
         }
         // Decode token
         const user = jwtVerify(verifyToken.token);
         // Check whether token is used for resetting only
         if (!user.use === 'Reset') {
-          util.setError(400, 'The token used here is not for resetting password, Use the appropriate one');
+          util.setError(
+            400,
+            'The token used here is not for resetting password, Use the appropriate one'
+          );
           return util.send(res);
         }
         // encrypt password
@@ -164,7 +201,13 @@ class UserController {
         const newValidity = false;
         updateCredentials(user.email, newpassword).then(() => {
           destroyToken(req.params.token, newValidity).then(() => {
-            mail.setMessage(user.email, req.params.token, 'User', user.email, msgType = 'Reset');
+            mail.setMessage(
+              user.email,
+              req.params.token,
+              'User',
+              user.email,
+              (msgType = 'Reset')
+            );
             return mail.send(res);
           });
         });
@@ -179,11 +222,11 @@ class UserController {
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @returns {*}  edited profile
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns {*}  edited profile
+   */
   static async editProfile(req, res) {
     // Check if user is verified
     if (!req.user.is_verified === true) {
@@ -198,7 +241,10 @@ class UserController {
         // Search if email already exists
         const searchUser = await findUserByEmail(req.body.email);
         if (searchUser) {
-          util.setError(409, 'The email you are trying to use is already registered');
+          util.setError(
+            409,
+            'The email you are trying to use is already registered'
+          );
           return util.send(res);
         }
       }
@@ -209,7 +255,13 @@ class UserController {
       const image = req.files.image.path;
       // checking if user uploaded valid picture
       const imgExt = image.split('.').pop();
-      if (imgExt !== 'jpg' && imgExt !== 'jpeg' && imgExt !== 'png' && imgExt !== 'bmp' && imgExt !== 'gif') {
+      if (
+        imgExt !== 'jpg'
+        && imgExt !== 'jpeg'
+        && imgExt !== 'png'
+        && imgExt !== 'bmp'
+        && imgExt !== 'gif'
+      ) {
         util.setError(415, 'Please Upload a valid image');
         return util.send(res);
       }
@@ -225,11 +277,11 @@ class UserController {
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @returns {*} user
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} user
+   */
   static async viewSingleProfile(req, res) {
     // Ensure passed value from the params is an integer value
     if (isNaN(req.params.id)) {
@@ -247,11 +299,11 @@ class UserController {
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @returns {*} all users
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} all users
+   */
   static async viewAllProfiles(req, res) {
     const allUsers = await displayAllUsers();
     util.setSuccess(200, 'All users!', allUsers);
@@ -259,11 +311,11 @@ class UserController {
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @returns {*} all users
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} all users
+   */
   static async viewProfilesByCompany(req, res) {
     const allUsers = await findUserByCompany(req.params.company);
     if (allUsers.length === 0) {
@@ -275,25 +327,37 @@ class UserController {
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @returns {*} all users
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns {*} all users
+   */
   static async enableOrDisableEmailNotifications(req, res) {
     await updateEmailNotification(req.user.email, req.query.emailAllowed);
-    if (req.query.emailAllowed === 'true') return res.status(200).json({ status: res.statusCode, message: 'You subscribed to email notifications' });
+    if (req.query.emailAllowed === 'true') {
+      return res
+        .status(200)
+        .json({
+          status: res.statusCode,
+          message: 'You subscribed to email notifications'
+        });
+    }
 
-    return res.status(200).json({ status: res.statusCode, message: 'You unsubscribed to email notifications' });
+    return res
+      .status(200)
+      .json({
+        status: res.statusCode,
+        message: 'You unsubscribed to email notifications'
+      });
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @param {*} next
- * @returns {*} user
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @returns {*} user
+   */
   static async getUserTrips(req, res, next) {
     const { years, months, days } = req.query;
     // convert to days
@@ -302,14 +366,26 @@ class UserController {
     const dataArray = [years * 365, months * 30, days];
     const daysArray = dataArray.filter((number) => number > 0);
     const totalDays = daysArray.reduce((a, b) => a + b, 0);
-    if (totalDays === 0) return res.status(400).send({ status: res.statusCode, error: 'Incomplete query params' });
+    if (totalDays === 0) {
+      return res
+        .status(400)
+        .send({ status: res.statusCode, error: 'Incomplete query params' });
+    }
     // get startt date with moment
-    const startDate = moment().subtract(totalDays, 'day').toDate();
+    const startDate = moment()
+      .subtract(totalDays, 'day')
+      .toDate();
     const currentDate = moment().toDate();
-    if ((req.user.id !== req.params.id)
-      && (req.user.role_value === 1 || req.user.role_value === 4 || req.user.role_value <= 0
-        || req.user.role_value > 7)) {
-      return res.status(401).send({ status: res.statusCode, error: 'Not allowed' });
+    if (
+      req.user.id !== req.params.id
+      && (req.user.role_value === 1
+        || req.user.role_value === 4
+        || req.user.role_value <= 0
+        || req.user.role_value > 7)
+    ) {
+      return res
+        .status(401)
+        .send({ status: res.statusCode, error: 'Not allowed' });
     }
     try {
       const result = await database.Request.findAll({
@@ -317,67 +393,108 @@ class UserController {
           user_id: req.params.id,
           status: 'Approved',
           departure_date: {
-            [Op.between]: [startDate, currentDate],
+            [Op.between]: [startDate, currentDate]
           }
         }
       });
       const totalTrips = result.length;
-      return res.status(200).send({ status: res.statusCode, totalTrips, data: result });
+      return res
+        .status(200)
+        .send({ status: res.statusCode, totalTrips, data: result });
     } catch (e) {
       next(e);
     }
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @param {*} next
- * @returns {*} message
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @returns {*} message
+   */
   static async markNotificationsAsSeen(req, res, next) {
     try {
       await updateNotificationsAsSeen(req.user.id);
-      return res.status(200).json({ status: res.statusCode, message: 'All notifications are marked as read' });
+      return res
+        .status(200)
+        .json({
+          status: res.statusCode,
+          message: 'All notifications are marked as read'
+        });
     } catch (e) {
       next(e);
     }
   }
 
   /**
- *
- * @param {*} req
- * @param {*} res
- * @param {*} next
- * @returns {*} all notifications
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @returns {*} all notifications
+   */
   static async getAllNotifications(req, res, next) {
     let results = null;
     let notifications = null;
     try {
       if (req.query.seen) {
         results = await getAllUserNotifications(req.user.id, req.query.seen);
-        notifications = results.rows.map(({ dataValues: notification }) => notification);
-        return UserController.sendNotificationResponse(res, results.count, notifications);
+        notifications = results.rows.map(
+          ({ dataValues: notification }) => notification
+        );
+        return UserController.sendNotificationResponse(
+          res,
+          results.count,
+          notifications
+        );
       }
 
       results = await getAllUserNotifications(req.user.id);
-      notifications = results.rows.map(({ dataValues: notification }) => notification);
-      UserController.sendNotificationResponse(res, results.count, notifications);
+      notifications = results.rows.map(
+        ({ dataValues: notification }) => notification
+      );
+      UserController.sendNotificationResponse(
+        res,
+        results.count,
+        notifications
+      );
     } catch (e) {
       next(e);
     }
   }
 
   /**
- * @param {*} res
- * @param {*} count
- * @param {*} notifications
- * @returns {*} all notifications
- */
+   *
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @returns {*} all notifications
+   */
+  static async markOneSeenNotification(req, res, next) {
+    try {
+      const id = Number(req.params.id);
+      const results = await getAllUserNotifications(req.user.id);
+      const foundNot = results.rows.find((not) => not.id === Number(id));
+      await database.Notification.update({ seen: true }, { where: { id } });
+      res.status(200).send({ data: foundNot });
+    } catch (e) {
+      next(e);
+    }
+  }
+
+  /**
+   * @param {*} res
+   * @param {*} count
+   * @param {*} notifications
+   * @returns {*} all notifications
+   */
   static async sendNotificationResponse(res, count, notifications) {
     return res.status(200).json({
-      status: res.statusCode, message: 'All notifications are successfully retrieved', number: count, data: notifications
+      status: res.statusCode,
+      message: 'All notifications are successfully retrieved',
+      number: count,
+      data: notifications
     });
   }
 }
