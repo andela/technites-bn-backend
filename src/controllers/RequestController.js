@@ -44,7 +44,7 @@ const {
 } = RequestServices;
 const { changeRoomStatus, bookRoom, releaseBooking } = RoomService;
 const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
-const { findUserByEmail, findUserById } = UserService;
+const { findUserByEmail, findUserById, autoFill } = UserService;
 const { requestEmailTheme, userConfirmTheme, sendEmail } = MailHelper;
 const Util = new Utils();
 let sign;
@@ -122,6 +122,11 @@ class RequestController {
 
     const alreadyExistRequest = await isRequestUnique(request.reason, request.departure_date);
     if (alreadyExistRequest) return res.status(409).json({ status: res.statusCode, error: 'Request already exists based on your reason and departure date' });
+
+    // set the cookies
+    res.cookie('passport_name', req.body.passport_name);
+    res.cookie('passport_number', req.body.passport_number);
+
     const dbRequest = await createRequest(request);
     const userRequests = request.destinations.map(({ check_in, check_out, room_id }) => ({ check_in, check_out, room_id })); 
     userRequests.forEach((req) => req.request_id = dbRequest.id);
@@ -152,6 +157,26 @@ class RequestController {
       status: res.statusCode,
       message: 'Failed to send request email try again later!',
     });
+  }
+
+  /**
+     *
+     * @param {*} req
+     * @param {*} res
+     * @param {*} next
+     * @returns {Object} newUser
+     */
+  static async setAutoFill(req, res, next) {
+    try {
+      if (req.params.autofill === 'true' || req.params.autofill === 'false') {
+        await autoFill(req.params.autofill, req.user.email);
+        res.status(200).json({ status: res.statusCode, message: 'updated successfully' });
+      } else {
+        res.status(400).json({ status: res.statusCode, error: 'Use only true or false for enabling auto-fill option' });
+      }
+    } catch (e) {
+      next(e);
+    }
   }
 
   /**

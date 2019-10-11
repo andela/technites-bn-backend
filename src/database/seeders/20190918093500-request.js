@@ -16,6 +16,8 @@ export function up(queryInterface, Sequelize) {
       }
     ],
     reason: 'some reason',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     status: 'Pending',
     createdAt: new Date(),
     updatedAt: new Date()
@@ -35,6 +37,8 @@ export function up(queryInterface, Sequelize) {
       }
     ],
     reason: 'some reason',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     status: 'Pending',
     createdAt: new Date(),
     updatedAt: new Date()
@@ -54,6 +58,8 @@ export function up(queryInterface, Sequelize) {
       }
     ],
     reason: 'some reason',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     status: 'Pending',
     createdAt: new Date(),
     updatedAt: new Date()
@@ -73,6 +79,8 @@ export function up(queryInterface, Sequelize) {
       }
     ],
     reason: 'some reason',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     status: 'Rejected',
     createdAt: new Date(),
     updatedAt: new Date()
@@ -92,6 +100,8 @@ export function up(queryInterface, Sequelize) {
       }
     ],
     reason: 'visit new york',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     status: 'Approved',
     createdAt: new Date(),
     updatedAt: new Date()
@@ -111,6 +121,8 @@ export function up(queryInterface, Sequelize) {
       }
     ],
     reason: 'visit new york',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     status: 'Approved',
     createdAt: new Date(),
     updatedAt: new Date()
@@ -130,6 +142,8 @@ export function up(queryInterface, Sequelize) {
       }
     ],
     reason: 'test get tripsreason',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     status: 'Approved',
     createdAt: new Date(),
     updatedAt: new Date()

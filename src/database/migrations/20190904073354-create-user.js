@@ -33,6 +33,11 @@ export function up(queryInterface, Sequelize) {
       allowNull: false,
       defaultValue: false
     },
+    auto_fill: {
+      type: Sequelize.BOOLEAN,
+      allowNull: true,
+      defaultValue: false
+    },
     role_value: {
       type: Sequelize.INTEGER,
       defaultValue: 1

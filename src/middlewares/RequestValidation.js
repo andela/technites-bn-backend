@@ -15,5 +15,9 @@ export default (req, res, next) => {
   const { error } = validateRequest(req);
   if (error) return res.status(400).json({ status: '400', error: error.details[0].message });
 
+  if (req.body.passport_name === undefined || req.body.passport_number === undefined) {
+    return res.status('404').json({ status: res.statusCode, error: 'Please add your passport name and passport number' });
+  }
+
   next();
 };
