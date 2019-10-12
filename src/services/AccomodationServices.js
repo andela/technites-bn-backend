@@ -19,15 +19,19 @@ class AccomodationServices {
       *
       * @param {*} accommodation_name
       * @param {*} location
-      * @param {*} room_type
       * @returns {object} returns the newly saved accomodation facility
       */
-  static async getByNameLocationRoom(accommodation_name, location, room_type) {
-    const found = await database.Accomodations.findAll({
-      where: { accommodation_name, location, room_type }
-    });
-    return found;
-  }
+      static async getByNameLocation(accommodation_name, location) {
+        const found = await database.Accomodations.findAll({
+          where: {
+            [Op.and]: [
+              { accommodation_name: { [Op.iLike]: `%${accommodation_name}%` } },
+              { location: { [Op.iLike]: `%${location}%` } },
+            ]
+          }
+        });
+        return found.map((result) => result.dataValues);
+      }
 
   /**
  *

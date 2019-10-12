@@ -41,30 +41,35 @@ class UserController {
   /**
    * @param {Object} req object
    * @param {Object} res object
+   * @param {Object} next object
    * @returns {Object} res
    */
-  static async register(req, res) {
-    const foundUser = await findUserByEmail(req.body.email);
-    if (foundUser) {
-      res.status(409).send({ status: 409, error: `User with email ${req.body.email} already exists` });
-    } else {
-      req.body.is_verified = false;
-      req.body.role_value = 1;
-      req.body.password = bcrypt.hashSync(req.body.password, 8);
-      const newUser = await addUser(req.body);
-      const token = jwtSign({ email: req.body.email });
-      const searchUser = await findUserByEmail(req.body.email);
-      if (!searchUser) {
-        return res.status(404).json({ status: 404, error: 'Email is not registered' });
-      }
-      sendConfirmationEmail(token, searchUser.email);
-      res.status(201).send({
-        status: 201,
-        message:
+  static async register(req, res, next) {
+    try {
+      const foundUser = await findUserByEmail(req.body.email);
+      if (foundUser) {
+        res.status(409).send({ status: 409, error: `User with email ${req.body.email} already exists` });
+      } else {
+        req.body.is_verified = false;
+        req.body.role_value = 1;
+        req.body.password = bcrypt.hashSync(req.body.password, 8);
+        const newUser = await addUser(req.body);
+        const token = jwtSign({ email: req.body.email });
+        const searchUser = await findUserByEmail(req.body.email);
+        if (!searchUser) {
+          return res.status(404).json({ status: 404, error: 'Email is not registered' });
+        }
+        sendConfirmationEmail(token, searchUser.email);
+        res.status(201).send({
+          status: 201,
+          message:
           'Sign up successful. Please confirm your account by clicking on the verification link in the email we sent you',
-        data: getPublicProfile(newUser),
-        token
-      });
+          data: getPublicProfile(newUser),
+          token
+        });
+      }
+    } catch (error) {
+      return next(error);
     }
   }
 
@@ -72,34 +77,39 @@ class UserController {
    * @description contoller function that logs a user in
    * @param {object} req - request object
    * @param {object} res - response object
+   * @param {object} next - response object
    * @returns {object} user - Logged in user
    */
-  static async loginUser(req, res) {
+  static async loginUser(req, res, next) {
     const { email, password } = req.body;
-    const searchUser = await findUserByEmail(email);
-    if (!searchUser) {
-      return res
-        .status(401)
-        .json({ status: 401, error: 'Invalid user credentials' });
+    try {
+      const searchUser = await findUserByEmail(email);
+      if (!searchUser) {
+        return res
+          .status(401)
+          .json({ status: 401, error: 'Invalid user credentials' });
+      }
+      const isVerified = searchUser.is_verified;
+      if (!isVerified) {
+        return res
+          .status(401)
+          .json({ status: 401, error: 'Email verification required' });
+      }
+      const comparePass = comparePassword(password, searchUser.password);
+      if (!comparePass) {
+        return res
+          .status(404)
+          .json({ status: 404, error: 'Invalid user credentials' });
+      }
+      const {
+        password: xx, createdAt, updatedAt, ...user
+      } = searchUser;
+      const token = jwtSign({ email: searchUser.email });
+      util.setSuccess(200, 'You have successfully logged in', { token, user });
+      util.send(res);
+    } catch (error) {
+      return next(error);
     }
-    const isVerified = searchUser.is_verified;
-    if (!isVerified) {
-      return res
-        .status(401)
-        .json({ status: 401, error: 'Email verification required' });
-    }
-    const comparePass = comparePassword(password, searchUser.password);
-    if (!comparePass) {
-      return res
-        .status(404)
-        .json({ status: 404, error: 'Invalid user credentials' });
-    }
-    const {
-      password: xx, createdAt, updatedAt, ...user
-    } = searchUser;
-    const token = jwtSign({ email: searchUser.email });
-    util.setSuccess(200, 'You have successfully logged in', { token, user });
-    util.send(res);
   }
 
   /**

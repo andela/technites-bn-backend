@@ -16,6 +16,7 @@ cloudinary.config({
 });
 const {
   createAccomodation,
+  getByNameLocation,
   findAllAccommodations,
   findAllAccommodationsByLocation,
   findAccommodationFeedback
@@ -37,13 +38,12 @@ class AccomodationControler {
      * @returns {object} returns an object of the newly added accomodation
      */
   static async createAccomodation(req, res, next) {
-    const { accommodation_name, location, room_type } = req.body;
+    const { accommodation_name, location } = req.body;
     if (req.user.role_value < 4) {
       return res.status(401).send({ status: 401, error: 'Access denied' });
     }
-    const checkExist = await getByNameLocationRoom(
-      accommodation_name.toLowerCase(), location.toLowerCase(), room_type.toLowerCase()
-    );
+    const checkExist = await getByNameLocation(accommodation_name, location);
+
     if (checkExist.length > 0) {
       return res.status(409).send({ status: 409, error: 'Accommodation facility already exist' });
     }
@@ -52,9 +52,6 @@ class AccomodationControler {
       const imageUrl = await uploadImage(imagesPath);
       if (imageUrl) {
         req.body.images = imageUrl;
-        req.body.accommodation_name = accommodation_name.toLowerCase();
-        req.body.location = location.toLowerCase();
-        req.body.room_type = room_type.toLowerCase();
         const created = await createAccomodation(req.body);
         return res.status(201).send({ status: 201, message: 'Accomodation facility succesifully created', data: created });
       }
