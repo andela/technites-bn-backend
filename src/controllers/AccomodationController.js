@@ -215,5 +215,4 @@ class AccomodationControler {
     }
   }
 }
-
 export default AccomodationControler;
