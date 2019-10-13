@@ -401,4 +401,11 @@ export default class Validation {
     }
     next();
   }
+  static validateMessage(req, res, next) {
+    const schema = Joi.object().keys({
+      to: Joi.number().integer().required(),
+      message: Joi.string().required(),
+    });
+    genericValidator(req, res, schema, next);
+  }
 }

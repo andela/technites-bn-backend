@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { Router } from 'express';
 import connect from 'connect-multiparty';
 import UserController from '../controllers/UserController';
@@ -14,12 +15,16 @@ const { verifyToken } = UserAuthentication;
 const {
   editProfile, viewSingleProfile, viewAllProfiles,
   viewProfilesByCompany, enableOrDisableEmailNotifications, getUserTrips,
-  markNotificationsAsSeen, getAllNotifications
+  markNotificationsAsSeen, getAllNotifications, sendMessage, fetchMessages
 } = UserController;
 
 const { getRequests } = RequestController;
 
-const { updateProfileValidator } = Validation;
+const { updateProfileValidator, validateMessage } = Validation;
+
+// chats
+router.post('/chat', verifyToken, validateMessage, sendMessage);
+router.get('/chat', verifyToken, fetchMessages);
 
 // profiles
 router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);

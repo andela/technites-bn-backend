@@ -55,7 +55,6 @@ app.use(methodOverride());
 if (!isProduction) {
   app.use(errorhandler());
 }
-
 app.use((req, res, next) => {
   if (req.header('x-forwarded-proto') !== 'https' && isProduction) {
     res.redirect(`https://${req.header('host')}${req.url}`);
@@ -109,7 +108,9 @@ app.use((err, req, res, next) => {
   });
 });
 
-io.on('connection', (socket) => socket.emit('welcome', 'Welcome to barefoot nomad'));
+io.on('connection', (socket) => {
+  socket.emit('welcome', 'Welcome to barefoot nomad');
+});
 
 // finally, let's start our server...
 const server = httpServer.listen(process.env.PORT || 3000, () => {

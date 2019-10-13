@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 import { Router } from 'express';
 import UserController from '../controllers/UserController';
 import Validation from '../validation/Validations';
