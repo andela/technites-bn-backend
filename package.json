@@ -15,6 +15,9 @@
     "migrate:refresh": "npm run migrate:reset && npm run migrate",
     "db:reset": "npm run migrate:refresh && npm run seed"
   },
+  "nyc": {
+    "exclude": "./README.md" 
+  },
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
