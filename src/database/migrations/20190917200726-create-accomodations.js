@@ -42,7 +42,13 @@ export function up(queryInterface, Sequelize) {
     },
     owner: {
       type: Sequelize.INTEGER,
-      allowNull: true
+      allowNull: true,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'Users',
+        key: 'id',
+        as: 'owner',
+      },
     },
     createdAt: {
       allowNull: false,

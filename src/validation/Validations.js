@@ -19,7 +19,7 @@ const { findHostByEmail } = HostService;
 const { comparePassword } = AuthenticationHelper;
 const { findAccommodation, findAccommodationById, findAccommodations } = AccomodationServices;
 const { findLocationById } = LocationServices;
-const { findRoom, findRooms } = RoomServices;
+const { findRoom, findRooms, checkRoomAvailability } = RoomServices;
 const util = new Util();
 
 export const genericValidator = (req, res, schema, next) => {
@@ -370,9 +370,19 @@ export default class Validation {
     // checking rooms requested by user if they are valid
     const checkRooms = requestedRooms.every((requestedRoom) => availableRooms.includes(requestedRoom));
     if (checkRooms !== true) return res.status(404).json({ status: res.statusCode, error: 'The rooms you are choosing are not available' });
+    // checking if room is not occupied during certain period
+    const dates = request.destinations.map(({ room_id, check_in, check_out }) => ({ room_id, check_in, check_out }));
+    const checkRoomDates = await Promise.all(dates.map(({ room_id, check_in, check_out }) => checkRoomAvailability(room_id, check_in, check_out)));
+    const count = [].concat(...checkRoomDates);
+    if (count.length !== 0) {
+      return res.status(409).json({
+        status: res.statusCode,
+        message: 'Room occupied during that period please change dates'
+      });
+    }
+
     req.accommodations = accommodations;
     req.requestedRooms = requestedRooms;
-
     next();
   }
   static async validateRequestAdmin(req, res, next) {

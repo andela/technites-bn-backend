@@ -18,6 +18,16 @@ class RoomService {
   }
 
   /**
+     *
+     * @param {*} room
+     * @returns {object} returns new room
+     */
+  static async bookRoom(room) {
+    const bookedRoom = await database.Bookings.create(room);
+    return bookedRoom;
+  }
+
+  /**
    *
    * @param {*} id
    * @returns {*} room
@@ -77,6 +87,57 @@ class RoomService {
   static async changeRoomStatus(roomId, status) {
     const rooms = await database.Room.update({ status }, { where: { id: roomId } });
     return rooms;
+  }
+
+  /**
+   *
+   * @param {*} room_id
+   * @param {*} check_in
+   * @param {*} check_out
+   * @returns {*} room
+   */
+  static async checkRoomAvailability(room_id, check_in, check_out) {
+    const room = await database.Bookings.findAll({
+      where: {
+        room_id,
+        [Op.or]: [
+          {
+            check_in: {
+              [Op.between]: [check_in, check_out]
+            }
+          },
+          {
+            check_out: {
+              [Op.between]: [check_in, check_out]
+            }
+          }
+        ],
+        status: true
+      }
+    });
+    if (!room) return null;
+    return room;
+  }
+
+  /**
+   * @param {*} where
+ * @returns {*} bookings
+ */
+  static async getRoomByDate(where) {
+    const bookings = await database.Bookings.findAll({ where });
+    if (!bookings) return null;
+    const bookingsArr = bookings.map((book) => { return book.dataValues; });
+    return bookingsArr;
+  }
+
+  /**
+   *
+   * @param {*} request_id
+   * @returns {*} released room
+   */
+  static async releaseBooking(request_id) {
+    const releasedRooms = await database.Bookings.update({ status: false }, { where: { request_id } });
+    return releasedRooms;
   }
 }
 

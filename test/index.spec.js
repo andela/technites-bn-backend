@@ -11,6 +11,7 @@ import feedbackTests from './Feedback.spec';
 import commonTests from './Common.spec';
 import commentTests from './Comment.spec';
 import ratingTests from './Rating.spec';
+import cronJobs from './CronJob.spec';
 
 describe('Test Runner', () => {
   describe('AdminTests', adminTests);
@@ -26,4 +27,5 @@ describe('Test Runner', () => {
   describe('commentTests', commentTests);
   describe('ratingTests', ratingTests);
   describe('NotificationUnitTest', NotificationUnitTest);
+  describe('cronJobs', cronJobs);
 });

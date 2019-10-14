@@ -51,6 +51,9 @@ export default (sequelize, DataTypes) => {
     Request.hasMany(models.Comment, {
       foreignKey: 'request_id',
     });
+    Request.hasOne(models.Bookings, {
+      foreignKey: 'request_id',
+    });
   };
 
   Request.afterCreate(({ dataValues }) => {
