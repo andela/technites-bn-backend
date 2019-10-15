@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 /* eslint-disable import/no-cycle */
 /* eslint-disable import/newline-after-import */
 /* eslint-disable no-console */
@@ -16,15 +17,19 @@ import expressValidator from 'express-validator';
 import path from 'path';
 import http from 'http';
 import socketIo from 'socket.io';
+import cron from 'node-cron';
+import { Op } from 'sequelize';
 import passport from './config/passport';
 import routes from './routes';
 import errorLogger from './utils/ErrorLogger';
 import initializeEventListeners from './utils/EventListeners';
-
+import RoomService from './services/RoomServices';
+import BookingCronJobs from './utils/BookingCronJobs';
 dotenv.config();
 
+const { bookings } = BookingCronJobs;
+const { getRoomByDate, releaseBooking, changeRoomStatus } = RoomService;
 const isProduction = process.env.NODE_ENV === 'production';
-
 // Create global app object
 const app = express();
 const httpServer = http.createServer(app);
@@ -86,6 +91,8 @@ if (!isProduction) {
     });
   });
 }
+const time = '59 * * * *';
+bookings(time);
 
 // production error handler
 app.use(Sentry.Handlers.errorHandler());

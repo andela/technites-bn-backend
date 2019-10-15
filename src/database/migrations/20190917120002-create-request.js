@@ -9,7 +9,13 @@ export function up(queryInterface, Sequelize) {
     },
     user_id: {
       type: Sequelize.INTEGER,
-      allowNull: false
+      allowNull: false,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'Users',
+        key: 'id',
+        as: 'user_id',
+      },
     },
     request_type: {
       type: Sequelize.STRING,

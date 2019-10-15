@@ -10,7 +10,13 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.INTEGER
     },
     accommodation_id: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'Accomodations',
+        key: 'id',
+        as: 'accommodation_id',
+      },
     },
     name: {
       type: Sequelize.STRING

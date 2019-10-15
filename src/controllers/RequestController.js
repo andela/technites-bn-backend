@@ -1,3 +1,4 @@
+/* eslint-disable no-return-assign */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-unused-vars */
 /* eslint-disable camelcase */
@@ -41,7 +42,7 @@ const {
   findIfLocationsExists,
   findRequestById
 } = RequestServices;
-const { changeRoomStatus } = RoomService;
+const { changeRoomStatus, bookRoom, releaseBooking } = RoomService;
 const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
 const { findUserByEmail, findUserById } = UserService;
 const { requestEmailTheme, userConfirmTheme, sendEmail } = MailHelper;
@@ -122,12 +123,9 @@ class RequestController {
     const alreadyExistRequest = await isRequestUnique(request.reason, request.departure_date);
     if (alreadyExistRequest) return res.status(409).json({ status: res.statusCode, error: 'Request already exists based on your reason and departure date' });
     const dbRequest = await createRequest(request);
-    // Update accommodations table
-    sign = '-';
-    req.accommodations.forEach((accommodation) => updateAccommodations(accommodation, sign));
-    // Update rooms table
-    status = false;
-    req.requestedRooms.forEach((requestedRoom) => changeRoomStatus(requestedRoom, status));
+    const userRequests = request.destinations.map(({ check_in, check_out, room_id }) => ({ check_in, check_out, room_id })); 
+    userRequests.forEach((req) => req.request_id = dbRequest.id);
+    const requests = userRequests.forEach((room) => bookRoom(room));
     // build base URL
     const baseUrl = `${req.protocol}://${req.header('host')}`;
     // send Request Email to Line Manager
@@ -370,14 +368,7 @@ class RequestController {
     eventEmitter.emit('travel_request_response', request);
     // release room in accommodation
     if (request.status === 'Rejected') {
-      sign = '+';
-      status = true;
-      request.destinations
-        .map((destination) => destination.accomodation_id)
-        .forEach((accommodation) => updateAccommodations(accommodation, sign));
-      request.destinations
-        .map((destination) => destination.room_id)
-        .forEach((room) => changeRoomStatus(room, status))
+      await releaseBooking(request.id);
     }
     // return reponse to user
     return res.status(200).json({

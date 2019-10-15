@@ -238,9 +238,6 @@ class AccomodationControler {
       addLike(newLike).then(() => {
         util.setSuccess(201, 'Liked succesfully');
         return util.send(res);
-      }).catch(() => {
-        util.setError(500, 'Failed to add like');
-        return util.send(res);
       });
     } else {
       const updatedLike = {
