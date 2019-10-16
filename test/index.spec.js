@@ -6,12 +6,13 @@ import usersRequestTests from './UsersRequest.spec';
 import utilsUnitTests from './UtilsUnitTest.spec';
 import hostTests from './Host.spec';
 import NotificationUnitTest from './NotificationUnitTest.spec';
-import accomodationTests from './Accommodation.spec';
 import feedbackTests from './Feedback.spec';
 import commonTests from './Common.spec';
 import commentTests from './Comment.spec';
 import ratingTests from './Rating.spec';
 import cronJobs from './CronJob.spec';
+import chatTests from './Chat.spec';
+import accomodationTests from './Accommodations.spec';
 
 describe('Test Runner', () => {
   describe('AdminTests', adminTests);
@@ -21,11 +22,12 @@ describe('Test Runner', () => {
   describe('UsersRequestTests', usersRequestTests);
   describe('UtilsUnitTests', utilsUnitTests);
   describe('HostTests', hostTests);
-  describe('AccomodationTests', accomodationTests);
   describe('feedbackTests', feedbackTests);
   describe('commonTests', commonTests);
   describe('commentTests', commentTests);
   describe('ratingTests', ratingTests);
+  describe('chatTests', chatTests);
   describe('NotificationUnitTest', NotificationUnitTest);
   describe('cronJobs', cronJobs);
+  describe('AccomodationTests', accomodationTests);
 });

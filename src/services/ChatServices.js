@@ -23,16 +23,19 @@ class ChatService {
  */
   static async fetchAllChats() {
     const chats = await database.Chats.findAll({
+      attributes: {
+        exclude: ['id', 'from', 'to', 'updatedAt']
+      },
       include: [{
         model: database.User,
         attributes:
         ['id', 'firstname',
           'lastname'],
         required: true
-      }],
+      }]
     });
     if (!chats) return null;
-    return chats;
+    return chats.map((chat) => chat.dataValues);
   }
 }
 export default ChatService;

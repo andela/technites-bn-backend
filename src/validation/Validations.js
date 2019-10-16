@@ -301,12 +301,12 @@ export default class Validation {
       util.setError(409, `Room name ${req.body.name}, with the type ${req.body.room_type} already exists at ${accommodation.accommodation_name}`);
       return util.send(res);
     }
-    if (req.user.id !== accommodation.owner) {
-      util.setError(403, 'You are not allowed to add rooms to an accommodation you do not own');
+    if (req.user.role_value === 1) {
+      util.setError(401, 'You are not allowed to access this endpoint');
       return util.send(res);
     }
-    if (req.user.role_value === 1) {
-      util.setError(403, 'You are not allowed to access this endpoint');
+    if (req.user.id !== accommodation.owner) {
+      util.setError(403, 'You are not allowed to add rooms to an accommodation you do not own');
       return util.send(res);
     }
     if (req.files.images.length === undefined) {

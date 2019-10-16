@@ -5,6 +5,7 @@ import UserController from '../controllers/UserController';
 import UserAuthentication from '../middlewares/UserAuthentication';
 import Validation from '../validation/Validations';
 import RequestController from '../controllers/RequestController';
+import ChatController from '../controllers/ChatController';
 import { checkIsInt, validator } from '../validation/UserValidation';
 
 const router = new Router();
@@ -15,12 +16,14 @@ const { verifyToken } = UserAuthentication;
 const {
   editProfile, viewSingleProfile, viewAllProfiles,
   viewProfilesByCompany, enableOrDisableEmailNotifications, getUserTrips,
-  markNotificationsAsSeen, getAllNotifications, sendMessage, fetchMessages
+  markNotificationsAsSeen, getAllNotifications
 } = UserController;
 
 const { getRequests } = RequestController;
 
 const { updateProfileValidator, validateMessage } = Validation;
+
+const { sendMessage, fetchMessages } = ChatController;
 
 // chats
 router.post('/chat', verifyToken, validateMessage, sendMessage);

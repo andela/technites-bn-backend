@@ -91,6 +91,18 @@ export function up(queryInterface, Sequelize) {
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  {
+    firstname: 'Requester',
+    lastname: 'withno',
+    username: 'linemanager',
+    email: 'nolinemanager@gmail.com',
+    password,
+    company: 'NewCompany',
+    is_verified: true,
+    role_value: 1,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
 ], {});
 }
 

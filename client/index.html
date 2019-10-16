@@ -66,9 +66,8 @@ socket.on('new_user',(data) => {
     sockets.user = data;
     sockets.emit('create', `user#${data.id}`);
     showUserJoinedNotification(data);
-    console.log(`===========>${getOnlineUsers()}`)
 });
-socket.on('message', (data) => {
+socket.on('send_message', (data) => {
   showMessageNotification(data);
 });
 </script>

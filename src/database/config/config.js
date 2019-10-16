@@ -14,7 +14,7 @@ module.exports = {
       ssl: true,
       native: true,
     },
-    logging: console.log,
+    logging: null,
   },
   test: {
     username: process.env.DB_USER,

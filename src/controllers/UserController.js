@@ -6,24 +6,19 @@ import bcrypt from 'bcrypt';
 import cloudinary from 'cloudinary';
 import moment from 'moment';
 import Sequelize from 'sequelize';
-import http from 'http';
-import socketIo from 'socket.io';
 import Util from '../utils/Utils';
 import Mail from '../utils/Mail';
 import redisClient from '../utils/RedisConnection';
 import UserService from '../services/UserServices';
-import ChatService from '../services/ChatServices';
 import { getPublicProfile } from '../utils/UserUtils';
 import AuthenticationHelper from '../utils/AuthHelper';
-import Response from '../utils/Response';
 import database from '../database/models';
-import { io } from '../index';
+import eventEmitter from '../utils/EventEmitter';
 
 const { Op } = Sequelize;
 const util = new Util();
 const mail = new Mail();
 const { jwtSign, jwtVerify, comparePassword } = AuthenticationHelper;
-const response = new Response();
 const {
   addUser, findUserByEmail, storeToken, updateCredentials, sendConfirmationEmail, storedToken,
   destroyToken, updateProfile, findUserById, displayAllUsers, findUserByCompany,
@@ -31,7 +26,6 @@ const {
 } = UserService;
 
 let msgType = null;
-const { storeChat, fetchAllChats } = ChatService;
 const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
 cloudinary.config({
   cloud_name: CLOUDINARY_NAME,
@@ -42,44 +36,6 @@ cloudinary.config({
  * @class UserController
  */
 class UserController {
-  /**
-   *
-   * @param {*} req
-   * @param {*} res
-   * @returns {*} message
-   */
-  static sendMessage(req, res) {
-    const chat = {
-      from: req.user.id,
-      to: req.body.to,
-      message: req.body.message
-    };
-    storeChat(chat).then(() => {
-      chat.from = `${req.user.firstname} ${req.user.lastname}`;
-      chat.to = 'All';
-      io.emit('message', chat);
-      util.setSuccess(201, 'Message Sent!', chat);
-      return util.send(res);
-    });
-  }
-
-  /**
-   * @param {*} req
-   * @param {*} res
-   * @returns {*} all messages
-   */
-  static async fetchMessages(req, res) {
-    const allMessages = await fetchAllChats();
-    const messages = allMessages.map(({
-      message, createdAt, User
-    }) => ({
-      message, createdAt, User
-    }));
-    // console.log(messages);
-    util.setSuccess(200, 'All Messages!', messages);
-    return util.send(res);
-  }
-
   /**
    * @param {Object} req object
    * @param {Object} res object
@@ -127,35 +83,35 @@ class UserController {
     } = searchUser;
     const token = jwtSign({ email: searchUser.email });
     // Join room
-    io.emit('new_user', user);
-    response.setSuccess(200, 'You have successfully logged in', { token, user });
-    response.send(res);
+    eventEmitter.emit('new_user', user);
+    util.setSuccess(200, 'You have successfully logged in', { token, user });
+    util.send(res);
   }
 
   /**
    * @description contoller function that logs a user out
    * @param {object} req - request object
    * @param {object} res - response object
+   * @param {*} next
    * @returns {object} user - Logged in user
    */
-  static async logoutUser(req, res) {
+  static async logoutUser(req, res, next) {
     const { email } = req.user;
     try {
       redisClient.set(email, req.token);
-      response.setSuccess(200, 'You have logged out');
-      return response.send(res);
-    } catch (error) {
-      res.status(500).json({ status: res.statusCode, error: 'Oops something went wrong!' });
-    }
+      util.setSuccess(200, 'You have logged out');
+      return util.send(res);
+    } catch (error) { return next(error); }
   }
 
   /**
  *
  * @param {req} req - Receive Email
  * @param {res} res for reset
+ * @param {*} next
  * @returns {token} - it returns a token
  */
-  static async reset(req, res) {
+  static async reset(req, res, next) {
     try {
       // check whether email address is recorded
       const searchUser = await findUserByEmail(req.body.email);
@@ -176,10 +132,7 @@ class UserController {
         mail.setMessage(req.body.email, token, searchUser.firstname, req.body.email, msgType = 'ResetRequest');
         return mail.send(res);
       });
-    } catch (error) {
-      util.setError(409, 'Failed to send email request');
-      return util.send(res);
-    }
+    } catch (error) { return next(error); }
   }
 
   /**

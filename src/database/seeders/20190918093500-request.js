@@ -134,6 +134,25 @@ export function up(queryInterface, Sequelize) {
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  {
+    user_id: 8,
+    request_type: 'OneWay',
+    location_id: 1,
+    departure_date: '2018-10-07 09:10:31.981 +00:00',
+    return_date: moment().add(7, 'days').toDate(),
+    destinations: [
+      {
+        destination_id: 3,
+        accomodation_id: 1,
+        check_in: moment().toDate(),
+        check_out: moment().add(7, 'days').toDate()
+      }
+    ],
+    reason: 'test get tripsreason',
+    status: 'Approved',
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
   ], {}, { destinations: { type: new Sequelize.JSONB() } });
 }
 

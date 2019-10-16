@@ -86,7 +86,7 @@ self.addEventListener('notificationclick', (event) => {
 
 const showUserJoinedNotification = (data) => {
   navigator.serviceWorker.getRegistration().then((reg) => {
-    reg.showNotification(`${data.firstname} ${data.lastname} joined chat`, {
+    reg.showNotification(`${data.from} joined chat`, {
       icon: 'https://res.cloudinary.com/technites/image/upload/v1570698565/uploads/updated-barefoot-logo_imccx3.png',
       actions: [
         {
