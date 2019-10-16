@@ -29,7 +29,9 @@ const dummyRequest = {
   {
     destination_id: 5, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 6
   }],
-  reason: 'Medical reason'
+  reason: 'Medical reason',
+  passport_name: 'my name',
+  passport_number: '1234567890',
 };
 
 const commentOne = {

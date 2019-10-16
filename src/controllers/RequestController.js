@@ -48,7 +48,7 @@ const {
 } = RequestServices;
 const { changeRoomStatus, bookRoom, releaseBooking } = RoomService;
 const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
-const { findUserById } = UserService;
+const { findUserById, autoFill } = UserService;
 const { requestEmailTheme, userConfirmTheme, sendEmail } = MailHelper;
 const { searchRequestUtil } = SearchUtils;
 const util = new Utils();
@@ -101,7 +101,7 @@ class RequestController {
       RequestController.sendUserEmail('You sent new trip request', 'Trip request confirmation sent', 'was succesfully received', req.user, request);
     }
     if (response) {
-      util.setSuccess(201, 'Sent request. Please wait travel admin to approve it', dbRequest); 
+      util.setSuccess(201, 'Sent request. Please wait travel admin to approve it', dbRequest);
       return util.send(res);
     }
     util.setError(500, 'Failed to send request email try again later!');
@@ -109,10 +109,26 @@ class RequestController {
   }
 
   /**
-   * @param {Object} req
-   * @param {Object} res
-   * @returns {Object} updated request
-   */
+     *
+     * @param {*} req
+     * @param {*} res
+     * @param {*} next
+     * @returns {Object} newUser
+     */
+  static async setAutoFill(req, res, next) {
+    if (req.params.autofill === 'true' || req.params.autofill === 'false') {
+      await autoFill(req.params.autofill, req.user.email);
+      res.status(200).json({ status: res.statusCode, message: 'updated successfully' });
+    } else {
+      res.status(400).json({ status: res.statusCode, error: 'Use only true or false for enabling auto-fill option' });
+    }
+  }
+
+  /**
+ * @param {Object} req
+ * @param {Object} res
+ * @returns {Object} updated request
+ */
   static async updateRequest(req, res) {
     const request = req.body;
     const { user } = req;
@@ -368,7 +384,7 @@ class RequestController {
     }
     return res.status(200).json({
       status: res.statusCode,
-      message: 'No requests found!'
+      error: 'No requests found!'
     });
   }
 

@@ -7,6 +7,7 @@ import validate from '../middlewares/RequestValidation';
 import { queryValidation, errorCheck } from '../validation/QueryValidation';
 import CommentController from '../controllers/CommentController';
 import { commentdata, validator } from '../validation/UserValidation';
+import checkCookies from '../middlewares/checkCookies';
 
 const router = new Router();
 
@@ -26,7 +27,8 @@ const {
   getRequests,
   searchRequests,
   managerRequests,
-  mostTravelledDestinations
+  mostTravelledDestinations,
+  setAutoFill
 } = RequestController;
 
 const {
@@ -38,7 +40,9 @@ const {
 } = Validation;
 
 router.get('/', [verifyToken], mostTravelledDestinations);
-router.post('/', [verifyToken, validate], validateRequestData, validateNewRequest, createRequest);
+// router.post('/', [verifyToken, validate], validateRequestData, validateNewRequest, createRequest);
+router.post('/', [verifyToken, checkCookies, validate], validateRequestData, validateNewRequest, createRequest);
+
 router.get('/:id([0-9]{1,11})/:action(approve|reject)/:token?', reqAttachUser, validateRequestAdmin, requestAction);
 router.patch('/:id', verifyToken, updateRequestValidator, validateUpdateRequest, updateRequest);
 router.get('/manager', verifyToken, managerRequests);
@@ -61,6 +65,8 @@ router.patch(
   verifyToken,
   editRequestComment
 );
+
+router.patch('/remember/:autofill', verifyToken, setAutoFill);
 router.delete('/:request_id/comments/:comment_id', verifyToken, deleteComment);
 
 export default router;
