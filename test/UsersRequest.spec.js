@@ -62,9 +62,9 @@ describe('REQUESTS ENDPOINTS', () => {
         request_type: 'OneWay',
         location_id: 3,
         departure_date: '2020-09-25',
-        destinations: [{
+        destinations: JSON.stringify([{
           destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 1
-        }],
+        }]),
         reason: 'Medical',
         passport_name: 'my name',
         passport_number: '1234567890',
@@ -122,7 +122,7 @@ describe('REQUESTS ENDPOINTS', () => {
         chai
           .request(app)
           .post('/api/v1/requests')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${token2}`)
           .send(dummyRequest)
           .end((err, res) => {
             res.should.have.status(404);
@@ -317,6 +317,7 @@ describe('REQUESTS ENDPOINTS', () => {
         ],
         reason: 'Vacation',
       };
+
       it('it should update request', (done) => {
         chai
           .request(app)

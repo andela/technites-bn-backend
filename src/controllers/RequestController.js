@@ -91,9 +91,6 @@ class RequestController {
     const request = req.body;
     request.user_id = user.id;
 
-    // attach user_id on payload to save it directly
-
-
     const allDestinationsIds = [];
     // getting all destinations ids
     allDestinationsIds.push(request.location_id);
@@ -115,7 +112,9 @@ class RequestController {
     if (message) return res.status(400).json(message);
 
     const samePlace = await isSamePlace(request);
-    if (samePlace) return res.status(400).json({ status: res.statusCode, error: 'Your location and destination should be different' });
+    if (samePlace) {
+      return res.status(400).json({ status: res.statusCode, error: 'Your location and destination should be different' });
+    }
 
     const destinationDifferent = await isDestinationsDifferent(request);
     if (destinationDifferent === false) return res.status(400).json({ status: res.statusCode, error: 'Destination id\'s or accomodation id\'s should be different' });
@@ -123,12 +122,8 @@ class RequestController {
     const alreadyExistRequest = await isRequestUnique(request.reason, request.departure_date);
     if (alreadyExistRequest) return res.status(409).json({ status: res.statusCode, error: 'Request already exists based on your reason and departure date' });
 
-    // set the cookies
-    res.cookie('passport_name', req.body.passport_name);
-    res.cookie('passport_number', req.body.passport_number);
-
     const dbRequest = await createRequest(request);
-    const userRequests = request.destinations.map(({ check_in, check_out, room_id }) => ({ check_in, check_out, room_id })); 
+    const userRequests = request.destinations.map(({ check_in, check_out, room_id }) => ({ check_in, check_out, room_id }));
     userRequests.forEach((req) => req.request_id = dbRequest.id);
     const requests = userRequests.forEach((room) => bookRoom(room));
     // build base URL
@@ -167,15 +162,11 @@ class RequestController {
      * @returns {Object} newUser
      */
   static async setAutoFill(req, res, next) {
-    try {
-      if (req.params.autofill === 'true' || req.params.autofill === 'false') {
-        await autoFill(req.params.autofill, req.user.email);
-        res.status(200).json({ status: res.statusCode, message: 'updated successfully' });
-      } else {
-        res.status(400).json({ status: res.statusCode, error: 'Use only true or false for enabling auto-fill option' });
-      }
-    } catch (e) {
-      next(e);
+    if (req.params.autofill === 'true' || req.params.autofill === 'false') {
+      await autoFill(req.params.autofill, req.user.email);
+      res.status(200).json({ status: res.statusCode, message: 'updated successfully' });
+    } else {
+      res.status(400).json({ status: res.statusCode, error: 'Use only true or false for enabling auto-fill option' });
     }
   }
 

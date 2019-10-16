@@ -59,6 +59,14 @@ class UserService {
   }
 
   /**
+   * @param {*} userId
+   * @returns {*} object
+   */
+  static async getUserLastRequest(userId) {
+    return database.Request.findOne({ where: { user_id: userId }, order: [['id', 'DESC']] });
+  }
+
+  /**
  *
  * @param {object} userInfo
  * @param {object} tokenOwner
