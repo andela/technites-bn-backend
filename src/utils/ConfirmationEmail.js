@@ -3,7 +3,7 @@ export default (token) => {
   if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
     baseUrl = 'http://localhost:3000';
   } else {
-    baseUrl = 'https://technites-bn-backend-staging.herokuapp.com';
+    baseUrl = 'https://technites-bn-backend-sta-pr-76.herokuapp.com';
   }
   return `<body style="font-family: sans-serif;">
    <div style="
