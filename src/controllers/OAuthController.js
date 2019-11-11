@@ -1,6 +1,10 @@
-import models from '../database/models';
-import AuthHelper from '../utils/AuthHelper';
+import models from "../database/models";
+import AuthHelper from "../utils/AuthHelper";
+import dotenv from "dotenv";
 
+dotenv.config();
+
+const { FRONTEND_URL } = process.env;
 const { jwtSign } = AuthHelper;
 /**
  * @class AuthController
@@ -16,15 +20,22 @@ class AuthController {
    */
   static async loginCallback(req, res) {
     const [dbUser] = await models.User.findOrCreate({
-      where: { email: req.user.email }, defaults: req.user
+      where: { email: req.user.email },
+      defaults: req.user
     });
-
     // omit password and other unnecessary fields
-    const {
-      password, createdAt, updatedAt, ...user
-    } = dbUser.dataValues;
+    const { password, createdAt, updatedAt, ...user } = dbUser.dataValues;
     const token = jwtSign(user);
-    res.status(200).json({ status: res.statusCode, token, user });
+
+    const apiResponse = {
+      status: 200,
+      message: "social login successful",
+      data: { token, user }
+    };
+
+    return res.redirect(
+      `${FRONTEND_URL}/login?token=${token}&status=ok&user=${user}`
+    );
   }
 }
 
