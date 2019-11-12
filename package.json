@@ -16,15 +16,15 @@
     "db:reset": "npm run migrate:refresh && npm run seed"
   },
   "nyc": {
-    "exclude": "./README.md" 
+    "exclude": "./README.md"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
     "@hapi/joi": "^15.1.1",
     "@sendgrid/mail": "^6.4.0",
-    "@sentry/node": "^5.6.2",
-    "bcrypt": "^3.0.6",
+    "@sentry/node": "^5.8.0",
+    "bcrypt": "^3",
     "body-parser": "^1.18.3",
     "cloudinary": "^1.15.0",
     "connect-multiparty": "^2.2.0",
