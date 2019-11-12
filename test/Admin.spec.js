@@ -2,16 +2,12 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/index';
-import AuthHelper from '../src/utils/AuthHelper';
-
-const { jwtSign } = AuthHelper;
 
 chai.use(chaiHttp);
 chai.should();
 
 describe('users endpoints', () => {
   let adminToken;
-  const token = jwtSign({ email: 'manager@admin.com' }, '4m');
   const dummyUser = {
     firstname: 'firstname',
     lastname: 'secondname',
@@ -85,22 +81,6 @@ describe('users endpoints', () => {
         })
         .end((err, res) => {
           res.should.have.status(422);
-          done();
-        });
-    });
-
-    it('it should return 401 if a normal user tries to make another person a super admin', (done) => {
-      chai
-        .request(app)
-        .put('/api/v1/admin/users')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          new_role: 7,
-          email: dummyUser.email
-        })
-        .end((err, res) => {
-          res.should.have.status(401);
-          res.body.should.have.property('message');
           done();
         });
     });

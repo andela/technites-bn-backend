@@ -144,8 +144,6 @@ export default class Validation {
         return_date: Joi.date().required(),
         destinations: Joi.array().items(multiCityRequest).min(1).required(),
         reason: Joi.string().required().min(1).max(255),
-        passport_name: Joi.string(),
-        passport_number: Joi.string(),
       };
     } else {
       schema = {
@@ -154,8 +152,6 @@ export default class Validation {
         departure_date: Joi.date().required(),
         destinations: Joi.array().items(multiCityRequest).min(1).required(),
         reason: Joi.string().required().min(1).max(255),
-        passport_name: Joi.string(),
-        passport_number: Joi.string(),
       };
     }
 

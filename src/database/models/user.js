@@ -6,7 +6,6 @@ export default (sequelize, DataTypes) => {
     username: DataTypes.STRING,
     password: DataTypes.STRING,
     is_verified: DataTypes.BOOLEAN,
-    auto_fill: DataTypes.BOOLEAN,
     role_value: DataTypes.INTEGER,
     phone: DataTypes.STRING,
     gender: DataTypes.STRING,

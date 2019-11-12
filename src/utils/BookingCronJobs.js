@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-/* eslint-disable no-irregular-whitespace */
 import cron from 'node-cron';
 import { Op } from 'sequelize';
 import RoomService from '../services/RoomServices';

@@ -14,7 +14,6 @@ chai.should();
 const { jwtSign } = AuthHelper;
 const token = jwtSign({ email: 'technitesdev1@gmail.com' }, '4m');
 const token2 = jwtSign({ email: 'technitesdev3@gmail.com' }, '4m');
-const tokenWithAutoFill = jwtSign({ email: 'requester@request.com' }, '4m');
 const adminToken = jwtSign({ email: 'technitesdev@gmail.com' }, '4m');
 
 describe('REQUESTS ENDPOINTS', () => {
@@ -62,12 +61,13 @@ describe('REQUESTS ENDPOINTS', () => {
         request_type: 'OneWay',
         location_id: 3,
         departure_date: '2020-09-25',
-        destinations: JSON.stringify([{
+        destinations: [{
           destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 1
-        }]),
-        reason: 'Medical',
-        passport_name: 'my name',
-        passport_number: '1234567890',
+        },
+        {
+          destination_id: 5, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 4
+        }],
+        reason: 'Medical'
       };
 
       const newToken = jwtSign({ email: 'dummyuser@gmail.com' }, '4m');
@@ -114,29 +114,9 @@ describe('REQUESTS ENDPOINTS', () => {
           });
       });
 
-      it('it should return 400 if passport name or number are undefined', (done) => {
-        dummyRequest.request_type = 'OneWay';
-        dummyRequest.location_id = 1;
-        dummyRequest.passport_name = undefined;
-        dummyRequest.passport_number = undefined;
-        chai
-          .request(app)
-          .post('/api/v1/requests')
-          .set('Authorization', `Bearer ${token2}`)
-          .send(dummyRequest)
-          .end((err, res) => {
-            res.should.have.status(404);
-            res.body.should.have.property('error');
-            done();
-          });
-      });
-
       it('it should create a one way trip request', (done) => {
         dummyRequest.request_type = 'OneWay';
         dummyRequest.location_id = 1;
-        dummyRequest.passport_name = 'my name';
-        dummyRequest.passport_number = '1234567890';
-
         chai
           .request(app)
           .post('/api/v1/requests')
@@ -153,7 +133,10 @@ describe('REQUESTS ENDPOINTS', () => {
       it('it should return 409 if request already exists', (done) => {
         dummyRequest.request_type = 'OneWay';
         dummyRequest.destinations = [{
-          destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 7
+          destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 6
+        },
+        {
+          destination_id: 5, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 7
         }];
         chai
           .request(app)
@@ -167,73 +150,12 @@ describe('REQUESTS ENDPOINTS', () => {
           });
       });
 
-      it('it should create a one way trip request using auto-fill', (done) => {
-        const dummy = {
-          request_type: 'OneWay',
-          location_id: 3,
-          departure_date: '2020-09-25',
-          destinations: [{
-            destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 2
-          }],
-          reason: 'new reason again!',
-        };
-
-        chai
-          .request(app)
-          .post('/api/v1/requests')
-          .set('Authorization', `Bearer ${tokenWithAutoFill}`)
-          .set('Cookie', 'passport_name=amily;passport_number=1234567;')
-          .send(dummy)
-          .end((err, res) => {
-            res.should.have.status(201);
-            res.body.should.have.property('message');
-            res.body.should.have.property('data').be.a('object');
-            done();
-          });
-      });
-
-      it('it should return 200 if auto-fill is enabled', (done) => {
-        chai
-          .request(app)
-          .patch('/api/v1/requests/remember/true')
-          .set('Authorization', `Bearer ${tokenWithAutoFill}`)
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.have.property('message');
-            done();
-          });
-      });
-
-      it('it should return 200 if auto-fill is disabled', (done) => {
-        chai
-          .request(app)
-          .patch('/api/v1/requests/remember/false')
-          .set('Authorization', `Bearer ${tokenWithAutoFill}`)
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.should.have.property('message');
-            done();
-          });
-      });
-
-      it('it should return 400 if auto-fill value is not true or false', (done) => {
-        chai
-          .request(app)
-          .patch('/api/v1/requests/remember/a')
-          .set('Authorization', `Bearer ${tokenWithAutoFill}`)
-          .end((err, res) => {
-            res.should.have.status(400);
-            res.body.should.have.property('error');
-            done();
-          });
-      });
-
       it('it should create a return trip request', (done) => {
         dummyRequest.reason = 'new reason';
         dummyRequest.request_type = 'ReturnTrip';
         dummyRequest.return_date = '2020-09-25';
         dummyRequest.destinations = [{
-          destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 4
+          destination_id: 4, accomodation_id: 1, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 2
         },
         {
           destination_id: 5, accomodation_id: 2, check_in: '2020-09-25', check_out: '2020-09-25', room_id: 5
@@ -317,7 +239,6 @@ describe('REQUESTS ENDPOINTS', () => {
         ],
         reason: 'Vacation',
       };
-
       it('it should update request', (done) => {
         chai
           .request(app)
@@ -385,7 +306,7 @@ describe('REQUESTS ENDPOINTS', () => {
           });
       });
     });
-
+    
     describe('GET Search the requests database', () => {
       const keyWord = 'reason';
       const beforeDate = 2030, afterDate = 2019, unrealisticBefore = 2090;
