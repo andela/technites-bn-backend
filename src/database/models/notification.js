@@ -7,7 +7,7 @@ export default (sequelize, DataTypes) => {
         primaryKey: true,
         type: DataTypes.INTEGER
       },
-      from: {
+      user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -16,24 +16,10 @@ export default (sequelize, DataTypes) => {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
-      },
-      to: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'User',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
-      data: {
-        type: DataTypes.JSONB,
-        allowNull: true
       },
       request_id: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
         references: {
           model: 'Request',
           key: 'id'
@@ -66,14 +52,8 @@ export default (sequelize, DataTypes) => {
     {});
   Notification.associate = (models) => {
     Notification.belongsTo(models.User, {
-      foreignKey: 'to',
-      as: 'receiver'
-    });
-  };
-  Notification.associate = (models) => {
-    Notification.belongsTo(models.User, {
-      foreignKey: 'from',
-      as: 'sender'
+      foreignKey: 'user_id',
+      as: 'user'
     });
   };
   return Notification;

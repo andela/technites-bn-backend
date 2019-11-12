@@ -2,19 +2,16 @@
 /* eslint-disable no-unused-vars */
 export function up(queryInterface, Sequelize) {
   return queryInterface.bulkInsert('Notifications', [{
-    from: 1,
-    to: 2,
+    user_id: 1,
     request_id: 1,
     message: 'notification',
     type: 'OneWay',
     seen: false,
-    data: { simple: 'this data is for testing' },
     createdAt: new Date(),
     updatedAt: new Date()
   },
   {
-    from: 1,
-    to: 3,
+    user_id: 3,
     request_id: 2,
     message: 'notification',
     type: 'OneWay',
@@ -23,8 +20,7 @@ export function up(queryInterface, Sequelize) {
     updatedAt: new Date()
   },
   {
-    from: 1,
-    to: 3,
+    user_id: 3,
     request_id: 3,
     message: 'notification',
     type: 'OneWay',
@@ -32,7 +28,7 @@ export function up(queryInterface, Sequelize) {
     createdAt: new Date(),
     updatedAt: new Date()
   }
-  ], {}, { data: { type: new Sequelize.JSONB() } });
+  ], {});
 }
 
 /* eslint-disable no-unused-vars */

@@ -47,23 +47,13 @@ describe('Accomodations', () => {
       departure_date: dateToUse,
       return_date: dateToUse,
       destinations: [{
-        destination_id: 4,
-        accomodation_id: 1,
-        check_in: dateToUse,
-        check_out: dateToUse,
-        room_id: roomId
+        destination_id: 4, accomodation_id: 1, dateToUse, check_out: dateToUse, room_id: roomId
       },
       {
-        destination_id: 4,
-        accomodation_id: 1,
-        check_in: dateToUse,
-        check_out: dateToUse,
-        room_id: roomId2
+        destination_id: 4, accomodation_id: 1, dateToUse, check_out: dateToUse, room_id: roomId2
       }
       ],
-      reason: 'Medical',
-      passport_name: 'my name',
-      passport_number: '1234567890',
+      reason: 'Medical'
     };
     const newRequest = await database.Request.create(request);
     requestId = newRequest.id;

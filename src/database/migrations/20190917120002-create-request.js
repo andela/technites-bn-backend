@@ -39,14 +39,6 @@ export function up(queryInterface, Sequelize) {
       type: Sequelize.STRING,
       allowNull: false
     },
-    passport_name: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    passport_number: {
-      type: Sequelize.INTEGER,
-      allowNull: false
-    },
     status: {
       type: Sequelize.STRING
     },

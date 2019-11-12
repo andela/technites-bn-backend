@@ -159,7 +159,6 @@ describe("users endpoints", () => {
         .set("Accept", "application/json")
         .send({ password: "123456aA@", confirm_password: "123456aA@" })
         .end((err, res) => {
-          console.log('*************** the result in resetting is : ', res.body);
           expect(res.status).to.equal(400);
           done();
         });

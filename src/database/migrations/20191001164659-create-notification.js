@@ -7,21 +7,13 @@ export function up(queryInterface, Sequelize) {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
-    from: {
+    user_id: {
       type: Sequelize.INTEGER,
       allowNull: false
-    },
-    to: {
-      type: Sequelize.INTEGER,
-      allowNull: false
-    },
-    data: {
-      type: Sequelize.JSONB,
-      allowNull: true
     },
     request_id: {
       type: Sequelize.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     type: {
       type: Sequelize.STRING,
