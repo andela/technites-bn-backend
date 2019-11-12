@@ -1,9 +1,18 @@
-export default (token) => {
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const { FRONTEND_URL } = process.env;
+
+export default token => {
   let baseUrl = null;
-  if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
-    baseUrl = 'http://localhost:3000';
+  if (
+    process.env.NODE_ENV === "test" ||
+    process.env.NODE_ENV === "development"
+  ) {
+    baseUrl = "http://localhost:3000";
   } else {
-    baseUrl = 'https://technites-bn-backend-staging.herokuapp.com';
+    baseUrl = "https://technites-bn-frontend-st-pr-11.herokuapp.com";
   }
   return `<body style="font-family: sans-serif;">
    <div style="
