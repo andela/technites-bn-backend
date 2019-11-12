@@ -40,6 +40,33 @@ class UserService {
   }
 
   /**
+   * @param {Object} userEmail
+   * @returns {Object} true or false
+   */
+  static async isAutoFill(userEmail) {
+    const user = await database.User.findOne({ where: { email: userEmail } });
+    if (!user) return null;
+    return user.dataValues.auto_fill;
+  }
+
+  /**
+   * @param {*} autoFill
+   * @param {*} email
+   * @returns {*} object
+   */
+  static async autoFill(autoFill, email) {
+    return database.User.update({ auto_fill: autoFill }, { where: { email } });
+  }
+
+  /**
+   * @param {*} userId
+   * @returns {*} object
+   */
+  static async getUserLastRequest(userId) {
+    return database.Request.findOne({ where: { user_id: userId }, order: [['id', 'DESC']] });
+  }
+
+  /**
  *
  * @param {object} userInfo
  * @param {object} tokenOwner
@@ -234,7 +261,7 @@ class UserService {
    * @returns {Object} updated field
    */
   static async updateNotificationsAsSeen(userId) {
-    return database.Notification.update({ seen: true }, { where: { user_id: userId } });
+    return database.Notification.update({ seen: true }, { where: { to: userId } });
   }
 
   /**
@@ -243,14 +270,11 @@ class UserService {
    * @returns {Object} updated field
    */
   static async getAllUserNotifications(userId, seen) {
-    if (seen === 'false') {
-      return database.Notification.findAndCountAll({ where: { user_id: userId, seen } });
-    }
-    if (seen === 'true') {
-      return database.Notification.findAndCountAll({ where: { user_id: userId, seen } });
+    if (seen) {
+      return database.Notification.findAndCountAll({ where: { to: userId, seen } });
     }
 
-    return database.Notification.findAndCountAll({ where: { user_id: userId } });
+    return database.Notification.findAndCountAll({ where: { to: userId } });
   }
 }
 

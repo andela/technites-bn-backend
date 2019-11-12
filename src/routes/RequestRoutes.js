@@ -4,6 +4,7 @@ import AttachUser from '../middlewares/AttachUser';
 import Validation from '../validation/Validations';
 import RequestController from '../controllers/RequestController';
 import validate from '../middlewares/RequestValidation';
+import checkCookies from '../middlewares/checkCookies';
 import { queryValidation, errorCheck } from '../validation/QueryValidation';
 import CommentController from '../controllers/CommentController';
 import { commentdata, validator } from '../validation/UserValidation';
@@ -23,7 +24,8 @@ const {
   getRequests,
   searchRequests,
   managerRequests,
-  mostTravelledDestinations
+  mostTravelledDestinations,
+  setAutoFill,
 } = RequestController;
 
 const {
@@ -34,8 +36,9 @@ const {
 } = Validation;
 router.get('/', verifyToken, getRequests);
 router.get('/', [verifyToken], mostTravelledDestinations);
-router.post('/', [verifyToken, validate], validateNewRequest, createRequest);
+router.post('/', [verifyToken, checkCookies, validate], validateNewRequest, createRequest);
 router.get('/:id([0-9]{1,11})/:action(approve|reject)/:token?', reqAttachUser, validateRequestAdmin, requestAction);
+router.patch('/remember/:autofill', verifyToken, setAutoFill);
 router.patch('/:id', verifyToken, updateRequestValidator, validateUpdateRequest, updateRequest);
 router.get('/manager', verifyToken, managerRequests);
 router.get('/search', verifyToken, queryValidation(), errorCheck, searchRequests);

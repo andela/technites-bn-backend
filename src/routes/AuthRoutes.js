@@ -42,6 +42,7 @@ router.get('/fb/callback', passport.authenticate('facebook', { failureRedirect: 
 
 router.get('/login/:token', verifyToken, async (req, res) => {
   await database.User.update({ is_verified: true }, { where: { email: req.user.email } });
+  res.redirect('https://technites-bn-frontend-st-pr-11.herokuapp.com/login');
 
   res.json({ status: 200, message: 'Your account is now verified' });
 });

@@ -19,6 +19,7 @@ import http from 'http';
 import socketIo from 'socket.io';
 import cron from 'node-cron';
 import { Op } from 'sequelize';
+import cookieParser from 'cookie-parser';
 import passport from './config/passport';
 import routes from './routes';
 import errorLogger from './utils/ErrorLogger';
@@ -42,6 +43,7 @@ app.use(Sentry.Handlers.requestHandler());
 
 app.enable('trust proxy');
 
+app.use(cookieParser());
 app.use(cors());
 app.use(passport.initialize());
 // Normal express config defaults

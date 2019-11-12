@@ -30,6 +30,14 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
+    passport_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    passport_number: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     status: {
       type: DataTypes.STRING,
       allowNull: false,

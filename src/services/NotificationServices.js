@@ -22,9 +22,10 @@ class NotificationService {
     notification.from = username;
 
     const notificationToSave = {};
-    notificationToSave.user_id = id;
+    notificationToSave.from = data.user_id;
+    notificationToSave.to = id;
     notificationToSave.request_id = data.id;
-    notificationToSave.message = data.reason;
+    notificationToSave.message = `new ${data.request_type} travel request`;
     notificationToSave.type = data.request_type;
 
     const { dataValues } = await NotificationService.saveNotification(notificationToSave);
@@ -53,7 +54,9 @@ class NotificationService {
     notification.data = data;
 
     const notificationToSave = {};
-    notificationToSave.user_id = id;
+    notificationToSave.from = data.user_id;
+    notificationToSave.to = id;
+    notificationToSave.data = data;
     notificationToSave.message = data.comment;
     notificationToSave.type = 'comments';
 
