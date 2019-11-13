@@ -77,9 +77,9 @@ class RequestController {
         data: requests
       });
     }
-    return res.status(200).json({
+    return res.status(404).json({
       status: res.statusCode,
-      message: "This user doesn't have any available requests!"
+      error: "This user doesn't have any available requests!"
     });
   }
 
