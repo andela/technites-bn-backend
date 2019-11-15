@@ -25,10 +25,13 @@ import errorLogger from './utils/ErrorLogger';
 import initializeEventListeners from './utils/EventListeners';
 import RoomService from './services/RoomServices';
 import BookingCronJobs from './utils/BookingCronJobs';
+import ChatService from './services/ChatServices';
+import eventEmitter from './utils/EventEmitter';
 dotenv.config();
 
 const { bookings } = BookingCronJobs;
 const { getRoomByDate, releaseBooking, changeRoomStatus } = RoomService;
+const { storeChat } = ChatService;
 const isProduction = process.env.NODE_ENV === 'production';
 // Create global app object
 const app = express();
@@ -55,7 +58,6 @@ app.use(methodOverride());
 if (!isProduction) {
   app.use(errorhandler());
 }
-
 app.use((req, res, next) => {
   if (req.header('x-forwarded-proto') !== 'https' && isProduction) {
     res.redirect(`https://${req.header('host')}${req.url}`);
@@ -109,7 +111,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-io.on('connection', (socket) => socket.emit('welcome', 'Welcome to barefoot nomad'));
+io.on('connection', (socket) => {
+  socket.emit('welcome', 'Welcome to barefoot nomad');
+  socket.on('message', async (message) => {
+    const newChat = await storeChat(message);
+    message.to = 'All';
+    eventEmitter.emit('send_message', message);
+  });
+});
 
 // finally, let's start our server...
 const server = httpServer.listen(process.env.PORT || 3000, () => {

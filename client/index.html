@@ -61,7 +61,15 @@ socket.on('new_comment', (data) => {
 socket.on('travel_request_response', (data) => {
   showRequestDecisionNotification(data);
 });
-
+socket.on('new_user',(data) => {
+    const sockets = io.connect();
+    sockets.user = data;
+    sockets.emit('create', `user#${data.id}`);
+    showUserJoinedNotification(data);
+});
+socket.on('send_message', (data) => {
+  showMessageNotification(data);
+});
 </script>
 <body>
 

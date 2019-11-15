@@ -15,6 +15,7 @@ const { jwtSign } = AuthHelper;
 const token = jwtSign({ email: 'technitesdev1@gmail.com' }, '4m');
 const token2 = jwtSign({ email: 'technitesdev3@gmail.com' }, '4m');
 const adminToken = jwtSign({ email: 'technitesdev@gmail.com' }, '4m');
+const notAllowed = jwtSign({ email: 'nolinemanager@gmail.com' }, '4m');
 
 describe('REQUESTS ENDPOINTS', () => {
   describe('GET api/v1/users/:id/requests', () => {
@@ -265,7 +266,7 @@ describe('REQUESTS ENDPOINTS', () => {
         chai
           .request(app)
           .patch('/api/v1/requests/3')
-          .set('Authorization', `Bearer ${token}`)
+          .set('Authorization', `Bearer ${notAllowed}`)
           .send(Request)
           .end((err, res) => {
             res.should.have.status(403);
@@ -298,7 +299,7 @@ describe('REQUESTS ENDPOINTS', () => {
         chai
           .request(app)
           .patch('/api/v1/requests/4')
-          .set('Authorization', `Bearer ${token2}`)
+          .set('Authorization', `Bearer ${notAllowed}`)
           .send(Request)
           .end((err, res) => {
             res.should.have.status(403);

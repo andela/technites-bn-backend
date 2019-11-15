@@ -1,9 +1,11 @@
+/* eslint-disable import/no-cycle */
 import { Router } from 'express';
 import connect from 'connect-multiparty';
 import UserController from '../controllers/UserController';
 import UserAuthentication from '../middlewares/UserAuthentication';
 import Validation from '../validation/Validations';
 import RequestController from '../controllers/RequestController';
+import ChatController from '../controllers/ChatController';
 import { checkIsInt, validator } from '../validation/UserValidation';
 
 const router = new Router();
@@ -19,7 +21,13 @@ const {
 
 const { getRequests } = RequestController;
 
-const { updateProfileValidator } = Validation;
+const { updateProfileValidator, validateMessage } = Validation;
+
+const { sendMessage, fetchMessages } = ChatController;
+
+// chats
+router.post('/chat', verifyToken, validateMessage, sendMessage);
+router.get('/chat', verifyToken, fetchMessages);
 
 // profiles
 router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);

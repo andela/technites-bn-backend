@@ -21,6 +21,7 @@ const { addUser } = UserService;
 const accomodationUrl = '/api/v1/accommodations';
 const hostToken = jwtSign({ email: 'host@gmail.com' });
 const hostToken2 = jwtSign({ email: 'host2@gmail.com' });
+const notAllowedUser = jwtSign({ email: 'requester@request.com' });
 let accId = null;
 describe('Accomodations', () => {
   // mock cloudinary response
@@ -161,6 +162,18 @@ describe('Accomodations', () => {
         .attach('images', 'src/utils/assets/accommodation3.jpeg', 'accommodation3.jpeg');
       expect(newAccommodation.body.status).to.equal(201);
     });
+    it('Should not create an accommodation when it only has one picture', async () => {
+      const newAccommodation = await chai.request(app)
+        .post('/api/v1/accommodations/hosts')
+        .set('Authorization', `${hostToken}`)
+        .field('accommodation_name', 'Test Accommodation')
+        .field('description', 'This is a very good place to be')
+        .field('location', locationId)
+        .field('services', '[{"service":"hello"}]')
+        .field('amenities', '[{"amenity":"hello"}]')
+        .attach('images', 'src/utils/assets/accommodation1.jpg', 'accommodation1.jpg');
+      expect(newAccommodation.body.status).to.equal(403);
+    });
     it('Should not create an accommodation when user is not allowed to access it', async () => {
       const newAccommodation = await chai.request(app)
         .post('/api/v1/accommodations/hosts')
@@ -277,6 +290,21 @@ describe('Accomodations', () => {
         .attach('images', 'src/utils/assets/accommodation3.jpeg', 'accommodation3.jpeg');
       expect(newRoom.body.status).to.equal(201);
     });
+    it('Should not add a room when person does not have right', async () => {
+      const newRoom = await chai.request(app)
+        .post('/api/v1/accommodations/rooms')
+        .set('Authorization', `${notAllowedUser}`)
+        .field('accommodation_id', accommodation.id)
+        .field('name', 'Test Room')
+        .field('room_type', 'single')
+        .field('description', 'This is a very good place to be')
+        .field('cost', 100)
+        .field('status', true)
+        .attach('images', 'src/utils/assets/accommodation1.jpg', 'accommodation1.jpg')
+        .attach('images', 'src/utils/assets/accommodation2.jpg', 'accommodation2.jpg')
+        .attach('images', 'src/utils/assets/accommodation3.jpeg', 'accommodation3.jpeg');
+      expect(newRoom.body.status).to.equal(401);
+    });
     it('Should not add a room to the  accommodation when user does not own it', async () => {
       const newRoom = await chai.request(app)
         .post('/api/v1/accommodations/rooms')
@@ -322,6 +350,19 @@ describe('Accomodations', () => {
         .attach('images', 'src/utils/assets/Test.rtf', 'Test.rtf');
       expect(newRoom.body.status).to.equal(415);
     });
+    it('Should not add a room to the  accommodation when it has one image', async () => {
+      const newRoom = await chai.request(app)
+        .post('/api/v1/accommodations/rooms')
+        .set('Authorization', `${hostToken2}`)
+        .field('accommodation_id', accommodation.id)
+        .field('name', 'Test Room')
+        .field('room_type', 'single')
+        .field('description', 'This is a very good place to be')
+        .field('cost', 100)
+        .field('status', true)
+        .attach('images', 'src/utils/assets/accommodation1.jpg', 'accommodation1.jpg');
+      expect(newRoom.body.status).to.equal(403);
+    });
     it('Should return single room', (done) => {
       chai.request(app)
         .get(`/api/v1/accommodations/${accommodation.id}/rooms/1`)
@@ -353,7 +394,7 @@ describe('Accomodations', () => {
         });
     });
   });
-  describe('POST rooms to accommodation', () => {
+  describe('Like or Unlike accommodations', () => {
     before(async () => {
       const location = {
         name: 'My2TestLocation',

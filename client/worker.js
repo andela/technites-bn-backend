@@ -82,3 +82,40 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
+
+
+const showUserJoinedNotification = (data) => {
+  navigator.serviceWorker.getRegistration().then((reg) => {
+    reg.showNotification(`${data.from} joined chat`, {
+      icon: 'https://res.cloudinary.com/technites/image/upload/v1570698565/uploads/updated-barefoot-logo_imccx3.png',
+      actions: [
+        {
+          action: 'show',
+          title: 'View'
+        },
+        {
+          action: 'close',
+          title: 'Close'
+        },
+      ]
+    });
+  });
+};
+const showMessageNotification = (data) => {
+  navigator.serviceWorker.getRegistration().then((reg) => {
+    reg.showNotification(`New Message from ${data.from} `, {
+      body: `${data.message}`,
+      icon: 'https://res.cloudinary.com/technites/image/upload/v1570698565/uploads/updated-barefoot-logo_imccx3.png',
+      actions: [
+        {
+          action: 'show',
+          title: 'View'
+        },
+        {
+          action: 'close',
+          title: 'Close'
+        },
+      ]
+    });
+  });
+};

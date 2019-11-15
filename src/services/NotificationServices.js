@@ -4,6 +4,7 @@ import { io } from '../index';
 import userService from './UserServices';
 import database from '../database/models';
 
+const { findUserById } = userService;
 /**
  * @class NotificationService
  */
@@ -60,6 +61,37 @@ class NotificationService {
     const { dataValues } = await NotificationService.saveNotification(notificationToSave);
     const emitRes = io.emit('new_comment', notification);
     return { dataValues, emitRes };
+  }
+
+  /**
+      *
+      * @param {Integer} data
+      * @returns {object} return null
+      */
+  static async newUserNotification(data) {
+    const notification = {
+      from: `${data.firstname} ${data.lastname}`,
+      type: 'newUser',
+      to: 'All'
+    };
+    io.emit('new_user', notification);
+  }
+
+  /**
+      *
+      * @param {Integer} data
+      * @param {*} req
+      * @returns {object} return null
+      */
+  static async newMessageNotification(data) {
+    const user = await findUserById(data.from);
+    const notification = {
+      from: `${user.firstname} ${user.lastname}`,
+      type: 'message',
+      to: data.to,
+      message: data.message
+    };
+    io.emit('send_message', notification);
   }
 
   /**

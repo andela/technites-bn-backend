@@ -1,3 +1,4 @@
+/* eslint-disable import/no-cycle */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-restricted-globals */
 /* eslint-disable no-unused-vars */
@@ -11,14 +12,13 @@ import redisClient from '../utils/RedisConnection';
 import UserService from '../services/UserServices';
 import { getPublicProfile } from '../utils/UserUtils';
 import AuthenticationHelper from '../utils/AuthHelper';
-import Response from '../utils/Response';
 import database from '../database/models';
+import eventEmitter from '../utils/EventEmitter';
 
 const { Op } = Sequelize;
 const util = new Util();
 const mail = new Mail();
 const { jwtSign, jwtVerify, comparePassword } = AuthenticationHelper;
-const response = new Response();
 const {
   addUser, findUserByEmail, storeToken, updateCredentials, sendConfirmationEmail, storedToken,
   destroyToken, updateProfile, findUserById, displayAllUsers, findUserByCompany,
@@ -26,7 +26,6 @@ const {
 } = UserService;
 
 let msgType = null;
-
 const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
 cloudinary.config({
   cloud_name: CLOUDINARY_NAME,
@@ -83,35 +82,36 @@ class UserController {
       password: xx, createdAt, updatedAt, ...user
     } = searchUser;
     const token = jwtSign({ email: searchUser.email });
-
-    response.setSuccess(200, 'You have successfully logged in', { token, user });
-    response.send(res);
+    // Join room
+    eventEmitter.emit('new_user', user);
+    util.setSuccess(200, 'You have successfully logged in', { token, user });
+    util.send(res);
   }
 
   /**
    * @description contoller function that logs a user out
    * @param {object} req - request object
    * @param {object} res - response object
+   * @param {*} next
    * @returns {object} user - Logged in user
    */
-  static async logoutUser(req, res) {
+  static async logoutUser(req, res, next) {
     const { email } = req.user;
     try {
       redisClient.set(email, req.token);
-      response.setSuccess(200, 'You have logged out');
-      return response.send(res);
-    } catch (error) {
-      res.status(500).json({ status: res.statusCode, error: 'Oops something went wrong!' });
-    }
+      util.setSuccess(200, 'You have logged out');
+      return util.send(res);
+    } catch (error) { return next(error); }
   }
 
   /**
  *
  * @param {req} req - Receive Email
  * @param {res} res for reset
+ * @param {*} next
  * @returns {token} - it returns a token
  */
-  static async reset(req, res) {
+  static async reset(req, res, next) {
     try {
       // check whether email address is recorded
       const searchUser = await findUserByEmail(req.body.email);
@@ -132,10 +132,7 @@ class UserController {
         mail.setMessage(req.body.email, token, searchUser.firstname, req.body.email, msgType = 'ResetRequest');
         return mail.send(res);
       });
-    } catch (error) {
-      util.setError(409, 'Failed to send email request');
-      return util.send(res);
-    }
+    } catch (error) { return next(error); }
   }
 
   /**
