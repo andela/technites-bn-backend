@@ -104,7 +104,7 @@ class UserController {
       const {
         password: xx, createdAt, updatedAt, ...user
       } = searchUser;
-      const token = jwtSign({ email: searchUser.email });
+      const token = jwtSign({ email: searchUser.email, id: searchUser.id });
       util.setSuccess(200, 'You have successfully logged in', { token, user });
       util.send(res);
     } catch (error) {

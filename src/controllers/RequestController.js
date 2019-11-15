@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 /* eslint-disable no-return-assign */
 /* eslint-disable no-plusplus */
 /* eslint-disable no-unused-vars */
@@ -64,16 +65,25 @@ class RequestController {
    * @param {Oject} res request
    * @returns {Object} object
    */
-  static async getRequests(req, res) {
-    if (req.user.id === parseInt(req.params.id, 10) || req.user.role_value === 7) {
-      const requests = await fetchRequests(req.params.id);
-      if (requests && requests.length) {
-        return res.status(200).json({ status: res.statusCode, message: 'user requests', data: requests });
-      }
-      return res.status(200).json({ status: res.statusCode, message: 'This user doesn\'t have any available requests!' });
+  static async getRequests(req, res) {
+    let param = req.user.id;
+    if (req.user.role_value >= 4 && req.params.id) {
+      param = req.params.id;
     }
-    res.status(403).json({ status: res.statusCode, message: 'You are not allowed to retrieve other users requests' });
+    const requests = await fetchRequests(param);
+    if (requests && requests.length) {
+      return res.status(200).json({
+        status: res.statusCode,
+        message: 'user requests',
+        data: requests
+      });
+    }
+    return res.status(404).json({
+      status: res.statusCode,
+      error: "This user doesn't have any available requests!"
+    });
   }
+
 
   /**
    *
@@ -101,7 +111,7 @@ class RequestController {
       RequestController.sendUserEmail('You sent new trip request', 'Trip request confirmation sent', 'was succesfully received', req.user, request);
     }
     if (response) {
-      util.setSuccess(201, 'Sent request. Please wait travel admin to approve it', dbRequest); 
+      util.setSuccess(201, 'Sent request. Please wait travel admin to approve it', dbRequest);
       return util.send(res);
     }
     util.setError(500, 'Failed to send request email try again later!');
@@ -348,7 +358,7 @@ class RequestController {
    * @returns {*} requests
    */
   static async managerRequests(req, res) {
-    if (req.user.role_value < 7) {
+    if (req.user.role_value < 4) {
       return res.status(403).json({
         status: res.statusCode,
         message: 'You must be a manager to access this URL'
@@ -366,7 +376,7 @@ class RequestController {
         data: requests
       });
     }
-    return res.status(200).json({
+    return res.status(404).json({
       status: res.statusCode,
       message: 'No requests found!'
     });
