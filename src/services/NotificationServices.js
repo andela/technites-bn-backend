@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable camelcase */
 /* eslint-disable import/no-cycle */
 import { io } from '../index';
@@ -93,6 +94,28 @@ class NotificationService {
       message: data.message
     };
     io.emit('send_message', notification);
+  }
+
+  /**
+ *
+ * @param {*} data
+ * @returns {*} object
+ */
+  static async updateRequestNotification(data) {
+    const notification = {
+      user_id: data.user_id,
+      request_id: data.id,
+      type: 'request update',
+      message: `${data.email} updated their request`
+    };
+
+    const { dataValues } = await NotificationService.saveNotification(notification);
+    const updateNotification = {
+      title: `${data.email} updated their request.`,
+      requestId: data.id,
+    };
+    const emitRes = io.emit('request_update', notification);
+    return { dataValues, emitRes };
   }
 
   /**

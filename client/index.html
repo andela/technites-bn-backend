@@ -55,9 +55,15 @@ socket.on('welcome', (data) => {
 socket.on('new_travel_request', (data) => {
   showNewTravelRequestNotification(data);
 });
+
+socket.on('request_update', (data) => {
+  requestUpdateNotification(data);
+});
+
 socket.on('new_comment', (data) => {
   showNewCommentNotification(data);
 });
+
 socket.on('travel_request_response', (data) => {
   showRequestDecisionNotification(data);
 });

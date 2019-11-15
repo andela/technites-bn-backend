@@ -10,6 +10,24 @@ const showNewTravelRequestNotification = (data) => {
     });
   });
 };
+
+const requestUpdateNotification = (data) => {
+  console.log(data);
+  navigator.serviceWorker.getRegistration().then((reg) => {
+    reg.showNotification(data.type, {
+      body: `${data.message}`,
+      data: { from:data.user_id, regarding: data.requestId },
+      icon: 'https://res.cloudinary.com/technites/image/upload/v1570698565/uploads/updated-barefoot-logo_imccx3.png',
+      actions: [
+        {
+          action: 'show',
+          title: 'View'
+        }
+      ]
+    });
+  });
+};
+
 const showRequestDecisionNotification = (data) => {
   navigator.serviceWorker.getRegistration().then((reg) => {
     reg.showNotification(`Request ${data.status}`, {
