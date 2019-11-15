@@ -5,6 +5,7 @@ import AccomodationServices from '../services/AccomodationServices';
 import RoomServices from '../services/RoomServices';
 import LikeServices from '../services/LikeServices';
 import Util from '../utils/Utils';
+import { uploadImages, uploadImage } from '../utils/ImageUploader';
 
 dotenv.config();
 const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
@@ -15,7 +16,6 @@ cloudinary.config({
 });
 const {
   createAccomodation,
-  getByNameLocation,
   findAllAccommodations,
   findAllAccommodationsByLocation,
   findAccommodationFeedback
@@ -37,50 +37,30 @@ class AccomodationControler {
      * @returns {object} returns an object of the newly added accomodation
      */
   static async createAccomodation(req, res, next) {
-    const { accommodation_name, description, location } = req.body;
-
+    const { accommodation_name, location, room_type } = req.body;
     if (req.user.role_value < 4) {
       return res.status(401).send({ status: 401, error: 'Access denied' });
     }
-
+    const checkExist = await getByNameLocationRoom(
+      accommodation_name.toLowerCase(), location.toLowerCase(), room_type.toLowerCase()
+    );
+    if (checkExist.length > 0) {
+      return res.status(409).send({ status: 409, error: 'Accommodation facility already exist' });
+    }
+    const imagesPath = req.files.images.path;
     try {
-      const checkExist = await getByNameLocation(accommodation_name, location);
-
-      if (checkExist.length > 0) {
-        return res.status(409).send({ status: 409, error: 'Accommodation facility already exist' });
+      const imageUrl = await uploadImage(imagesPath);
+      if (imageUrl) {
+        req.body.images = imageUrl;
+        req.body.accommodation_name = accommodation_name.toLowerCase();
+        req.body.location = location.toLowerCase();
+        req.body.room_type = room_type.toLowerCase();
+        const created = await createAccomodation(req.body);
+        return res.status(201).send({ status: 201, message: 'Accomodation facility succesifully created', data: created });
       }
-
-      const { images } = req.files;
-
-      let uploadedImageUrl;
-
-      if (!images.length) {
-        const result = await cloudinary.uploader.upload(images.path);
-        uploadedImageUrl = result.url;
-      } else if (images.length >= 2) {
-        const uploads = await images.map(async (image) => {
-          const result = await cloudinary.uploader.upload(image.path);
-          return result.url;
-        });
-        uploadedImageUrl = await Promise.all(uploads);
-      } else { uploadedImageUrl = null; }
-
-      const newAccommodation = {
-        accommodation_name,
-        description,
-        location,
-        images: uploadedImageUrl
-      };
-
-      const created = await createAccomodation(newAccommodation);
-
-      return res.status(201).send({
-        status: 201,
-        message: 'Accomodation facility succesifully created',
-        data: created
-      });
+      res.status(400).send({ status: 400, error: 'Invalid image upload' });
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 
@@ -95,27 +75,17 @@ class AccomodationControler {
     try {
       const accommodation = req.body;
       if (req.files && req.files.images) {
-        let image = null;
-        let imgExt = null;
-        const multiImages = [];
-        for (let i = 0; i < req.files.images.length; i++) {
-          image = req.files.images[i].path;
-          // checking if user uploaded valid picture
-          imgExt = image.split('.').pop();
-          if (imgExt !== 'jpg' && imgExt !== 'jpeg' && imgExt !== 'png' && imgExt !== 'bmp' && imgExt !== 'gif') {
-            util.setError(415, 'Please Upload a valid image');
+        const arr = await uploadImages(req.files.images);
+        if (arr.every((item) => item != null)) {
+          accommodation.images = arr;
+          accommodation.owner = req.user.id;
+          return createAccomodation(accommodation).then(() => {
+            util.setSuccess(201, 'Accomodation added successfully!', accommodation);
             return util.send(res);
-          }
-          // uploading to cloudinary
-          const uploadPicture = await cloudinary.uploader.upload(image);
-          multiImages.push({ image_url: uploadPicture.url });
+          });
         }
-        accommodation.images = multiImages;
-        accommodation.owner = req.user.id;
-        createAccomodation(accommodation).then(() => {
-          util.setSuccess(201, 'Accomodation added successfully!', accommodation);
-          return util.send(res);
-        });
+        util.setError(415, 'Please Upload a valid image');
+        return util.send(res);
       }
     } catch (error) { return next(error); }
   }
@@ -131,26 +101,16 @@ class AccomodationControler {
     try {
       const room = req.body;
       if (req.files && req.files.images) {
-        let image = null;
-        let imgExt = null;
-        const multiImages = [];
-        for (let i = 0; i < req.files.images.length; i++) {
-          image = req.files.images[i].path;
-          // checking if user uploaded valid picture
-          imgExt = image.split('.').pop();
-          if (imgExt !== 'jpg' && imgExt !== 'jpeg' && imgExt !== 'png' && imgExt !== 'bmp' && imgExt !== 'gif') {
-            util.setError(415, 'Please Upload a valid image');
+        const arr = await uploadImages(req.files.images);
+        if (arr.every((v) => v != null)) {
+          room.images = arr;
+          return addRoom(room).then(() => {
+            util.setSuccess(201, 'Accomodation added successfully!', room);
             return util.send(res);
-          }
-          // uploading to cloudinary
-          const uploadPicture = await cloudinary.uploader.upload(image);
-          multiImages.push({ image_url: uploadPicture.url });
+          });
         }
-        room.images = multiImages;
-        addRoom(room).then(() => {
-          util.setSuccess(201, 'Accomodation added successfully!', room);
-          return util.send(res);
-        });
+        util.setError(415, 'Please Upload a valid image');
+        return util.send(res);
       }
     } catch (error) { return next(error); }
   }
@@ -178,7 +138,7 @@ class AccomodationControler {
  * @returns {*} user
  */
   static async viewSingleAccommodation(req, res) {
-  // let singleAccommodation;
+    // let singleAccommodation;
     const singleAccommodation = await findAccommodationFeedback(req.params.id);
     if (!singleAccommodation) {
       util.setError(404, 'Accommodation not found');

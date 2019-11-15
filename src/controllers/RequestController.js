@@ -10,6 +10,7 @@ import v from 'voca';
 import crypto from 'crypto';
 import { promisify } from 'util';
 import dotenv from 'dotenv';
+import _ from 'lodash';
 import eventEmitter from '../utils/EventEmitter';
 import redisClient from '../utils/RedisConnection';
 import RequestServices from '../services/RequestServices';
@@ -18,6 +19,7 @@ import Utils from '../utils/Utils';
 import MailHelper from '../utils/MailHelper';
 import AccommodationService from '../services/AccomodationServices';
 import RoomService from '../services/RoomServices';
+import SearchUtils from '../utils/SearchUtils';
 
 dotenv.config();
 
@@ -45,13 +47,11 @@ const {
   findRequestById
 } = RequestServices;
 const { changeRoomStatus, bookRoom, releaseBooking } = RoomService;
-const {
-  updateAccommodations,
-  findAllAccommodationsByLocation
-} = AccommodationService;
-const { findUserByEmail, findUserById } = UserService;
+const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
+const { findUserById } = UserService;
 const { requestEmailTheme, userConfirmTheme, sendEmail } = MailHelper;
-const Util = new Utils();
+const { searchRequestUtil } = SearchUtils;
+const util = new Utils();
 let sign;
 let status;
 /**
@@ -65,22 +65,14 @@ class RequestController {
    * @returns {Object} object
    */
   static async getRequests(req, res) {
-    let param = req.user.id;
-    if (req.user.role_value === 7 && req.params.id) {
-      param = req.params.id;
+    if (req.user.id === parseInt(req.params.id, 10) || req.user.role_value === 7) {
+      const requests = await fetchRequests(req.params.id);
+      if (requests && requests.length) {
+        return res.status(200).json({ status: res.statusCode, message: 'user requests', data: requests });
+      }
+      return res.status(200).json({ status: res.statusCode, message: 'This user doesn\'t have any available requests!' });
     }
-    const requests = await fetchRequests(param);
-    if (requests && requests.length) {
-      return res.status(200).json({
-        status: res.statusCode,
-        message: 'user requests',
-        data: requests
-      });
-    }
-    return res.status(404).json({
-      status: res.statusCode,
-      error: "This user doesn't have any available requests!"
-    });
+    res.status(403).json({ status: res.statusCode, message: 'You are not allowed to retrieve other users requests' });
   }
 
   /**
@@ -90,80 +82,10 @@ class RequestController {
    * @returns {Object} newUser
    */
   static async createRequest(req, res) {
-    const user = await findUserByEmail(req.user.email);
     const request = req.body;
-    request.user_id = user.id;
-
+    request.user_id = req.user.id;
     // attach user_id on payload to save it directly
-
-    const allDestinationsIds = [];
-    // getting all destinations ids
-    allDestinationsIds.push(request.location_id);
-    for (let i = 0; i < request.destinations.length; i++) {
-      allDestinationsIds.push(request.destinations[i].destination_id);
-    }
-    // find if all locations ids provided exists or not
-    const nonExistentIds = await findIfLocationsExists(allDestinationsIds);
-    if (nonExistentIds.length > 0) {
-      return res
-        .status(404)
-        .json({
-          status: res.statusCode,
-          error: `the location ${nonExistentIds} does not exists, please enter valid locations`
-        });
-    }
-
-    // find if the user has a valid line manager
-    const lineManager = await findUserByEmail(user.line_manager);
-    if (lineManager === null) {
-      return res
-        .status(400)
-        .json({
-          status: res.statusCode,
-          error:
-            'Your line manager does not exists in our database, please edit your profile and add a valid line manager'
-        });
-    }
-
-    let message = await isDatesValid(request);
-    if (message) return res.status(400).json(message);
-
-    message = await isCheckDatesValid(request.destinations);
-    if (message) return res.status(400).json(message);
-
-    const samePlace = await isSamePlace(request);
-    if (samePlace) {
-      return res
-        .status(400)
-        .json({
-          status: res.statusCode,
-          error: 'Your location and destination should be different'
-        });
-    }
-
-    const destinationDifferent = await isDestinationsDifferent(request);
-    if (destinationDifferent === false) {
-      return res
-        .status(400)
-        .json({
-          status: res.statusCode,
-          error: "Destination id's or accomodation id's should be different"
-        });
-    }
-
-    const alreadyExistRequest = await isRequestUnique(
-      request.reason,
-      request.departure_date
-    );
-    if (alreadyExistRequest) {
-      return res
-        .status(409)
-        .json({
-          status: res.statusCode,
-          error:
-            'Request already exists based on your reason and departure date'
-        });
-    }
+    if (typeof request.destinations === 'string') { request.destinations = JSON.parse(request.destinations); }
     const dbRequest = await createRequest(request);
     const userRequests = request.destinations.map(
       ({ check_in, check_out, room_id }) => ({ check_in, check_out, room_id })
@@ -173,35 +95,17 @@ class RequestController {
     // build base URL
     const baseUrl = `${req.protocol}://${req.header('host')}`;
     // send Request Email to Line Manager
-    const responseOne = RequestController.sendRequestEmail(
-      user,
-      dbRequest,
-      baseUrl
-    );
-    // send info e-mail to the user
-    let responseTwo = true;
-
-    if (user.isEmailAllowed === 'true') {
-      responseTwo = RequestController.sendUserEmail(
-        'You sent new trip request',
-        'Trip request confirmation sent',
-        'was succesfully received',
-        user,
-        request
-      );
+    const response = RequestController.sendRequestEmail(req.user, dbRequest, baseUrl);
+    if (req.user.isEmailAllowed === 'true') {
+      // send info e-mail to the user
+      RequestController.sendUserEmail('You sent new trip request', 'Trip request confirmation sent', 'was succesfully received', req.user, request);
     }
-
-    if (responseOne && responseTwo) {
-      return res.status(201).json({
-        status: res.statusCode,
-        message: 'Sent request. Please wait travel admin to approve it',
-        data: dbRequest
-      });
+    if (response) {
+      util.setSuccess(201, 'Sent request. Please wait travel admin to approve it', dbRequest); 
+      return util.send(res);
     }
-    return res.status(500).json({
-      status: res.statusCode,
-      message: 'Failed to send request email try again later!'
-    });
+    util.setError(500, 'Failed to send request email try again later!');
+    util.send(res);
   }
 
   /**
@@ -212,11 +116,9 @@ class RequestController {
   static async updateRequest(req, res) {
     const request = req.body;
     const { user } = req;
-
     if (typeof request.destinations === 'string') {
       request.destinations = JSON.parse(request.destinations);
     }
-
     const updatedRequest = await updateRequest(req.userRequest.id, request);
     // send Owner Info E-mail
     const responseOne = RequestController.sendUserEmail(
@@ -238,16 +140,9 @@ class RequestController {
     );
 
     if (responseOne && responseTwo) {
-      return res.status(200).json({
-        status: res.statusCode,
-        message: 'Sent request. Please wait travel admin to approve it',
-        data: updatedRequest
-      });
+      return res.status(200).json({ status: res.statusCode, message: 'Sent request. Please wait travel admin to approve it', data: updatedRequest });
     }
-    return res.status(500).json({
-      status: res.statusCode,
-      message: 'Failed to send request email try again later!'
-    });
+    return res.status(500).json({ status: res.statusCode, message: 'Failed to send request email try again later!' });
   }
 
   /**
@@ -298,28 +193,15 @@ class RequestController {
    */
   static async mostTravelledDestinations(req, res) {
     if (req.query.mostTraveledDestination === 'true') {
-      const allDestinations = [];
-      const allDestinationsIds = [];
-
       const allRequests = await fetchApprovedRequests();
-      if (allRequests.length < 1) {
-        return res
-          .status(200)
-          .json({
-            status: res.statusCode,
-            message:
-              "The most traveled destination is not found because we currently don't have requests"
-          });
-      }
-      for (let i = 0; i < allRequests.length; i++) {
-        allDestinations.push(allRequests[i].dataValues.destinations);
-      }
 
-      for (let i = 0; i < allDestinations.length; i++) {
-        for (let j = 0; j < allDestinations[i].length; j++) {
-          allDestinationsIds.push(allDestinations[i][j].destination_id);
-        }
-      }
+      if (allRequests.length < 1) return res.status(200).json({ status: res.statusCode, message: 'The most traveled destination is not found because we currently don\'t have requests' });
+      const allDestinationsIds = _.chain(allRequests)
+        .map(({ destinations }) => destinations)
+        .flatten()
+        .map(({ destination_id }) => destination_id)
+        .uniq()
+        .value();
 
       const mostTravelledCity = await findMostTravelledDestination(
         allDestinationsIds
@@ -333,11 +215,7 @@ class RequestController {
           });
       }
 
-      return res.status(200).json({
-        status: res.statusCode,
-        message: `${mostTravelledCity.dataValues.name} is the most travelled destination`,
-        data: mostTravelledCity.dataValues
-      });
+      return res.status(200).json({ status: res.statusCode, message: `${mostTravelledCity.dataValues.name} is the most travelled destination`, data: mostTravelledCity.dataValues });
     }
   }
 
@@ -390,10 +268,7 @@ class RequestController {
     // destinations locations
     const destinationArray = await findDestination(request.destinations);
     const destinations = destinationArray
-      .map(({ name }, i) => {
-        if (destinationArray.length === i + 1) return `and ${name}`;
-        return name;
-      })
+      .map(({ name }, i) => (this.length === i ? `and ${name}` : `${name}`))
       .join(', ');
 
     request = { ...request, origin, destinations };
@@ -426,19 +301,13 @@ class RequestController {
     const hDelAsync = promisify(redisClient.hdel).bind(redisClient);
     // only manager can approve/reject w/o hash token if authenticated
     if (!token && role < 4) {
-      return res.status(403).json({
-        status: res.statusCode,
-        message: `Manager only can ${action} request`
-      });
+      return res.status(403).json({ status: res.statusCode, message: `Manager only can ${action} request` });
     }
     if (token) {
       // check hash if is correct
       const storedHash = await hGetAsync('requests_otp', id);
       if (storedHash !== token) {
-        return res.status(400).json({
-          status: res.statusCode,
-          message: `Invalid  ${action} URL provided!`
-        });
+        return res.status(400).json({ status: res.statusCode, message: `Invalid  ${action} URL provided!` });
       }
     }
     const [rowUpdated, rows] = await actionOnTrip(id, action);
@@ -446,10 +315,7 @@ class RequestController {
 
     const user = await findUserById(request.user_id);
     if (rowUpdated === 0) {
-      return res.status(200).json({
-        status: res.statusCode,
-        message: 'The request with the given id does not exists'
-      });
+      return res.status(200).json({ status: res.statusCode, message: 'The request with the given id does not exists' });
     }
     // remove stored token
     await hDelAsync('requests_otp', id);
@@ -472,11 +338,7 @@ class RequestController {
       await releaseBooking(request.id);
     }
     // return reponse to user
-    return res.status(200).json({
-      status: res.statusCode,
-      message:
-        action === 'approve' ? 'Trip request Approved' : 'Trip request rejected'
-    });
+    return res.status(200).json({ status: res.statusCode, message: action === 'approve' ? 'Trip request Approved' : 'Trip request rejected' });
   }
 
   /**
@@ -520,165 +382,18 @@ class RequestController {
     const {
       key_word, beforeDate, afterDate, column
     } = req.query;
-
-    let where;
-    let searchResults;
-
-    if (key_word) {
-      where = {
-        [Op.or]: [
-          { status: { [Op.iLike]: `%${key_word}%` } },
-          { reason: { [Op.iLike]: `%${key_word}%` } },
-          { request_type: { [Op.iLike]: `%${key_word}%` } }
-        ]
-      };
-      searchResults = await searchRequests(where);
-      return res.status(200).json({
-        status: '200',
-        message: 'Search complete',
-        data: searchResults
+    if (new Date(beforeDate) < new Date(afterDate)) {
+      return res.status(400).json({
+        status: '400',
+        error: 'Invalid search'
       });
     }
-
-    if (beforeDate && afterDate) {
-      if (new Date(beforeDate) < new Date(afterDate)) {
-        return res.status(400).json({
-          status: '400',
-          error: 'Invalid search'
-        });
-      }
-      if (column === 'departure_date') {
-        where = {
-          [Op.and]: [
-            {
-              departure_date: {
-                [Op.lte]: new Date(beforeDate),
-                [Op.gte]: new Date(afterDate)
-              }
-            }
-          ]
-        };
-        searchResults = await searchRequests(where);
-        return res.status(200).json({
-          status: '200',
-          message: 'Search complete',
-          data: searchResults
-        });
-      }
-      if (column === 'createdAt') {
-        where = {
-          [Op.and]: [
-            {
-              createdAt: {
-                [Op.lte]: new Date(beforeDate),
-                [Op.gte]: new Date(afterDate)
-              }
-            }
-          ]
-        };
-        searchResults = await searchRequests(where);
-        return res.status(200).json({
-          status: '200',
-          message: 'Search complete',
-          data: searchResults
-        });
-      }
-      where = {
-        [Op.and]: [
-          {
-            createdAt: {
-              [Op.lte]: new Date(beforeDate),
-              [Op.gte]: new Date(afterDate)
-            }
-          },
-          {
-            departure_date: {
-              [Op.lte]: new Date(beforeDate),
-              [Op.gte]: new Date(afterDate)
-            }
-          }
-        ]
-      };
-      searchResults = await searchRequests(where);
-      return res.status(200).json({
-        status: '200',
-        message: 'Search complete',
-        data: searchResults
-      });
-    }
-
-    if (beforeDate) {
-      if (column === 'departure_date') {
-        where = {
-          [Op.or]: [{ departure_date: { [Op.lt]: new Date(beforeDate) } }]
-        };
-        searchResults = await searchRequests(where);
-        return res.status(200).json({
-          status: '200',
-          message: 'Search complete',
-          data: searchResults
-        });
-      }
-      if (column === 'createdAt') {
-        where = {
-          [Op.and]: [{ createdAt: { [Op.lt]: new Date(beforeDate) } }]
-        };
-        searchResults = await searchRequests(where);
-        return res.status(200).json({
-          status: '200',
-          message: 'Search complete',
-          data: searchResults
-        });
-      }
-      where = {
-        [Op.and]: [
-          { departure_date: { [Op.lt]: new Date(beforeDate) } },
-          { createdAt: { [Op.lt]: new Date(beforeDate) } }
-        ]
-      };
-      searchResults = await searchRequests(where);
-      return res.status(200).json({
-        status: '200',
-        message: 'Search complete',
-        data: searchResults
-      });
-    }
-    if (afterDate) {
-      if (column === 'departure_date') {
-        where = {
-          [Op.or]: [{ departure_date: { [Op.gte]: new Date(afterDate) } }]
-        };
-        searchResults = await searchRequests(where);
-        return res.status(200).json({
-          status: '200',
-          message: 'Search complete',
-          data: searchResults
-        });
-      }
-      if (column === 'createdAt') {
-        where = {
-          [Op.or]: [{ createdAt: { [Op.gte]: new Date(afterDate) } }]
-        };
-        searchResults = await searchRequests(where);
-        return res.status(200).json({
-          status: '200',
-          message: 'Search complete',
-          data: searchResults
-        });
-      }
-      where = {
-        [Op.or]: [
-          { departure_date: { [Op.gte]: new Date(afterDate) } },
-          { createdAt: { [Op.gte]: new Date(afterDate) } }
-        ]
-      };
-      searchResults = await searchRequests(where);
-      return res.status(200).json({
-        status: '200',
-        message: 'Search complete',
-        data: searchResults
-      });
-    }
+    const searchResults = await searchRequestUtil(key_word, beforeDate, afterDate, column);
+    return res.status(200).json({
+      status: '200',
+      message: 'Search complete',
+      data: searchResults
+    });
   }
 }
 

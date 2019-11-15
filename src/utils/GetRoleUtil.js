@@ -30,4 +30,5 @@ const getRoleName = (roleValue) => {
   return result;
 };
 
+export const hasRole = (user, arrRoles) => arrRoles.some((v) => user.dataValues.role_value === v);
 export default getRoleName;

@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import Sequelize from 'sequelize';
 import database from '../database/models';
 import getConfirmationEmail from '../utils/ConfirmationEmail';
-import checkService from '../utils/UserServicesResponse';
 
 const { Op } = Sequelize;
 dotenv.config();
@@ -113,14 +112,9 @@ class UserService {
  */
   static async updateCredentials(userEmail, password) {
     try {
-      const userToUpdate = await database.User.findOne({
-        where: { email: userEmail }
-      });
+      const userToUpdate = await database.User.findOne({ where: { email: userEmail } });
       if (userToUpdate) {
-        const newUser = {
-          password,
-          is_verified: true,
-        };
+        const newUser = { password, is_verified: true };
         await database.User.update(newUser, { where: { email: userEmail } });
         return newUser;
       }
@@ -160,9 +154,7 @@ class UserService {
    * @returns {*} updated profile
    */
   static async updateProfile(id, profile) {
-    const checkProfile = await database.User.findOne({
-      where: { id }
-    });
+    const checkProfile = await database.User.findOne({ where: { id } });
 
     if (checkProfile) {
       await database.User.update(profile, { where: { id } });
@@ -204,7 +196,7 @@ class UserService {
         [Op.not]: [{ role_value: 7 }]
       }
     });
-    return checkService(searchUser);
+    return searchUser || null;
   }
 
   /**
@@ -217,7 +209,7 @@ class UserService {
       },
       where: { [Op.not]: [{ role_value: 7 }] }
     });
-    return checkService(users);
+    return users || null;
   }
 
   /**

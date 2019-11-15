@@ -176,11 +176,11 @@ describe('REQUESTS ENDPOINTS', () => {
       });
 
       it('should return 404 when user creates a request with unregistered email', (done) => {
-        const newToken = jwtSign({ email: 'notexists@gmail.com' }, '4m');
+        const otherToken = jwtSign({ email: 'notexists@gmail.com' }, '4m');
         chai
           .request(app)
           .post('/api/v1/requests')
-          .set('Authorization', `Bearer ${newToken}`)
+          .set('Authorization', `Bearer ${otherToken}`)
           .send(dummyRequest)
           .end((err, res) => {
             res.should.have.status(404);
@@ -307,7 +307,7 @@ describe('REQUESTS ENDPOINTS', () => {
           });
       });
     });
-    
+
     describe('GET Search the requests database', () => {
       const keyWord = 'reason';
       const beforeDate = 2030, afterDate = 2019, unrealisticBefore = 2090;

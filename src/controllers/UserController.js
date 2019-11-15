@@ -1,9 +1,6 @@
-/* eslint-disable import/no-cycle */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-restricted-globals */
 /* eslint-disable no-unused-vars */
+/* eslint-disable no-restricted-globals */
 import bcrypt from 'bcrypt';
-import cloudinary from 'cloudinary';
 import moment from 'moment';
 import Sequelize from 'sequelize';
 import Util from '../utils/Utils';
@@ -13,7 +10,7 @@ import UserService from '../services/UserServices';
 import { getPublicProfile } from '../utils/UserUtils';
 import AuthenticationHelper from '../utils/AuthHelper';
 import database from '../database/models';
-import eventEmitter from '../utils/EventEmitter';
+import { uploadImage } from '../utils/ImageUploader';
 
 const { Op } = Sequelize;
 const util = new Util();
@@ -37,12 +34,6 @@ const {
 } = UserService;
 
 let msgType = null;
-const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
-cloudinary.config({
-  cloud_name: CLOUDINARY_NAME,
-  api_key: CLOUDINARY_API_KEY,
-  api_secret: CLOUDINARY_API_SECRET
-});
 /**
  * @class UserController
  */
@@ -107,8 +98,6 @@ class UserController {
       password: xx, createdAt, updatedAt, ...user
     } = searchUser;
     const token = jwtSign({ email: searchUser.email });
-    // Join room
-    eventEmitter.emit('new_user', user);
     util.setSuccess(200, 'You have successfully logged in', { token, user });
     util.send(res);
   }
@@ -117,7 +106,7 @@ class UserController {
    * @description contoller function that logs a user out
    * @param {object} req - request object
    * @param {object} res - response object
-   * @param {*} next
+   * @param {object} next - middleware object
    * @returns {object} user - Logged in user
    */
   static async logoutUser(req, res, next) {
@@ -126,7 +115,9 @@ class UserController {
       redisClient.set(email, req.token);
       util.setSuccess(200, 'You have logged out');
       return util.send(res);
-    } catch (error) { return next(error); }
+    } catch (error) {
+      res.status(500).json({ status: res.statusCode, error: 'Oops something went wrong!' });
+    }
   }
 
   /**
@@ -252,22 +243,13 @@ class UserController {
     const profile = req.body;
     // Add picture if user added it
     if (req.files && req.files.image) {
-      const image = req.files.image.path;
-      // checking if user uploaded valid picture
-      const imgExt = image.split('.').pop();
-      if (
-        imgExt !== 'jpg'
-        && imgExt !== 'jpeg'
-        && imgExt !== 'png'
-        && imgExt !== 'bmp'
-        && imgExt !== 'gif'
-      ) {
+      // uploading to cloudinary
+      const imageUrl = await uploadImage(req.files.image.path);
+      if (!imageUrl) {
         util.setError(415, 'Please Upload a valid image');
         return util.send(res);
       }
-      // uploading to cloudinary
-      const uploadPicture = await cloudinary.uploader.upload(image);
-      profile.image_url = uploadPicture.url;
+      profile.image_url = imageUrl;
     }
     // update profile
     updateProfile(req.user.id, profile).then(() => {

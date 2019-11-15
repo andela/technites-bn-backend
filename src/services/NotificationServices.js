@@ -56,6 +56,7 @@ class NotificationService {
     const notificationToSave = {};
     notificationToSave.user_id = id;
     notificationToSave.message = data.comment;
+    notificationToSave.request_id = data.request_id;
     notificationToSave.type = 'comments';
 
     const { dataValues } = await NotificationService.saveNotification(notificationToSave);

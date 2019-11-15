@@ -103,6 +103,18 @@ export function up(queryInterface, Sequelize) {
     createdAt: new Date(),
     updatedAt: new Date()
   },
+  {
+    firstname: 'Host',
+    lastname: 'Acc',
+    username: 'Host',
+    email: 'host5@gmail.com',
+    password,
+    company: 'NewCompany',
+    is_verified: true,
+    role_value: 0,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
 ], {});
 }
 

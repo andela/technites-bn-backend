@@ -20,11 +20,8 @@ const {
 } = UserController;
 
 const { getRequests } = RequestController;
-
 const { updateProfileValidator, validateMessage } = Validation;
-
 const { sendMessage, fetchMessages } = ChatController;
-
 // chats
 router.post('/chat', verifyToken, validateMessage, sendMessage);
 router.get('/chat', verifyToken, fetchMessages);
@@ -38,7 +35,6 @@ router.get('/:id', viewSingleProfile);
 router.get('/', viewAllProfiles);
 router.get('/company/:company', viewProfilesByCompany);
 router.patch('/notifications/seen', [verifyToken], markNotificationsAsSeen);
-
 // get requests
 router.get('/:id/requests', verifyToken, getRequests);
 
