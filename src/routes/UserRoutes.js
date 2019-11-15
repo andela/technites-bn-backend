@@ -16,7 +16,7 @@ const { verifyToken } = UserAuthentication;
 const {
   editProfile, viewSingleProfile, viewAllProfiles,
   viewProfilesByCompany, enableOrDisableEmailNotifications, getUserTrips,
-  markNotificationsAsSeen, getAllNotifications
+  markNotificationsAsSeen, getAllNotifications, markOneSeenNotification
 } = UserController;
 
 const { getRequests } = RequestController;
@@ -32,6 +32,7 @@ router.get('/chat', verifyToken, fetchMessages);
 // profiles
 router.patch('/editprofile', verifyToken, connection, updateProfileValidator, editProfile);
 router.post('/notifications', [verifyToken], enableOrDisableEmailNotifications);
+router.get('/notification/:id/seen', checkIsInt, validator, [verifyToken], markOneSeenNotification);
 router.get('/notifications', [verifyToken], getAllNotifications);
 router.get('/:id', viewSingleProfile);
 router.get('/', viewAllProfiles);
