@@ -7,6 +7,10 @@ export function up(queryInterface, Sequelize) {
       primaryKey: true,
       type: Sequelize.INTEGER
     },
+    auto_fill: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
+    },
     firstname: {
       type: Sequelize.STRING,
       allowNull: false

@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 const { SUPER_ADMIN_PASS } = process.env;
 const password = bcrypt.hashSync(SUPER_ADMIN_PASS, 8);
 export function up(queryInterface, Sequelize) {
-   return queryInterface.bulkInsert('Users', [{
+  return queryInterface.bulkInsert('Users', [{
     firstname: 'John',
     lastname: 'Doe',
     username: 'johndoe',
@@ -14,6 +14,7 @@ export function up(queryInterface, Sequelize) {
     password,
     company: 'Andela',
     is_verified: true,
+    auto_fill: true,
     role_value: 7,
     line_manager: 'technitesdev@gmail.com',
     createdAt: new Date(),
@@ -26,6 +27,7 @@ export function up(queryInterface, Sequelize) {
     email: 'technitesdev2@gmail.com',
     password,
     is_verified: false,
+    auto_fill: false,
     line_manager: 'technitesdev@gmail.com',
     createdAt: new Date(),
     updatedAt: new Date()
@@ -37,6 +39,7 @@ export function up(queryInterface, Sequelize) {
     email: 'technitesdev@gmail.com',
     password, // currently in .env
     is_verified: true,
+    auto_fill: false,
     line_manager: 'technitesdev@gmail.com',
     role_value: 7,
     createdAt: new Date(),
@@ -49,6 +52,7 @@ export function up(queryInterface, Sequelize) {
     email: 'travel@admin.com',
     password,
     is_verified: true,
+    auto_fill: false,
     line_manager: 'technitesdev@gmail.com',
     role_value: 4,
     createdAt: new Date(),
@@ -61,6 +65,7 @@ export function up(queryInterface, Sequelize) {
     email: 'requester@request.com',
     password,
     is_verified: true,
+    auto_fill: true,
     line_manager: 'manager@admin.com',
     role_value: 1,
     createdAt: new Date(),
@@ -73,6 +78,7 @@ export function up(queryInterface, Sequelize) {
     email: 'manager@admin.com',
     password,
     is_verified: true,
+    auto_fill: false,
     role_value: 2,
     line_manager: 'manager@admin.com',
     createdAt: new Date(),
@@ -87,6 +93,7 @@ export function up(queryInterface, Sequelize) {
     company: 'NewCompany',
     line_manager: 'manager@admin.com',
     is_verified: true,
+    auto_fill: false,
     role_value: 1,
     createdAt: new Date(),
     updatedAt: new Date()
@@ -98,6 +105,7 @@ export function up(queryInterface, Sequelize) {
     email: 'nolinemanager@gmail.com',
     password,
     company: 'NewCompany',
+    auto_fill: false,
     is_verified: true,
     role_value: 1,
     createdAt: new Date(),
@@ -110,14 +118,15 @@ export function up(queryInterface, Sequelize) {
     email: 'host5@gmail.com',
     password,
     company: 'NewCompany',
+    auto_fill: false,
     is_verified: true,
     role_value: 0,
     createdAt: new Date(),
     updatedAt: new Date()
   }
-], {});
+  ], {});
 }
 
 export function down(queryInterface, Sequelize) {
-      return queryInterface.bulkDelete('Users', null, {});
+  return queryInterface.bulkDelete('Users', null, {});
 }

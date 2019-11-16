@@ -17,6 +17,14 @@ export function up(queryInterface, Sequelize) {
         as: 'user_id',
       },
     },
+    passport_name: {
+      type: Sequelize.STRING,
+      allowNull: true
+    },
+    passport_number: {
+      type: Sequelize.INTEGER,
+      allowNull: true
+    },
     request_type: {
       type: Sequelize.STRING,
       allowNull: false

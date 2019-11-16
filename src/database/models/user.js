@@ -23,6 +23,10 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: true,
     },
+    auto_fill: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   }, {});
   // eslint-disable-next-line no-unused-vars
   User.associate = (models) => {

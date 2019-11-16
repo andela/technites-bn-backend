@@ -7,6 +7,8 @@ export function up(queryInterface, Sequelize) {
     location_id: 1,
     departure_date: moment().toDate(),
     return_date: moment().add(7, 'days').toDate(),
+    passport_name: 'my name',
+    passport_number: '1234567890',
     destinations: [
       {
         destination_id: 2,
@@ -26,6 +28,8 @@ export function up(queryInterface, Sequelize) {
     location_id: 1,
     departure_date: moment().toDate(),
     return_date: moment().add(7, 'days').toDate(),
+    passport_name: 'my name',
+    passport_number: '1234567890',
     destinations: [
       {
         destination_id: 3,
@@ -45,6 +49,8 @@ export function up(queryInterface, Sequelize) {
     location_id: 3,
     departure_date: moment().toDate(),
     return_date: moment().add(7, 'days').toDate(),
+    passport_name: 'my name',
+    passport_number: '1234567890',
     destinations: [
       {
         destination_id: 1,
@@ -64,6 +70,8 @@ export function up(queryInterface, Sequelize) {
     location_id: 3,
     departure_date: moment().toDate(),
     return_date: moment().add(7, 'days').toDate(),
+    passport_name: 'my name',
+    passport_number: '1234567890',
     destinations: [
       {
         destination_id: 1,
@@ -80,6 +88,8 @@ export function up(queryInterface, Sequelize) {
   {
     user_id: 1,
     request_type: 'OneWay',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     location_id: 1,
     departure_date: moment().toDate(),
     return_date: moment().add(7, 'days').toDate(),
@@ -99,6 +109,8 @@ export function up(queryInterface, Sequelize) {
   {
     user_id: 1,
     request_type: 'OneWay',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     location_id: 1,
     departure_date: moment().toDate(),
     return_date: moment().add(7, 'days').toDate(),
@@ -118,6 +130,8 @@ export function up(queryInterface, Sequelize) {
   {
     user_id: 5,
     request_type: 'OneWay',
+    passport_name: 'my name',
+    passport_number: '1234567890',
     location_id: 1,
     departure_date: '2018-10-07 09:10:31.981 +00:00',
     return_date: moment().add(7, 'days').toDate(),
@@ -138,6 +152,8 @@ export function up(queryInterface, Sequelize) {
     user_id: 8,
     request_type: 'OneWay',
     location_id: 1,
+    passport_name: 'my name',
+    passport_number: '1234567890',
     departure_date: '2018-10-07 09:10:31.981 +00:00',
     return_date: moment().add(7, 'days').toDate(),
     destinations: [

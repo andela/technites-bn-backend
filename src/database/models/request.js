@@ -21,6 +21,14 @@ export default (sequelize, DataTypes) => {
         isDate: true
       }
     },
+    passport_name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    passport_number: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
     return_date: DataTypes.STRING,
     destinations: {
       type: DataTypes.JSONB,

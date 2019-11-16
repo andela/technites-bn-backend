@@ -39,6 +39,33 @@ class UserService {
   }
 
   /**
+   * @param {Object} userEmail
+   * @returns {Object} true or false
+   */
+  static async isAutoFill(userEmail) {
+    const user = await database.User.findOne({ where: { email: userEmail } });
+    if (!user) return null;
+    return user.dataValues.auto_fill;
+  }
+
+  /**
+   * @param {*} autoFill
+   * @param {*} email
+   * @returns {*} object
+   */
+  static async autoFill(autoFill, email) {
+    return database.User.update({ auto_fill: autoFill }, { where: { email } });
+  }
+
+  /**
+   * @param {*} userId
+   * @returns {*} object
+   */
+  static async getUserLastRequest(userId) {
+    return database.Request.findOne({ where: { user_id: userId }, order: [['id', 'DESC']] });
+  }
+
+  /**
  *
  * @param {object} userInfo
  * @param {object} tokenOwner
