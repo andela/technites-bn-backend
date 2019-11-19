@@ -63,7 +63,7 @@ class UserController {
         res.status(201).send({
           status: 201,
           message:
-          'Sign up successful. Please confirm your account by clicking on the verification link in the email we sent you',
+            'Sign up successful. Please confirm your account by clicking on the verification link in the email we sent you',
           data: getPublicProfile(newUser),
           token
         });
@@ -104,7 +104,12 @@ class UserController {
       const {
         password: xx, createdAt, updatedAt, ...user
       } = searchUser;
-      const token = jwtSign({ email: searchUser.email, id: searchUser.id });
+      const token = jwtSign({
+        id: searchUser.id,
+        email: searchUser.email,
+        firstname: searchUser.firstname,
+        lastname: searchUser.lastname
+      });
       util.setSuccess(200, 'You have successfully logged in', { token, user });
       util.send(res);
     } catch (error) {

@@ -102,13 +102,13 @@ class NotificationService {
  * @returns {*} object
  */
   static async updateRequestNotification(data) {
+    const { id } = await userService.findUserByEmail(data.line_manager);
     const notification = {
-      user_id: data.user_id,
+      user_id: id,
       request_id: data.id,
       type: 'request update',
       message: `${data.email} updated their request`
     };
-
     const { dataValues } = await NotificationService.saveNotification(notification);
     const updateNotification = {
       title: `${data.email} updated their request.`,
