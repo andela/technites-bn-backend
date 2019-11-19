@@ -233,6 +233,15 @@ class RequestService {
   }
 
   /**
+  *
+  * @param {Object} id
+  * @returns {Object} res
+  */
+  static async deleteRequest(id) {
+    return database.Request.destroy({ where: { id } });
+  }
+
+  /**
    *
    * @param {*} locationId
    * @returns {*} locations
