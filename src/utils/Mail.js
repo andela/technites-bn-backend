@@ -84,7 +84,7 @@ export default class Mail {
 
                 <p style="color: #000;font-size: 1.3em;font-family: fantasy;">In order to reset your password, Please click on the button below.</p>
                 <div>
-                <button style="width:50%;height:20%;color: white; background-color: #8E7FFF; border: none; font-family: fantasy;border-radius: 10px; padding: 5px;"><a href="${MAIL_URL}/api/v1/auth/reset/${this.token}" style="font-family: fantasy;font-size: 2em;width:50%; text-align:center;text-decoration: none; color: white;background-color: #8E7FFF;width: 50%; border: none; border-radius: 10px;">Reset password</a></button>
+                <button style="width:50%;height:20%;color: white; background-color: #8E7FFF; border: none; font-family: fantasy;border-radius: 10px; padding: 5px;"><a href="${MAIL_URL}/${this.token}" style="font-family: fantasy;font-size: 2em;width:50%; text-align:center;text-decoration: none; color: white;background-color: #8E7FFF;width: 50%; border: none; border-radius: 10px;">Reset password</a></button>
                 
                 </div>
             </div>
