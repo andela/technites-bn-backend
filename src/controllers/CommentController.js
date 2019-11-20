@@ -55,7 +55,16 @@ class CommentController {
     if (!result) return res.status(401).send({ status: 401, error: 'Not allowed' });
     // get all comments with request_id
 
-    const comments = await database.Comment.findAll({ where: { request_id, active: 'true' } });
+    const comments = await database.Comment.findAll({
+      where: { request_id, active: 'true' },
+      order: [['createdAt', 'DESC']],
+      include: [{
+        model: database.User,
+        attributes:
+          ['id', 'firstname', 'lastname', 'image_url'],
+        required: true
+      }],
+    });
     return res.status(200).send({ status: 200, message: `comments from the request with id :${request_id}`, data: comments });
   }
 
