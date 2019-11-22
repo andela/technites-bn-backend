@@ -40,7 +40,7 @@ const {
   validateRequestAdmin
 } = Validation;
 router.get('/', verifyToken, getRequests);
-router.get('/', [verifyToken], mostTravelledDestinations);
+router.get('/mostTravelledDestinations', [verifyToken], mostTravelledDestinations);
 // router.post('/', [verifyToken, validate], validateRequestData, validateNewRequest, createRequest);
 router.post('/', [verifyToken, checkCookies, validate], validateRequestData, validateNewRequest, createRequest);
 
