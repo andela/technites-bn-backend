@@ -56,7 +56,8 @@ class CommentController {
     // get all comments with request_id
 
     const comments = await database.Comment.findAll({
-      where: { request_id, active: 'true', },
+      where: { request_id, active: 'true' },
+      order: [['createdAt', 'DESC']],
       include: [{
         model: database.User,
         attributes:
