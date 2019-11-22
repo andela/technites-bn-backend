@@ -45,7 +45,8 @@ const {
   isDestinationsDifferent,
   findMostTravelledDestination,
   findIfLocationsExists,
-  findRequestById
+  findRequestById,
+  deleteRequest
 } = RequestServices;
 const { changeRoomStatus, bookRoom, releaseBooking } = RoomService;
 const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
@@ -65,22 +66,22 @@ class RequestController {
    * @param {Oject} res request
    * @returns {Object} object
    */
-  static async getRequests(req, res) {
-    let param = req.user.id;
-    if (req.user.role_value >= 4 && req.params.id) {
-      param = req.params.id;
+  static async getRequests(req, res) {
+    let param = req.user.id;
+    if (req.user.role_value >= 4 && req.params.id) {
+      param = req.params.id;
     }
-    const requests = await fetchRequests(param);
-    if (requests && requests.length) {
-      return res.status(200).json({
-        status: res.statusCode,
-        message: 'user requests',
-        data: requests
+    const requests = await fetchRequests(param);
+    if (requests && requests.length) {
+      return res.status(200).json({
+        status: res.statusCode,
+        message: 'user requests',
+        data: requests
       });
     }
-    return res.status(404).json({
-      status: res.statusCode,
-      error: "This user doesn't have any available requests!"
+    return res.status(404).json({
+      status: res.statusCode,
+      error: "This user doesn't have any available requests!"
     });
   }
 
@@ -419,6 +420,20 @@ class RequestController {
       status: '200',
       message: 'Search complete',
       data: searchResults
+    });
+  }
+
+  /**
+   *
+   * @param {*} req
+   * @param {*} res
+   * @returns {object} - returns search results from the DB
+   */
+  static async deleteRequest(req, res) {
+    await deleteRequest(req.params.request_id);
+    return res.status(200).json({
+      status: res.statusCode,
+      message: 'Deleted successfully'
     });
   }
 }

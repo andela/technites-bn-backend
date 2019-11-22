@@ -28,7 +28,8 @@ const {
   searchRequests,
   managerRequests,
   mostTravelledDestinations,
-  setAutoFill
+  setAutoFill,
+  deleteRequest
 } = RequestController;
 
 const {
@@ -67,5 +68,7 @@ router.patch(
 
 router.patch('/remember/:autofill', verifyToken, setAutoFill);
 router.delete('/:request_id/comments/:comment_id', verifyToken, deleteComment);
+router.delete('/:request_id/', verifyToken, deleteRequest);
+
 
 export default router;

@@ -307,6 +307,20 @@ describe('REQUESTS ENDPOINTS', () => {
             done();
           });
       });
+
+      it('it should return 200 if a request is deleted successfully', (done) => {
+        dummyRequest.reason = 1;
+        chai
+          .request(app)
+          .delete('/api/v1/requests/11')
+          .set('Authorization', `Bearer ${token}`)
+          .send(dummyRequest)
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.have.property('message').be.a('string');
+            done();
+          });
+      });
     });
     describe('PATCH api/v1/requests/:id', () => {
       const Request = {
