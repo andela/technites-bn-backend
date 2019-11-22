@@ -219,31 +219,29 @@ class RequestController {
    * @returns {Object} updated request
    */
   static async mostTravelledDestinations(req, res) {
-    if (req.query.mostTraveledDestination === 'true') {
-      const allRequests = await fetchApprovedRequests();
+    const allRequests = await fetchApprovedRequests();
 
-      if (allRequests.length < 1) return res.status(200).json({ status: res.statusCode, message: 'The most traveled destination is not found because we currently don\'t have requests' });
-      const allDestinationsIds = _.chain(allRequests)
-        .map(({ destinations }) => destinations)
-        .flatten()
-        .map(({ destination_id }) => destination_id)
-        .uniq()
-        .value();
+    if (allRequests.length < 1) return res.status(200).json({ status: res.statusCode, message: 'The most traveled destination is not found because we currently don\'t have requests' });
+    const allDestinationsIds = _.chain(allRequests)
+      .map(({ destinations }) => destinations)
+      .flatten()
+      .map(({ destination_id }) => destination_id)
+      .uniq()
+      .value();
 
-      const mostTravelledCity = await findMostTravelledDestination(
-        allDestinationsIds
-      );
-      if (!mostTravelledCity) {
-        return res
-          .status(200)
-          .json({
-            status: res.statusCode,
-            message: 'All the cities have the same amount of trips'
-          });
-      }
-
-      return res.status(200).json({ status: res.statusCode, message: `${mostTravelledCity.dataValues.name} is the most travelled destination`, data: mostTravelledCity.dataValues });
+    const mostTravelledCity = await findMostTravelledDestination(
+      allDestinationsIds
+    );
+    if (!mostTravelledCity) {
+      return res
+        .status(200)
+        .json({
+          status: res.statusCode,
+          message: 'All the cities have the same amount of trips'
+        });
     }
+
+    return res.status(200).json({ status: res.statusCode, message: `${mostTravelledCity.dataValues.name} is the most travelled destination`, data: mostTravelledCity.dataValues });
   }
 
   /**
