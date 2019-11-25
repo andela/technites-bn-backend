@@ -188,6 +188,18 @@ Nomad.</p>
           <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">password: ${password}</p>
           <p style="text-align: left; margin-left: 30px; margin-top: 20px; line-height: 0; color: rgb(93, 93, 93);">Please Remember to change your password
  after logging in.</p>
+ <a style="background-color: #FD297B; /* Green */
+ outline: none;
+ border-radius: 360px;
+ color: white;
+ margin-top: 10px;
+ padding: 15px 32px;
+ text-align: center;
+ text-decoration: none;
+ display: inline-block;
+ font-size: 16px;
+ font-weight: bold;
+ cursor: pointer;" href='https://technites-bn-frontend-staging.herokuapp.com/host/reset'>Verify Account</a>
 
      
      </div>
