@@ -108,7 +108,8 @@ class UserController {
         id: searchUser.id,
         email: searchUser.email,
         firstname: searchUser.firstname,
-        lastname: searchUser.lastname
+        lastname: searchUser.lastname,
+        role_value: searchUser.role_value
       });
       util.setSuccess(200, 'You have successfully logged in', { token, user });
       util.send(res);
