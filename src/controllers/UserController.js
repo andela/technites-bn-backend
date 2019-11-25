@@ -109,7 +109,10 @@ class UserController {
         email: searchUser.email,
         firstname: searchUser.firstname,
         lastname: searchUser.lastname,
-        role_value: searchUser.role_value
+        role_value: searchUser.role_value,
+        auto_fill: searchUser.auto_fill,
+        gender: searchUser.gender,
+        line_manager: searchUser.line_manager
       });
       util.setSuccess(200, 'You have successfully logged in', { token, user });
       util.send(res);

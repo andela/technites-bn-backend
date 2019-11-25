@@ -188,7 +188,7 @@ Nomad.</p>
           <p style="text-align: left; margin-left: 30px; margin-top: 20px; color: rgb(93, 93, 93);">password: ${password}</p>
           <p style="text-align: left; margin-left: 30px; margin-top: 20px; line-height: 0; color: rgb(93, 93, 93);">Please Remember to change your password
  after logging in.</p>
- <a style="background-color: #FD297B; /* Green */
+ <a style="background-color: #2a89f5; /* Green */
  outline: none;
  border-radius: 360px;
  color: white;
