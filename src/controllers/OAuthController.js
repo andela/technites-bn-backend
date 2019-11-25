@@ -1,6 +1,6 @@
-import models from "../database/models";
-import AuthHelper from "../utils/AuthHelper";
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
+import models from '../database/models';
+import AuthHelper from '../utils/AuthHelper';
 
 dotenv.config();
 
@@ -24,17 +24,13 @@ class AuthController {
       defaults: req.user
     });
     // omit password and other unnecessary fields
-    const { password, createdAt, updatedAt, ...user } = dbUser.dataValues;
+    const {
+      password, createdAt, updatedAt, ...user
+    } = dbUser.dataValues;
     const token = jwtSign(user);
 
-    const apiResponse = {
-      status: 200,
-      message: "social login successful",
-      data: { token, user }
-    };
-
     return res.redirect(
-      `${FRONTEND_URL}/login?token=${token}&status=ok&user=${user}`
+      `${FRONTEND_URL}/login?token=${token}&status=ok`
     );
   }
 }
