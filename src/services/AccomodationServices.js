@@ -21,17 +21,17 @@ class AccomodationServices {
       * @param {*} location
       * @returns {object} returns the newly saved accomodation facility
       */
-      static async getByNameLocation(accommodation_name, location) {
-        const found = await database.Accomodations.findAll({
-          where: {
-            [Op.and]: [
-              { accommodation_name: { [Op.iLike]: `%${accommodation_name}%` } },
-              { location: { [Op.iLike]: `%${location}%` } },
-            ]
-          }
-        });
-        return found.map((result) => result.dataValues);
+  static async getByNameLocation(accommodation_name, location) {
+    const found = await database.Accomodations.findAll({
+      where: {
+        [Op.and]: [
+          { accommodation_name: { [Op.iLike]: `%${accommodation_name}%` } },
+          { location: { [Op.iLike]: `%${location}%` } },
+        ]
       }
+    });
+    return found.map((result) => result.dataValues);
+  }
 
   /**
  *
@@ -95,7 +95,12 @@ class AccomodationServices {
  * @returns {*} accommodations
  */
   static async findAllAccommodations() {
-    const accommodation = await database.Accomodations.findAll();
+    const accommodation = await database.Accomodations.findAll({
+      include: [{
+        model: database.Room,
+        required: true,
+      }]
+    });
     if (!accommodation) return null;
     return accommodation;
   }
