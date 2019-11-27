@@ -399,6 +399,9 @@ export default class Validation {
 
     // checking rooms requested by user if they are valid
     const checkRooms = requestedRooms.every((requestedRoom) => availableRooms.includes(requestedRoom));
+     console.log(availableRooms);
+     console.log(requestedRooms);
+
     if (checkRooms !== true) return res.status(404).json({ status: res.statusCode, error: 'The rooms you are choosing are not available' });
     // checking if room is not occupied during certain period
     const dates = request.destinations.map(({ room_id, check_in, check_out }) => ({ room_id, check_in, check_out }));

@@ -99,7 +99,12 @@ class AccomodationServices {
  * @returns {*} accommodations
  */
   static async findAllAccommodations() {
-    const accommodation = await database.Accomodations.findAll();
+    const accommodation = await database.Accomodations.findAll({
+      include: [{
+        model: database.Room,
+        required: true,
+      }]
+    });
     if (!accommodation) return null;
     return accommodation;
   }
