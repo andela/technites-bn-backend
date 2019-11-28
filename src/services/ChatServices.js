@@ -30,7 +30,7 @@ class ChatService {
         model: database.User,
         attributes:
         ['id', 'firstname',
-          'lastname'],
+          'lastname', 'image_url'],
         required: true
       }]
     });
