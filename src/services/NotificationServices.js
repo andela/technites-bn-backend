@@ -89,9 +89,12 @@ class NotificationService {
       * @returns {object} return null
       */
   static async newMessageNotification(data) {
+    const {
+      firstname, lastname, line_manager, email
+    } = await userService.findUserById(data.user_id);
     const user = await findUserById(data.from);
     const notification = {
-      from: `${user.firstname} ${user.lastname}`,
+      from: `${email}`,
       user_id: user.id,
       type: 'message',
       to: data.to,
@@ -107,13 +110,13 @@ class NotificationService {
  * @returns {*} object
  */
   static async updateRequestNotification(data) {
-    const user = await findUserById(data.from);
-    const { id } = await userService.findUserByEmail(data.line_manager);
+    const { firstname, lastname, line_manager } = await userService.findUserById(data.user_id);
+    const { id } = await userService.findUserByEmail(line_manager);
     const notification = {
       user_id: id,
       request_id: data.id,
       type: 'request update',
-      message: `${user.firstname} ${user.lastname} updated their request`
+      message: `${firstname} ${lastname} updated their request`
     };
     const { dataValues } = await NotificationService.saveNotification(notification);
     const updateNotification = {
