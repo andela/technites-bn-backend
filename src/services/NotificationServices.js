@@ -22,11 +22,12 @@ class NotificationService {
 
     notification.title = data.request_type;
     notification.from = username;
+    notification.message = `New ${data.request_type} travel request from ${username}`;
 
     const notificationToSave = {};
     notificationToSave.user_id = id;
     notificationToSave.request_id = data.id;
-    notificationToSave.message = data.reason;
+    notificationToSave.message = notification.message;
     notificationToSave.type = data.request_type;
 
     const { dataValues } = await NotificationService.saveNotification(notificationToSave);
@@ -50,13 +51,13 @@ class NotificationService {
     const { username, line_manager } = await userService.findUserById(data.user_id);
     const { id } = await userService.findUserByEmail(line_manager);
 
-    notification.title = `${username} commented on your request`;
+    notification.message = `${username} commented on this request`;
     notification.from = username;
     notification.data = data;
 
     const notificationToSave = {};
     notificationToSave.user_id = id;
-    notificationToSave.message = data.comment;
+    notificationToSave.message = notification.message;
     notificationToSave.request_id = data.request_id;
     notificationToSave.type = 'comments';
 
