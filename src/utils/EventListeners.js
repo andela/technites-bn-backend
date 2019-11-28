@@ -16,5 +16,5 @@ export default () => {
   eventEmitter.on('travel_request_response', sendNewTravelRequestNotification);
   eventEmitter.on('new_user', newUserNotification);
   eventEmitter.on('send_message', newMessageNotification);
-  eventEmitter.on('request_update', updateRequestNotification)
+  eventEmitter.on('request_update', updateRequestNotification);
 };
