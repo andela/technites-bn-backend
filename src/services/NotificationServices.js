@@ -17,12 +17,13 @@ class NotificationService {
       */
   static async sendNewTravelRequestNotification(data) {
     const notification = {};
-    const { username, line_manager } = await userService.findUserById(data.user_id);
+    const { firstname, lastname, line_manager } = await userService.findUserById(data.user_id);
     const { id } = await userService.findUserByEmail(line_manager);
 
     notification.title = data.request_type;
-    notification.from = username;
-    notification.message = `New ${data.request_type} travel request from ${username}`;
+    notification.from = `${firstname} ${lastname}`;
+    notification.message = `New ${data.request_type} travel request from ${firstname} ${lastname}`;
+    notification.user_id = id;
 
     const notificationToSave = {};
     notificationToSave.user_id = id;
@@ -48,12 +49,13 @@ class NotificationService {
    */
   static async sendNewCommentNotification(data) {
     const notification = {};
-    const { username, line_manager } = await userService.findUserById(data.user_id);
+    const { firstname, lastname, line_manager } = await userService.findUserById(data.user_id);
     const { id } = await userService.findUserByEmail(line_manager);
 
-    notification.message = `${username} commented on this request`;
-    notification.from = username;
+    notification.message = `${firstname} ${lastname} commented on this request`;
+    notification.from = `${firstname} ${lastname}`;
     notification.data = data;
+    notification.user_id = id;
 
     const notificationToSave = {};
     notificationToSave.user_id = id;
@@ -90,9 +92,11 @@ class NotificationService {
     const user = await findUserById(data.from);
     const notification = {
       from: `${user.firstname} ${user.lastname}`,
+      user_id: user.id,
       type: 'message',
       to: data.to,
-      message: data.message
+      message: data.message,
+      notMessage: `${user.firstname} ${user.lastname} sent you a message`
     };
     io.emit('send_message', notification);
   }
@@ -103,12 +107,13 @@ class NotificationService {
  * @returns {*} object
  */
   static async updateRequestNotification(data) {
+    const user = await findUserById(data.from);
     const { id } = await userService.findUserByEmail(data.line_manager);
     const notification = {
       user_id: id,
       request_id: data.id,
       type: 'request update',
-      message: `${data.email} updated their request`
+      message: `${user.firstname} ${user.lastname} updated their request`
     };
     const { dataValues } = await NotificationService.saveNotification(notification);
     const updateNotification = {
