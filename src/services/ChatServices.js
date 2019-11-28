@@ -34,7 +34,7 @@ class ChatService {
         required: true
       }],
       order: [
-        ['id', 'DESC']]
+        ['id', 'ASC']]
     });
     if (!chats) return null;
     return chats.map((chat) => chat.dataValues);
