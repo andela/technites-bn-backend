@@ -50,7 +50,7 @@ class NotificationService {
     const { id, firstname, lastname } = await userService.findUserByEmail(line_manager);
     notification.title = data.request_type;
     notification.from = `${firstname} ${lastname}`;
-    notification.message = `Trip request ${data.status} by ${firstname} ${lastname}`;
+    notification.message = `Trip request ${data.status} by line manager`;
     notification.user_id = id;
     notification.request_owner = data.user_id;
 
