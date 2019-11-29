@@ -12,7 +12,7 @@ const { findUserById } = userService;
 class NotificationService {
   /**
    *
-   * @param {Integer} data
+   * @param {object} data
    * @returns {object} return null
    */
   static async sendNewTravelRequestNotification(data) {
@@ -23,6 +23,7 @@ class NotificationService {
     notification.from = `${firstname} ${lastname}`;
     notification.message = `New ${data.request_type} travel request from ${firstname} ${lastname}`;
     notification.user_id = id;
+    notification.request_owner = data.user_id;
 
     const notificationToSave = {};
     notificationToSave.user_id = id;

@@ -48,6 +48,7 @@ const {
   findRequestById,
   deleteRequest
 } = RequestServices;
+
 const { changeRoomStatus, bookRoom, releaseBooking } = RoomService;
 const { updateAccommodations, findAllAccommodationsByLocation } = AccommodationService;
 const { findUserById, autoFill } = UserService;
@@ -68,7 +69,7 @@ class RequestController {
    */
   static async getRequests(req, res) {
     let param = req.user.id;
-    if (req.user.role_value >= 4 && req.params.id) {
+    if (req.user.role_value >= 2 && req.params.id) {
       param = req.params.id;
     }
     const requests = await fetchRequests(param);
