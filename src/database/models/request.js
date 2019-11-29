@@ -72,7 +72,7 @@ export default (sequelize, DataTypes) => {
       .query(`SELECT "Requests".*,"Users".email,"Users".line_manager FROM "Requests", "Users" WHERE "Requests".id = ${data.where.id} AND "Users".id = "Requests".user_id`, {
         type: sequelize.QueryTypes.SELECT
       });
-    eventEmitter.emit('request_update', updatedRequest[0]);
+    // eventEmitter.emit('request_update', updatedRequest[0]);
   });
 
   return Request;
