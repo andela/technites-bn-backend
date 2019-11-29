@@ -121,20 +121,13 @@ class NotificationService {
    * @returns {object} return null
    */
   static async newMessageNotification(data) {
-    const {
-      firstname,
-      lastname,
-      line_manager,
-      email
-    } = await userService.findUserById(data.user_id);
-    const { id } = await userService.findUserByEmail(line_manager);
+    const user = await findUserById(data.from);
     const notification = {
-      from: `${email}`,
-      user_id: id,
+      from: `${user.firstname} ${user.lastname}`,
       type: 'message',
       to: data.to,
       message: data.message,
-      notMessage: `${firstname} ${lastname} sent you a message`
+      user_id: user.id
     };
     io.emit('send_message', notification);
   }
