@@ -126,7 +126,8 @@ class NotificationService {
       from: `${user.firstname} ${user.lastname}`,
       type: 'message',
       to: data.to,
-      message: data.message
+      message: data.message,
+      user_id: user.id
     };
     io.emit('send_message', notification);
   }
