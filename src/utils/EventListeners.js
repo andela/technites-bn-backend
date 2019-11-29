@@ -8,12 +8,13 @@ export default () => {
     sendNewCommentNotification,
     newUserNotification,
     newMessageNotification,
-    updateRequestNotification
+    updateRequestNotification,
+    responseToRequest
   } = notificationService;
 
   eventEmitter.on('new_travel_request', sendNewTravelRequestNotification);
   eventEmitter.on('new_comment', sendNewCommentNotification);
-  eventEmitter.on('travel_request_response', sendNewTravelRequestNotification);
+  eventEmitter.on('travel_request_response', responseToRequest);
   eventEmitter.on('new_user', newUserNotification);
   eventEmitter.on('send_message', newMessageNotification);
   eventEmitter.on('request_update', updateRequestNotification);

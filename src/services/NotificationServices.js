@@ -34,14 +34,42 @@ class NotificationService {
     const { dataValues } = await NotificationService.saveNotification(
       notificationToSave
     );
-    if (data.status === 'Approved' || data.status === 'Rejected') {
-      notification.status = data.status;
-      const emitRes = io.emit('travel_request_response', notification);
-      return { dataValues, emitRes };
-    }
     const emitRes = io.emit('new_travel_request', notification);
 
     return { dataValues, emitRes };
+  }
+
+  /**
+   *
+   * @param {object} data
+   * @returns {object} return null
+   */
+  static async responseToRequest(data) {
+    const notification = {};
+    const { line_manager } = await userService.findUserById(data.user_id);
+    const { id, firstname, lastname } = await userService.findUserByEmail(line_manager);
+    notification.title = data.request_type;
+    notification.from = `${firstname} ${lastname}`;
+    notification.message = `Trip request ${data.status} by ${firstname} ${lastname}`;
+    notification.user_id = id;
+    notification.request_owner = data.user_id;
+
+    const notificationToSave = {};
+    notificationToSave.user_id = id;
+    notificationToSave.request_id = data.id;
+    notificationToSave.message = notification.message;
+    notificationToSave.type = data.request_type;
+
+    if (data.status === 'Approved' || data.status === 'Rejected') {
+      notification.status = data.status;
+
+      const { dataValues } = await NotificationService.saveNotification(
+        notificationToSave
+      );
+
+      const emitRes = io.emit('travel_request_response', notification);
+      return { dataValues, emitRes };
+    }
   }
 
   /**
