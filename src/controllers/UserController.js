@@ -263,7 +263,7 @@ class UserController {
     // Add picture if user added it
     if (req.files && req.files.image) {
       // uploading to cloudinary
-      const imageUrl = await uploadImage(req.files.image.path);
+      const imageUrl = await uploadImage(req.files.image);
       if (!imageUrl) {
         util.setError(415, 'Please Upload a valid image');
         return util.send(res);
