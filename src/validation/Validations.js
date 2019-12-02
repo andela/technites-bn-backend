@@ -268,10 +268,6 @@ export default class Validation {
       util.setError(409, `The accommodation named ${req.body.accommodation_name} already exists in that location`);
       return util.send(res);
     }
-    if (req.files.images.length === undefined) {
-      util.setError(403, 'Please Upload more pictures');
-      return util.send(res);
-    }
     if (typeof req.body.services === 'string') {
       req.body.services = JSON.parse(req.body.services);
     }
@@ -283,7 +279,7 @@ export default class Validation {
   static async validateNewRoom(req, res, next) {
     const {
       accommodation_id, name, room_type, description
-    } = req.body;
+    } = req.body;    
     const accommodation = await findAccommodationById(accommodation_id);
     if (!accommodation) {
       util.setError(404, 'Accommodation does not exist');
@@ -301,10 +297,6 @@ export default class Validation {
     }
     if (req.user.id !== accommodation.owner) {
       util.setError(403, 'You are not allowed to add rooms to an accommodation you do not own');
-      return util.send(res);
-    }
-    if (req.files.images.length === undefined) {
-      util.setError(403, 'Please Upload more pictures');
       return util.send(res);
     }
     next();

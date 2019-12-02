@@ -23,7 +23,8 @@ const {
   viewAllRoomsByAccommodation,
   viewAllAccommodations,
   viewAllAccommodationsByLocation,
-  likeAccommodation
+  likeAccommodation,
+  getAccommodationOwner,
 } = AccomodationController;
 const {
   validateHostAccommodations, validateAccommodations, validateRooms, validateNewRoom, validateLike
@@ -35,6 +36,7 @@ const {
 
 
 router.post('/hosts', verifyToken, multipartyMiddle, validateHostAccommodations, validateAccommodations, createHostAccommodation);
+router.get('/hosts', verifyToken, getAccommodationOwner);
 router.post('/rooms', verifyToken, multipartyMiddle, validateRooms, validateNewRoom, createRoom);
 router.post('/', verifyToken, multipartyMiddle, accommodationData, validator, createAccomodation);
 router.get('/', viewAllAccommodations);
