@@ -4,6 +4,7 @@ import AccomodationController from '../controllers/AccomodationController';
 import RatingController from '../controllers/RatingController';
 import FeedbackController from '../controllers/FeedbackController';
 import UserAuthentication from '../middlewares/UserAuthentication';
+import AttachUser from '../middlewares/AttachUser';
 import {
   validator, feedbackData, accommodationData, checkIsInt
 } from '../validation/UserValidation';
@@ -13,6 +14,7 @@ const multipartyMiddle = multiparty();
 const router = new Router();
 const { validateRating } = Validation;
 const { verifyToken } = UserAuthentication;
+const { reqAttachUser } = AttachUser;
 const { getRate, addRate, rating } = RatingController;
 const {
   createAccomodation,
@@ -39,7 +41,7 @@ router.post('/rooms', verifyToken, multipartyMiddle, validateRooms, validateNewR
 router.post('/', verifyToken, multipartyMiddle, accommodationData, validator, createAccomodation);
 router.get('/', viewAllAccommodations);
 router.get('/location/:id', viewAllAccommodationsByLocation);
-router.get('/:id([0-9]{1,11})', viewSingleAccommodation);
+router.get('/:id([0-9]{1,11})', reqAttachUser, viewSingleAccommodation);
 router.get('/:id/rooms', viewAllRoomsByAccommodation);
 router.get('/:accomodationid/rooms/:id', viewSingleRoom);
 router.post('/:id/like', verifyToken, validateLike, likeAccommodation);
