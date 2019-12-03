@@ -23,7 +23,7 @@ const {
 } = AccomodationServices;
 const { addRoom, findRoomById, getAllRoomsByAccommodation } = RoomServices;
 const {
-  addLike, updateLike, findLike, countLikes
+  addLike, updateLike, findLike, countLikes, userLiked,
 } = LikeServices;
 const util = new Util();
 /**
@@ -143,6 +143,11 @@ class AccomodationControler {
     }
     const likes = await countLikes(req.params.id);
     singleAccommodation.likes = likes;
+    singleAccommodation.liked = false;
+    if (req.user != null) {
+      const check = await userLiked(req.user.id, req.params.id);
+      singleAccommodation.liked = check;
+    }
     util.setSuccess(200, 'Accommodation found!', singleAccommodation);
     return util.send(res);
   }

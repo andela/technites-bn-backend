@@ -27,7 +27,13 @@ class FeedbackServices {
     const allFeedbacks = await db.Feedback.findAll({
       where: {
         accommodation_id
-      }
+      },
+      include: [{
+        model: db.User,
+        attributes:
+          ['id', 'firstname', 'lastname', 'image_url'],
+        required: true
+      }],
     });
     return allFeedbacks;
   }

@@ -51,5 +51,20 @@ class LikeService {
     if (!like) return null;
     return like.dataValues;
   }
+
+  /**
+ *
+ * @param {*} userId
+ * @param {*} accommodationId
+ * @returns {*} boolean
+ */
+  static async userLiked(userId, accommodationId) {
+    const count = await database.Likes.count({ where: { accommodation_id: accommodationId, user_id: userId, status: 'true' } });
+    if (count) {
+      return true;
+    }
+    return false;
+  }
 }
+
 export default LikeService;
