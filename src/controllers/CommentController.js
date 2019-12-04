@@ -23,18 +23,21 @@ class CommentController {
     if (!request) return res.status(404).send({ status: 404, error: 'Request not found' });
     // confirm his request
     const result = await confirmRequestOwner(request_id, user_id);
-    if (!result) return res.status(401).send({ status: 401, error: 'Not allowed' });
-    const comment = req.body.comment.toLowerCase();
-    const sentData = await database.Comment.create({
-      request_id,
-      user_id,
-      comment
-    });
-    // emit notification Event
-    const data = sentData.dataValues;
-    eventEmitter.emit('new_comment', data);
-    // post comment on req
-    return res.status(200).send({ status: 200, message: 'comment posted', data });
+    if (result || req.user.role_value > 1) {
+      const comment = req.body.comment.toLowerCase();
+      const sentData = await database.Comment.create({
+        request_id,
+        user_id,
+        comment
+      });
+      // emit notification Event
+      const data = sentData.dataValues;
+      data.from = req.user.id;
+      eventEmitter.emit('new_comment', data);
+      // post comment on req
+      return res.status(200).send({ status: 200, message: 'comment posted', data });
+    }
+    return res.status(401).send({ status: 401, error: 'Not allowed' });
   }
 
   /**
@@ -52,20 +55,22 @@ class CommentController {
 
     // confirm his request
     const result = await confirmRequestOwner(request_id, id);
-    if (!result) return res.status(401).send({ status: 401, error: 'Not allowed' });
     // get all comments with request_id
 
-    const comments = await database.Comment.findAll({
-      where: { request_id, active: 'true' },
-      order: [['createdAt', 'DESC']],
-      include: [{
-        model: database.User,
-        attributes:
-          ['id', 'firstname', 'lastname', 'image_url'],
-        required: true
-      }],
-    });
-    return res.status(200).send({ status: 200, message: `comments from the request with id :${request_id}`, data: comments });
+    if (result || req.user.role_value > 1) {
+      const comments = await database.Comment.findAll({
+        where: { request_id, active: 'true' },
+        order: [['createdAt', 'DESC']],
+        include: [{
+          model: database.User,
+          attributes:
+            ['id', 'firstname', 'lastname', 'image_url'],
+          required: true
+        }],
+      });
+      return res.status(200).send({ status: 200, message: `comments from the request with id :${request_id}`, data: comments });
+    }
+    if (!result) return res.status(401).send({ status: 401, error: 'Not allowed' });
   }
 
   /**

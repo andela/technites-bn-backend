@@ -166,9 +166,9 @@ class RequestController {
       'Trip approval request updated',
       'Trip request  updated'
     );
+    eventEmitter.emit('request_update', request);
 
     if (responseOne && responseTwo) {
-      eventEmitter.emit('request_update', request);
       return res.status(200).json({ status: res.statusCode, message: 'Sent request. Please wait travel admin to approve it', data: updatedRequest });
     }
     return res.status(500).json({ status: res.statusCode, message: 'Failed to send request email try again later!' });

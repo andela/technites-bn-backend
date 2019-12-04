@@ -1,33 +1,35 @@
 version: "3.7"
 services:
- db:
-   image: postgres
-   restart: always
-   volumes:
-     - "pgdata:/var/lib/postgresql/data"
-   ports:
-     - '${DB_DOCKER_PORT}:5432'
+  db:
+    image: postgres
+    container_name: technites-postgres
+    restart: always
+    volumes:
+    - "pgdata:/var/lib/postgresql/data"
+    ports:
+      - "${DB_DOCKER_PORT}:5432"
 
- redis:
-   image: redis
-   environment:         
-      - POSTGRES_DB= ${DB_NAME}
-      - POSTGRES_USER= ${DB_USER}
-      - POSTGRES_PASSWORD= ${DB_PASS}
- web:
-   command: bash -c "npm run db:reset && npm run dev"
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+  redis:
+    image: redis
+  web:
+    command: bash -c "npm run db:reset && npm run dev"
 
-   build: .
-   depends_on:
-     - db
-     - redis
-   ports:
-     - '${WEB_DOCKER_PORT}:${PORT}'
-   environment:
+    build: .
+    container_name: technites-backend
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "${WEB_DOCKER_PORT}:${PORT}"
+    environment:
       - DB_HOST=db
-      - DB_USER= ${DB_USER}
-      - DB_NAME= ${DB_NAME}
-      - DB_PASS= ${DB_PASS}
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+      - DB_PASS=${DB_PASS}
       - JWT_SECRET= ${JWT_SECRET}
       - SENDGRID_API_KEY= ${SENDGRID_API_KEY}
       - REDIS_URL=redis://redis:6379
@@ -36,7 +38,17 @@ services:
       - CLOUDINARY_NAME= ${CLOUDINARY_NAME}
       - CLOUDINARY_API_KEY= ${CLOUDINARY_API_KEY}
       - CLOUDINARY_API_SECRET= ${CLOUDINARY_API_SECRET}
-   links:
+    links:
       - db
+  ui:
+    container_name: technites-frontend
+    build: "${UI_PATH}"
+    volumes:
+     - '../technites-bn-frontend:/usr/src/app'
+     - '/usr/src/app/node_modules'
+    ports:
+      - "3001:3000"
+    links:
+      - web
 volumes:
-  pgdata:
+ pgdata:
