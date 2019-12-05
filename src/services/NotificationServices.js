@@ -4,8 +4,10 @@
 import { io } from '../index';
 import userService from './UserServices';
 import database from '../database/models';
+import RequestService from './RequestServices';
 
 const { findUserById } = userService;
+const { findRequestById } = RequestService;
 /**
  * @class NotificationService
  */
@@ -79,16 +81,30 @@ class NotificationService {
    */
   static async sendNewCommentNotification(data) {
     const notification = {};
-    const { line_manager } = await userService.findUserById(data.user_id);
+    const notificationToSave = {};
+
+    const request = await findRequestById(data.request_id);
+    const reqOwner = request.dataValues.user_id;
+    const from = data.user_id;
+    const { line_manager } = await userService.findUserById(reqOwner);
     const { id } = await userService.findUserByEmail(line_manager);
 
-    notification.message = 'A comment was posted on this request';
-    notification.data = data;
-    notification.manager = id;
-    notification.owner = data.user_id;
+    const manId = id || 0;
 
-    const notificationToSave = {};
-    notificationToSave.user_id = id;
+    if (manId && (from === manId)) {
+      notification.message = 'manager commented on this request';
+      notificationToSave.user_id = reqOwner;
+    }
+    if (reqOwner === from) {
+      notification.message = 'requester commented on this request';
+      notificationToSave.user_id = manId;
+    }
+
+    notification.data = data;
+    notification.manager = manId;
+    notification.from = from;
+    notification.reqOwner = reqOwner;
+
     notificationToSave.message = notification.message;
     notificationToSave.request_id = data.request_id;
     notificationToSave.type = 'comments';
@@ -144,7 +160,7 @@ class NotificationService {
       user_id: id,
       request_id: data.id,
       type: 'request update',
-      message: `${firstname} ${lastname} updated their request`
+      message: `Update on ${firstname} ${lastname}'s Request`
     };
     const { dataValues } = await NotificationService.saveNotification(
       notification

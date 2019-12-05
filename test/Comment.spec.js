@@ -199,14 +199,14 @@ describe('Change user roles', () => {
       });
   });
 
-  it('it should not create a comment from travel admin on requesters request', (done) => {
+  it('it should create a comment from travel admin on requesters request', (done) => {
     chai
       .request(app)
       .post(`/api/v1/requests/${requestId}/comments`)
       .set('Authorization', `Bearer ${travelAdminToken}`)
       .send(commentOne)
       .end((err, res) => {
-        res.should.have.status(401);
+        res.should.have.status(200);
         done();
       });
   });
@@ -316,13 +316,13 @@ describe('Change user roles', () => {
       });
   });
 
-  it('it should be able to get comments of any requests if not manager owner or superadmin', (done) => {
+  it('it should be able to get comments of any requests if manager owner or superadmin', (done) => {
     chai
       .request(app)
       .get(`/api/v1/requests/${requestId}/comments`)
       .set('Authorization', `Bearer ${travelAdminToken}`)
       .end((err, res) => {
-        res.should.have.status(401);
+        res.should.have.status(200);
         done();
       });
   });
