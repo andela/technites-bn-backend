@@ -34,6 +34,17 @@ class AccomodationServices {
   }
 
   /**
+      *
+      * @returns {object} returns the newly saved accomodation facility
+      */
+     static async getByOwner(owner) {
+      const found = await database.Accomodations.findAll({
+        where: {owner}
+      });
+      return found.map((result) => result.dataValues);
+    }
+
+  /**
  *
  * @param {*} accommodation_name
  * @param {*} location
@@ -102,7 +113,7 @@ class AccomodationServices {
     const accommodation = await database.Accomodations.findAll({
       include: [{
         model: database.Room,
-        required: true,
+        required: false,
       }]
     });
     if (!accommodation) return null;

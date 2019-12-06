@@ -5,21 +5,15 @@ import AccomodationServices from '../services/AccomodationServices';
 import RoomServices from '../services/RoomServices';
 import LikeServices from '../services/LikeServices';
 import Util from '../utils/Utils';
-import { uploadImages, uploadImage } from '../utils/ImageUploader';
+import { uploadImage, uploader } from '../utils/ImageUploader';
 
-dotenv.config();
-const { CLOUDINARY_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET } = process.env;
-cloudinary.config({
-  cloud_name: CLOUDINARY_NAME,
-  api_key: CLOUDINARY_API_KEY,
-  api_secret: CLOUDINARY_API_SECRET,
-});
 const {
   createAccomodation,
   getByNameLocation,
   findAllAccommodations,
   findAllAccommodationsByLocation,
-  findAccommodationFeedback
+  findAccommodationFeedback,
+  getByOwner
 } = AccomodationServices;
 const { addRoom, findRoomById, getAllRoomsByAccommodation } = RoomServices;
 const {
@@ -56,6 +50,7 @@ class AccomodationControler {
         return res.status(201).send({ status: 201, message: 'Accomodation facility succesifully created', data: created });
       }
       res.status(400).send({ status: 400, error: 'Invalid image upload' });
+      
     } catch (error) {
       next(error);
     }
@@ -71,21 +66,32 @@ class AccomodationControler {
   static async createHostAccommodation(req, res, next) {
     try {
       const accommodation = req.body;
-      if (req.files && req.files.images) {
-        const arr = await uploadImages(req.files.images);
-        if (arr.every((item) => item != null)) {
-          accommodation.images = arr;
-          accommodation.owner = req.user.id;
-          return createAccomodation(accommodation).then(() => {
-            util.setSuccess(201, 'Accomodation added successfully!', accommodation);
-            return util.send(res);
-          });
-        }
-        util.setError(415, 'Please Upload a valid image');
-        return util.send(res);
+      const imageUrl = await uploader(req.files.images);
+      if (imageUrl) {
+        req.body.images = imageUrl;
+        accommodation.owner = req.user.id;
+        const createdAcc = await createAccomodation(req.body);
+        return res.status(201).send({ status: 201, message: 'Accomodation added successfully!', data: createdAcc.dataValues });
       }
+      util.setError(415, 'Please Upload a valid image');
+        return util.send(res);
     } catch (error) { return next(error); }
   }
+
+    /**
+   *
+   * @param {*} req
+   * @param {*} res
+   * @param {*} next
+   * @returns {*} registered accommodation
+   */
+  static async getAccommodationOwner(req, res, next) {
+    try {
+      const accommodations = await getByOwner(req.user.id);
+      return res.status(201).send({ status: 200, message: 'All your accommodations', data: accommodations });
+    } catch (error) { return next(error); }
+  }
+
 
   /**
    *
@@ -96,19 +102,14 @@ class AccomodationControler {
    */
   static async createRoom(req, res, next) {
     try {
-      const room = req.body;
-      if (req.files && req.files.images) {
-        const arr = await uploadImages(req.files.images);
-        if (arr.every((v) => v != null)) {
-          room.images = arr;
-          return addRoom(room).then(() => {
-            util.setSuccess(201, 'Accomodation added successfully!', room);
-            return util.send(res);
-          });
-        }
-        util.setError(415, 'Please Upload a valid image');
-        return util.send(res);
+      const imageUrl = await uploader(req.files.images);
+      if (imageUrl) {
+        req.body.images = imageUrl;
+        const createdRoom = await addRoom(req.body);
+        return res.status(201).send({ status: 201, message: 'Room succesifully added', data: createdRoom.dataValues });
       }
+      util.setError(415, 'Please Upload a valid image');
+        return util.send(res);
     } catch (error) { return next(error); }
   }
 
