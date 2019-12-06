@@ -106,7 +106,7 @@ class AccomodationControler {
       if (imageUrl) {
         req.body.images = imageUrl;
         const createdRoom = await addRoom(req.body);
-        return res.status(201).send({ status: 201, message: 'Room succesifully added', data: createdRoom });
+        return res.status(201).send({ status: 201, message: 'Room succesifully added', data: createdRoom.dataValues });
       }
       util.setError(415, 'Please Upload a valid image');
         return util.send(res);

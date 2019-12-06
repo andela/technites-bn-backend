@@ -113,7 +113,7 @@ class AccomodationServices {
     const accommodation = await database.Accomodations.findAll({
       include: [{
         model: database.Room,
-        required: true,
+        required: false,
       }]
     });
     if (!accommodation) return null;
