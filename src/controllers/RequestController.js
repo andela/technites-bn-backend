@@ -222,17 +222,14 @@ class RequestController {
    */
   static async mostTravelledDestinations(req, res) {
     const allRequests = await fetchApprovedRequests();
-
-    if (allRequests.length < 1) return res.status(200).json({ status: res.statusCode, message: 'The most traveled destination is not found because we currently don\'t have requests' });
-    const allDestinationsIds = _.chain(allRequests)
-      .map(({ destinations }) => destinations)
-      .flatten()
-      .map(({ destination_id }) => destination_id)
-      .uniq()
-      .value();
+    const locations = [];
+    allRequests.map((req) => {
+      if (req) locations.push(req.dataValues.location_id);
+      return locations;
+    });
 
     const mostTravelledCity = await findMostTravelledDestination(
-      allDestinationsIds
+      locations
     );
     if (!mostTravelledCity) {
       return res
