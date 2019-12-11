@@ -29,7 +29,7 @@ export const changeRoleData = [
     .not()
     .isEmpty()
     .isIn([1, 2, 3, 4, 5, 6, 7])
-    .withMessage('new_role value can only take a value between 1 and 7')
+    .withMessage('New role value can either by Requester, Manager, Travel Admin or SuperAdmin')
 ];
 export const registerData = [
   check(['firstname', 'lastname']).isLength({ min: 2, max: 30 })
