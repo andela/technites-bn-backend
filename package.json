@@ -24,7 +24,7 @@
     "@hapi/joi": "^15.1.1",
     "@sendgrid/mail": "^6.4.0",
     "@sentry/node": "^5.8.0",
-    "bcrypt": "^3",
+    "bcrypt": "^5",
     "body-parser": "^1.18.3",
     "cloudinary": "^1.15.0",
     "connect-multiparty": "^2.2.0",
