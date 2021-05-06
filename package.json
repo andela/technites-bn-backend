@@ -57,7 +57,7 @@
     "sequelize": "^5.19.3",
     "socket.io": "^2.3.0",
     "swagger-ui-express": "^4.1.1",
-    "underscore": "^1.9.1",
+    "underscore": "^1.12.1",
     "voca": "^1.4.0",
     "winston": "^3.2.1"
   },
