@@ -55,7 +55,7 @@
     "redis": "^2.8.0",
     "request": "^2.87.0",
     "sequelize": "^5.19.3",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.5.0",
     "swagger-ui-express": "^4.1.1",
     "underscore": "^1.9.1",
     "voca": "^1.4.0",
